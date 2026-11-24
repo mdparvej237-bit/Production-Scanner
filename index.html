@@ -203,13 +203,12 @@
 
         <div class="scanner-wrap">
           <div id="scanStepBanner" class="step-banner">Operator ID Scan</div>
-          <div id="scanInstructionText" style="font-size:13px;color:#cbd5e1;">প্রথমে Operator ID স্ক্যান করুন। Operator ID স্ক্যান না করলে TC Scan লক থাকবে।</div>
+          <div id="scanInstructionText" style="font-size:13px;color:#cbd5e1;">প্রথমে Operator ID স্ক্যান করুন। স্ক্যান হলে Next বাটন আসবে।</div>
           <div id="reader"></div>
         </div>
 
         <div id="scanNotifyBox" class="notify-box"></div>
 
-        <!-- স্ক্যান হয়ে গেলে এই NEXT বাটন দেখাবে -->
         <div id="nextActionArea" class="hidden" style="margin-top:12px;">
           <button id="nextBtnMain" type="button" class="btn-next" style="width:100%;" onclick="onNextButtonClick()">Next</button>
         </div>
@@ -220,7 +219,7 @@
         </div>
       </div>
 
-      <!-- OPERATOR INFORMATION -->
+      <!-- OPERATOR INFORMATION (ONLY OPERATOR FIELDS: OP ID, NAME, FLOOR, DEPARTMENT, LINE) -->
       <div class="card">
         <div class="card-head">
           <h2 class="card-title">Operator Information</h2>
@@ -229,13 +228,13 @@
         <div class="info-grid">
           <div class="info-cell"><div class="info-lbl">Operator ID</div><div id="dOpId" class="info-val">-</div></div>
           <div class="info-cell"><div class="info-lbl">Operator Name</div><div id="dOpName" class="info-val">-</div></div>
-          <div class="info-cell"><div class="info-lbl">Line</div><div id="dOpLine" class="info-val">-</div></div>
           <div class="info-cell"><div class="info-lbl">Floor</div><div id="dOpFloor" class="info-val">-</div></div>
           <div class="info-cell"><div class="info-lbl">Department</div><div id="dOpDept" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">Line</div><div id="dOpLine" class="info-val">-</div></div>
         </div>
       </div>
 
-      <!-- TC INFORMATION -->
+      <!-- TC INFORMATION (ONLY TC FIELDS: TC NO, LOT NO, BUYER, STYLE, COLOR, SIZE, BUNDLE QTY, PROCESS, SMV, EARNED SAH) -->
       <div id="tcStepCard" class="card locked-box">
         <div class="card-head">
           <h2 class="card-title">TC Information</h2>
@@ -243,10 +242,13 @@
         </div>
         <div class="info-grid">
           <div class="info-cell"><div class="info-lbl">TC No.</div><div id="dTcNo" class="info-val">-</div></div>
-          <div class="info-cell"><div class="info-lbl">Style No.</div><div id="dTcStyle" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">Lot No</div><div id="dTcLot" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">Buyer</div><div id="dTcBuyer" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">Style</div><div id="dTcStyle" class="info-val">-</div></div>
           <div class="info-cell"><div class="info-lbl">Color</div><div id="dTcColor" class="info-val">-</div></div>
           <div class="info-cell"><div class="info-lbl">Size</div><div id="dTcSize" class="info-val">-</div></div>
           <div class="info-cell"><div class="info-lbl">Bundle Qty</div><div id="dTcQty" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">Process</div><div id="dTcProcess" class="info-val">-</div></div>
           <div class="info-cell"><div class="info-lbl">SMV</div><div id="dTcSmv" class="info-val">-</div></div>
           <div class="info-cell"><div class="info-lbl">Earned SAH</div><div id="dTcSah" class="info-val">-</div></div>
         </div>
@@ -276,7 +278,7 @@
         </div>
         <table>
           <thead>
-            <tr><th>OP ID</th><th>TC No.</th><th>Line</th><th>Style</th><th>Process</th><th>Qty</th><th>SAH</th></tr>
+            <tr><th>OP ID</th><th>TC No.</th><th>Lot</th><th>Style</th><th>Size</th><th>Process</th><th>Qty</th><th>SAH</th></tr>
           </thead>
           <tbody id="scanDetailsTbody"></tbody>
         </table>
@@ -315,12 +317,7 @@
     let cameraRunning = false;
     let audioCtx = null;
 
-    // States:
-    // 'SCAN_OP'        -> Operator ID স্ক্যান হবে
-    // 'HOLD_AFTER_OP'  -> Operator স্ক্যান হয়ে গেছে, Next ক্লিক না করা পর্যন্ত আর কোনো স্ক্যান হবে না
-    // 'SCAN_TC'        -> TC স্ক্যান হবে
-    // 'HOLD_AFTER_TC'  -> TC স্ক্যান হয়ে গেছে, Process সিলেক্ট করবে
-    // 'HOLD_AFTER_SAVE'-> Save হয়ে গেছে, Next ক্লিক করলে পরের TC স্ক্যান হবে
+    // States: 'SCAN_OP' -> 'HOLD_AFTER_OP' -> 'SCAN_TC' -> 'HOLD_AFTER_TC' -> 'HOLD_AFTER_SAVE'
     let flowMode = 'SCAN_OP';
     let currentOperator = null;
     let currentTcData = null;
@@ -330,7 +327,7 @@
       { style: '1896', process: 'Ironing', smv: 8.28 }
     ];
 
-    let scannedEntries = JSON.parse(localStorage.getItem('scanned_entries_v3') || '[]');
+    let scannedEntries = JSON.parse(localStorage.getItem('scanned_entries_v4') || '[]');
     const scannedTcProcessSet = new Set(scannedEntries.map(e => `${e.tcNo}__${e.process.toLowerCase()}`));
 
     function playBeep(type = 'ok') {
@@ -365,20 +362,25 @@
       box.textContent = '';
     }
 
+    // Operator ফরম্যাট: OPID|NAME|FLOOR|DEPT|LINE
     function renderOperatorCard() {
       document.getElementById('dOpId').textContent = currentOperator ? currentOperator.operatorId : '-';
       document.getElementById('dOpName').textContent = currentOperator ? currentOperator.operatorName : '-';
-      document.getElementById('dOpLine').textContent = currentOperator ? currentOperator.line : '-';
       document.getElementById('dOpFloor').textContent = currentOperator ? currentOperator.floor : '-';
       document.getElementById('dOpDept').textContent = currentOperator ? currentOperator.dept : '-';
+      document.getElementById('dOpLine').textContent = currentOperator ? currentOperator.line : '-';
     }
 
-    function renderTcCard(smvVal = null, sahVal = null) {
+    // TC ফরম্যাট: TCNO|LOTNO|BUYER|STYLE|COLOR|SIZE|QTY
+    function renderTcCard(procVal = '-', smvVal = '-', sahVal = '-') {
       document.getElementById('dTcNo').textContent = currentTcData ? currentTcData.tcNo : '-';
+      document.getElementById('dTcLot').textContent = currentTcData ? currentTcData.lotNo : '-';
+      document.getElementById('dTcBuyer').textContent = currentTcData ? currentTcData.buyer : '-';
       document.getElementById('dTcStyle').textContent = currentTcData ? currentTcData.style : '-';
       document.getElementById('dTcColor').textContent = currentTcData ? currentTcData.color : '-';
       document.getElementById('dTcSize').textContent = currentTcData ? currentTcData.size : '-';
-      document.getElementById('dTcQty').textContent = currentTcData ? currentTcData.qty : '-';
+      document.getElementById('dTcQty').textContent = currentTcData ? currentTcData.bundleQty : '-';
+      document.getElementById('dTcProcess').textContent = procVal || '-';
       document.getElementById('dTcSmv').textContent = smvVal !== null ? smvVal : '-';
       document.getElementById('dTcSah').textContent = sahVal !== null ? sahVal : '-';
     }
@@ -470,25 +472,21 @@
     function handleBarcodeInput(rawCode) {
       const code = String(rawCode || '').trim();
       if (!code) return;
+      if (flowMode !== 'SCAN_OP' && flowMode !== 'SCAN_TC') return;
 
-      // কেবল SCAN_OP বা SCAN_TC মোডেই স্ক্যান গ্রহণ করবে; অন্য সময় স্ক্যান ব্লক থাকবে
-      if (flowMode !== 'SCAN_OP' && flowMode !== 'SCAN_TC') {
-        return;
-      }
-
-      // একটি বারকোড পড়ার সাথে সাথেই ক্যামেরা পজ/স্টপ করে দেব যাতে একই কোড বারবার না পড়ে
       stopCamera();
       playBeep('ok');
       clearNotification();
 
       if (flowMode === 'SCAN_OP') {
+        // ফরম্যাট: OPID|NAME|FLOOR|DEPT|LINE
         const parts = code.split('|').map(s => s.trim());
         currentOperator = {
           operatorId: parts[0] || code,
           operatorName: parts[1] || 'Md. Parvej Miah',
-          line: parts[2] || 'Linking Line-02',
-          floor: parts[3] || '2nd Floor',
-          dept: parts[4] || 'Linking'
+          floor: parts[2] || '2nd Floor',
+          dept: parts[3] || 'Linking',
+          line: parts[4] || 'Linking Line-02'
         };
         flowMode = 'HOLD_AFTER_OP';
         updateFlowUI();
@@ -497,13 +495,16 @@
       }
 
       if (flowMode === 'SCAN_TC') {
+        // ফরম্যাট: TCNO|LOTNO|BUYER|STYLE|COLOR|SIZE|QTY
         const parts = code.split('|').map(s => s.trim());
         currentTcData = {
           tcNo: parts[0] || code,
-          style: parts[1] || '1896',
-          color: parts[2] || 'Blue',
-          size: parts[3] || 'M',
-          qty: Number(parts[4] || 12)
+          lotNo: parts[1] || 'LOT-101',
+          buyer: parts[2] || 'Buyer-A',
+          style: parts[3] || '1896',
+          color: parts[4] || 'Blue',
+          size: parts[5] || 'M',
+          bundleQty: Number(parts[6] || 12)
         };
         flowMode = 'HOLD_AFTER_TC';
         updateFlowUI();
@@ -533,8 +534,8 @@
              x.process.toLowerCase() === proc.toLowerCase()
       );
       const smv = found ? Number(found.smv) : 0;
-      const sah = Number(((currentTcData.qty * smv) / 60).toFixed(2));
-      renderTcCard(smv, sah);
+      const sah = Number(((currentTcData.bundleQty * smv) / 60).toFixed(2));
+      renderTcCard(proc, smv, sah);
     }
 
     async function confirmProcessEntry() {
@@ -564,7 +565,7 @@
              x.process.toLowerCase() === proc.toLowerCase()
       );
       const smv = found ? Number(found.smv) : 0;
-      const sah = Number(((currentTcData.qty * smv) / 60).toFixed(2));
+      const sah = Number(((currentTcData.bundleQty * smv) / 60).toFixed(2));
 
       const record = {
         timestamp: new Date().toISOString(),
@@ -574,10 +575,12 @@
         dept: currentOperator.dept,
         line: currentOperator.line,
         tcNo: currentTcData.tcNo,
+        lotNo: currentTcData.lotNo,
+        buyer: currentTcData.buyer,
         style: currentTcData.style,
         color: currentTcData.color,
         size: currentTcData.size,
-        bundleQty: currentTcData.qty,
+        bundleQty: currentTcData.bundleQty,
         process: proc,
         smv,
         earnedSah: sah
@@ -585,12 +588,13 @@
 
       scannedTcProcessSet.add(dupKey);
       scannedEntries.unshift(record);
-      localStorage.setItem('scanned_entries_v3', JSON.stringify(scannedEntries));
+      localStorage.setItem('scanned_entries_v4', JSON.stringify(scannedEntries));
       renderScanDetails();
 
       flowMode = 'HOLD_AFTER_SAVE';
       updateFlowUI();
-      showNotification(`Saved: OP ${record.operatorId} | TC ${record.tcNo} | Process ${record.process} | SAH ${record.earnedSah}. পরের TC স্ক্যানে "Next" চাপুন।`, 'ok');
+      renderTcCard(proc, smv, sah);
+      showNotification(`Saved: OP ${record.operatorId} | TC ${record.tcNo} | Style ${record.style} | Size ${record.size} | Process ${record.process} | SAH ${record.earnedSah}. পরের TC স্ক্যানে "Next" চাপুন।`, 'ok');
 
       try {
         await fetch(API_URL, {
@@ -614,10 +618,10 @@
     let testTcSeq = 500;
     function testSingleScan() {
       if (flowMode === 'SCAN_OP') {
-        handleBarcodeInput('OP-9001|Md. Parvej Miah|Linking Line-02|2nd Floor|Linking');
+        handleBarcodeInput('OP-9001|Md. Parvej Miah|2nd Floor|Linking|Linking Line-02');
       } else if (flowMode === 'SCAN_TC') {
         testTcSeq += 1;
-        handleBarcodeInput(`TC-${testTcSeq}|1896|Blue|M|12`);
+        handleBarcodeInput(`TC-${testTcSeq}|LOT-101|Buyer-A|1896|Blue|M|12`);
       } else {
         playBeep('dup');
         showNotification('পরের ধাপে যেতে "Next" বাটনে ক্লিক করুন।', 'dup');
@@ -630,8 +634,9 @@
         <tr>
           <td>${esc(r.operatorId)}</td>
           <td><b>${esc(r.tcNo)}</b></td>
-          <td>${esc(r.line)}</td>
+          <td>${esc(r.lotNo || '-')}</td>
           <td>${esc(r.style)}</td>
+          <td>${esc(r.size || '-')}</td>
           <td>${esc(r.process)}</td>
           <td><b>${r.bundleQty}</b></td>
           <td>${r.earnedSah}</td>
