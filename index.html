@@ -13,8 +13,8 @@
       --red-soft: #fee2e2; --red-text: #991b1b;
       --bg: #f4f2ec; --card: #fdfcfa; --border: #e2dfd7; --text: #111827; --muted: #5b6472;
     }
-    * { box-sizing: border-box; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
-    body { margin: 0; background: var(--bg); color: var(--text); }
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 16px; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-size: 16px; }
 
     .topbar {
       background: linear-gradient(135deg, var(--navy), var(--navy-2));
@@ -22,10 +22,10 @@
       align-items: center; gap: 8px; flex-wrap: wrap;
       box-shadow: 0 4px 14px rgba(12, 35, 64, 0.18);
     }
-    .topbar h1 { margin: 0; font-size: 17px; font-weight: 800; line-height: 1.15; }
+    .topbar h1 { margin: 0; font-size: 19px; font-weight: 800; line-height: 1.15; }
     .topbar-right { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 
-    .pill { border: none; border-radius: 999px; padding: 7px 12px; font-size: 12px; font-weight: 700; cursor: pointer; }
+    .pill { border: none; border-radius: 999px; padding: 8px 14px; font-size: 14px; font-weight: 700; cursor: pointer; }
     .pill-tab { background: rgba(255, 255, 255, 0.15); color: #fff; }
     .pill-tab.active { background: rgba(143, 184, 159, 0.32); color: #d1fae5; border: 1px solid rgba(143, 184, 159, 0.55); }
     .pill-logout { background: #dc2626; color: #fff; }
@@ -35,9 +35,9 @@
       background: var(--card); border: 1px solid var(--border); border-radius: 16px;
       padding: 16px; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(17, 24, 39, 0.05);
     }
-    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; }
-    .card-title { margin: 0; font-size: 18px; font-weight: 800; }
-    .hint { margin: 0; color: var(--muted); font-size: 13.5px; line-height: 1.5; }
+    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
+    .card-title { margin: 0; font-size: 20px; font-weight: 800; }
+    .hint { margin: 0; color: var(--muted); font-size: 15.5px; line-height: 1.5; }
 
     .admin-menubar {
       display: flex; gap: 8px; flex-wrap: wrap;
@@ -47,17 +47,17 @@
     .admin-menu-btn {
       flex: 1; min-width: 150px; border: 1px solid transparent;
       background: transparent; color: var(--text); border-radius: 10px;
-      padding: 10px 12px; font-size: 13.5px; font-weight: 800; cursor: pointer;
+      padding: 10px 12px; font-size: 15.5px; font-weight: 800; cursor: pointer;
     }
     .admin-menu-btn.active {
       background: linear-gradient(180deg, #3b82f6, var(--cobalt-dark));
       color: #fff; box-shadow: 0 3px 10px rgba(37, 99, 235, 0.22);
     }
 
-    label { display: block; font-size: 13px; font-weight: 700; color: #374151; margin: 10px 0 5px; }
+    label { display: block; font-size: 15px; font-weight: 700; color: #374151; margin: 10px 0 5px; }
     input, select {
       width: 100%; padding: 11px 12px; border: 1px solid #d5d0c5;
-      border-radius: 11px; font-size: 15px; background: #fff; color: var(--text);
+      border-radius: 11px; font-size: 17px; background: #fff; color: var(--text);
     }
     input:focus, select:focus { outline: none; border-color: var(--cobalt); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
 
@@ -66,49 +66,60 @@
     .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
     .info-cell {
       background: #f8f7f3; border: 1px solid var(--border);
-      border-radius: 10px; padding: 9px 11px; font-size: 13px;
+      border-radius: 10px; padding: 9px 11px; font-size: 15px;
     }
-    .info-lbl { font-size: 11.5px; color: var(--muted); font-weight: 700; }
-    .info-val { font-size: 14px; color: var(--text); font-weight: 800; margin-top: 2px; }
+    .info-lbl { font-size: 13.5px; color: var(--muted); font-weight: 700; }
+    .info-val { font-size: 16px; color: var(--text); font-weight: 800; margin-top: 2px; }
 
     .btn-row { display: grid; grid-template-columns: 2.2fr 1fr; gap: 10px; margin-top: 14px; }
     .btn-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
 
     .btn-primary {
       background: linear-gradient(180deg, #3b82f6, var(--cobalt-dark));
-      color: #fff; border: none; border-radius: 11px; padding: 11px 14px; font-size: 14px; font-weight: 700; cursor: pointer;
+      color: #fff; border: none; border-radius: 11px; padding: 11px 14px; font-size: 16px; font-weight: 700; cursor: pointer;
     }
     .btn-next {
       background: linear-gradient(180deg, #059669, #047857);
-      color: #fff; border: none; border-radius: 12px; padding: 13px 16px; font-size: 16px; font-weight: 800; cursor: pointer;
+      color: #fff; border: none; border-radius: 12px; padding: 13px 16px; font-size: 18px; font-weight: 800; cursor: pointer;
       box-shadow: 0 4px 12px rgba(5, 150, 105, 0.28);
     }
     .btn-sage {
       background: var(--sage); color: #102a1d; border: none;
-      border-radius: 11px; padding: 11px 14px; font-size: 14px; font-weight: 700; cursor: pointer;
+      border-radius: 11px; padding: 11px 14px; font-size: 16px; font-weight: 700; cursor: pointer;
     }
     .btn-refresh {
       background: var(--sage-soft); color: var(--sage-text); border: 1px solid #c6e0d0;
-      border-radius: 10px; padding: 7px 12px; font-weight: 700; font-size: 12.5px; cursor: pointer;
+      border-radius: 10px; padding: 8px 12px; font-weight: 700; font-size: 14.5px; cursor: pointer;
+    }
+    .btn-camera-green {
+      background: linear-gradient(180deg, #22c55e, #15803d);
+      color: #ffffff;
+      border: 2px solid #166534;
+      border-radius: 12px;
+      padding: 10px 18px;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(21, 128, 61, 0.28);
     }
     .btn-edit {
       background: var(--sage-soft); color: var(--sage-text); border: 1px solid #b8d8c5;
-      border-radius: 8px; padding: 5px 10px; font-size: 12px; font-weight: 700; cursor: pointer;
+      border-radius: 8px; padding: 6px 10px; font-size: 14px; font-weight: 700; cursor: pointer;
     }
     .btn-remove {
       background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;
-      border-radius: 8px; padding: 5px 9px; font-size: 12px; font-weight: 700; cursor: pointer;
+      border-radius: 8px; padding: 6px 10px; font-size: 14px; font-weight: 700; cursor: pointer;
     }
 
-    .badge-entries { background: #0f766e; color: #ecfdf5; padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 800; }
-    .badge-live { background: var(--amber-soft); color: var(--amber-text); padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 800; }
-    .badge-lock { background: var(--red-soft); color: var(--red-text); padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 800; }
-    .badge-count { background: #e0e7ff; color: #1e3a8a; padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 800; }
+    .badge-entries { background: #0f766e; color: #ecfdf5; padding: 5px 11px; border-radius: 999px; font-size: 14px; font-weight: 800; }
+    .badge-live { background: var(--amber-soft); color: var(--amber-text); padding: 5px 11px; border-radius: 999px; font-size: 14px; font-weight: 800; }
+    .badge-lock { background: var(--red-soft); color: var(--red-text); padding: 5px 11px; border-radius: 999px; font-size: 14px; font-weight: 800; }
+    .badge-count { background: #e0e7ff; color: #1e3a8a; padding: 4px 10px; border-radius: 999px; font-size: 13.5px; font-weight: 800; }
 
     .scanner-wrap { background: #090d16; color: #fff; border-radius: 14px; padding: 14px; text-align: center; }
     .step-banner {
       background: #172554; color: #dbeafe; border: 1px solid #3b82f6;
-      border-radius: 10px; padding: 10px 12px; font-size: 15px; font-weight: 800; margin-bottom: 8px;
+      border-radius: 10px; padding: 10px 12px; font-size: 17px; font-weight: 800; margin-bottom: 8px;
     }
     .step-banner.hold-step { background: #1e3a8a; color: #fef08a; border-color: #facc15; }
     .step-banner.tc-step { background: #064e3b; color: #d1fae5; border-color: #10b981; }
@@ -118,7 +129,7 @@
 
     .notify-box {
       margin-top: 10px; border-radius: 11px; padding: 10px 12px;
-      font-size: 13.5px; font-weight: 800; display: none;
+      font-size: 15.5px; font-weight: 800; display: none;
     }
     .notify-dup { display: block; background: var(--red-soft); border: 1px solid #f87171; color: var(--red-text); }
     .notify-ok { display: block; background: var(--sage-soft); border: 1px solid #8fb89f; color: var(--sage-text); }
@@ -140,15 +151,15 @@
       width: 100%; border: none; background: #f2efe8;
       padding: 12px 14px; display: flex; justify-content: space-between;
       align-items: center; gap: 10px; cursor: pointer; text-align: left;
-      font-size: 15px; font-weight: 800; color: var(--text);
+      font-size: 17px; font-weight: 800; color: var(--text);
     }
     .style-group-header:hover { background: #e9e5dc; }
     .style-group-body { padding: 4px 12px 12px; background: #fff; }
 
-    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
-    th, td { padding: 8px 6px; border-bottom: 1px solid #ece9e2; text-align: left; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 15px; }
+    th, td { padding: 8px 6px; border-bottom: 1px solid #ece9e2; text-align: left; font-size: 15px; }
     th { background: #f5f3ed; font-weight: 800; }
-    .msg { margin-top: 8px; font-size: 13px; font-weight: 700; }
+    .msg { margin-top: 8px; font-size: 15px; font-weight: 700; }
     .hidden { display: none !important; }
   </style>
 </head>
@@ -228,12 +239,12 @@
       <div class="card">
         <div class="card-head">
           <h2 class="card-title">Barcode Scanner</h2>
-          <button id="camToggleBtn" type="button" class="btn-refresh" onclick="toggleCamera()">Start Camera</button>
+          <button id="camToggleBtn" type="button" class="btn-camera-green" onclick="toggleCamera()">Start Camera</button>
         </div>
 
         <div class="scanner-wrap">
           <div id="scanStepBanner" class="step-banner">Operator ID Scan</div>
-          <div id="scanInstructionText" style="font-size:13px;color:#cbd5e1;">প্রথমে Operator ID স্ক্যান করুন। স্ক্যান হলে Next বাটন আসবে।</div>
+          <div id="scanInstructionText" style="font-size:15px;color:#cbd5e1;">প্রথমে Operator ID স্ক্যান করুন। স্ক্যান হলে Next বাটন আসবে।</div>
           <div id="reader"></div>
         </div>
 
