@@ -63,6 +63,10 @@
       background: linear-gradient(180deg, #3b82f6, var(--cobalt-dark));
       color: #fff; border: none; border-radius: 11px; padding: 11px 14px; font-size: 14px; font-weight: 700; cursor: pointer;
     }
+    .btn-next {
+      background: linear-gradient(180deg, #059669, #047857);
+      color: #fff; border: none; border-radius: 11px; padding: 12px 14px; font-size: 15px; font-weight: 800; cursor: pointer;
+    }
     .btn-sage {
       background: var(--sage); color: #102a1d; border: none;
       border-radius: 11px; padding: 11px 14px; font-size: 14px; font-weight: 700; cursor: pointer;
@@ -89,6 +93,7 @@
       background: #172554; color: #dbeafe; border: 1px solid #3b82f6;
       border-radius: 10px; padding: 10px 12px; font-size: 15px; font-weight: 800; margin-bottom: 8px;
     }
+    .step-banner.ready-next { background: #1e3a8a; color: #fef08a; border-color: #facc15; }
     .step-banner.tc-step { background: #064e3b; color: #d1fae5; border-color: #10b981; }
     .step-banner.proc-step { background: #451a03; color: #fef3c7; border-color: #f59e0b; }
 
@@ -203,10 +208,15 @@
 
         <div id="scanNotifyBox" class="notify-box"></div>
 
+        <!-- Operator Scan হওয়ার পর এই Next বক্স আসবে -->
+        <div id="nextStepBox" class="hidden" style="margin-top:12px;">
+          <button type="button" class="btn-next" style="width:100%;" onclick="goToTcScan()">Next → TC Scan</button>
+        </div>
+
         <div class="btn-row-3">
-          <button class="btn-primary" onclick="testScanStep()">Test Scan Step</button>
-          <button class="btn-sage" onclick="nextTcScan()">Next TC Scan</button>
-          <button class="btn-sage" onclick="resetOperatorFlow()">Reset Flow</button>
+          <button type="button" class="btn-primary" onclick="testScanStep()">Test Scan Step</button>
+          <button type="button" class="btn-sage" onclick="nextTcScan()">Next TC Scan</button>
+          <button type="button" class="btn-sage" onclick="resetOperatorFlow()">Reset Flow</button>
         </div>
       </div>
 
@@ -253,7 +263,7 @@
           <option value="">-- Process সিলেক্ট করুন --</option>
         </select>
         <div style="margin-top:12px;">
-          <button class="btn-primary" style="width:100%;" onclick="confirmProcessEntry()">Confirm & Save Scan</button>
+          <button type="button" class="btn-primary" style="width:100%;" onclick="confirmProcessEntry()">Confirm & Save Scan</button>
         </div>
         <div id="processActionMsg" class="msg"></div>
       </div>
@@ -304,7 +314,9 @@
     let html5QrScanner = null;
     let cameraRunning = false;
     let audioCtx = null;
+    let scanCooldownLock = false;
 
+    // Flow states: 'WAIT_OP' -> 'OP_SCANNED_WAIT_NEXT' -> 'WAIT_TC' -> 'WAIT_PROCESS'
     let scanFlowState = 'WAIT_OP';
     let currentOperator = null;
     let currentTcData = null;
@@ -316,6 +328,11 @@
 
     let scannedEntries = JSON.parse(localStorage.getItem('scanned_entries_v3') || '[]');
     const scannedTcProcessSet = new Set(scannedEntries.map(e => `${e.tcNo}__${e.process.toLowerCase()}`));
+
+    function triggerScanCooldown(ms = 1500) {
+      scanCooldownLock = true;
+      setTimeout(() => { scanCooldownLock = false; }, ms);
+    }
 
     function isOperatorBarcode(code) {
       const upper = String(code || '').trim().toUpperCase();
@@ -344,11 +361,22 @@
         floor: parts[3] || '2nd Floor',
         dept: parts[4] || 'Linking'
       };
-      if (scanFlowState === 'WAIT_OP') {
-        scanFlowState = 'WAIT_TC';
-      }
+      scanFlowState = 'OP_SCANNED_WAIT_NEXT';
       updateFlowUI();
-      showNotification(`Operator "${currentOperator.operatorId}" সেট হয়েছে। এখন TC Card স্ক্যান করুন।`, 'ok');
+      showNotification(`Operator "${currentOperator.operatorId}" স্ক্যান হয়েছে। পরবর্তী TC স্ক্যানে যেতে "Next" চাপুন।`, 'ok');
+    }
+
+    function goToTcScan() {
+      if (!currentOperator) {
+        playBeep('dup');
+        showNotification('আগে Operator ID স্ক্যান করুন।', 'dup');
+        return;
+      }
+      playBeep('ok');
+      clearNotification();
+      scanFlowState = 'WAIT_TC';
+      updateFlowUI();
+      showNotification('এখন শুধু TC Card স্ক্যান করুন।', 'ok');
     }
 
     function applyTcScan(code) {
@@ -366,33 +394,38 @@
     }
 
     function handleBarcodeInput(rawCode) {
+      if (scanCooldownLock) return;
       const code = String(rawCode || '').trim();
       if (!code) return;
 
+      triggerScanCooldown(1500);
       playBeep('ok');
       clearNotification();
 
-      // ১. Operator বারকোড হলে সর্বদা Operator Information-এই বসবে (কখনো TC-এর ঘরে যাবে না)
+      // Operator স্ক্যান হয়ে গেলে Next না চাপা পর্যন্ত বারবার Operator স্ক্যান হয়ে TC-এর জায়গা দখল করবে না
+      if (scanFlowState === 'OP_SCANNED_WAIT_NEXT') {
+        playBeep('dup');
+        showNotification('Operator তথ্য ইতিমধ্যে নেওয়া হয়েছে। TC স্ক্যান করতে "Next → TC Scan" বাটনে চাপুন।', 'dup');
+        return;
+      }
+
       if (isOperatorBarcode(code)) {
         applyOperatorScan(code);
         return;
       }
 
-      // ২. Operator ID স্ক্যান না হলে TC Scan লক থাকবে
       if (!currentOperator || scanFlowState === 'WAIT_OP') {
         playBeep('dup');
         showNotification('আগে Operator ID স্ক্যান করুন! Operator ID স্ক্যান না করা পর্যন্ত TC Scan লক।', 'dup');
         return;
       }
 
-      // ৩. TC বারকোড না হলে TC-এর ঘরে বসবে না
       if (!isTcBarcode(code)) {
         playBeep('dup');
         showNotification(`"${code}" একটি বৈধ TC বারকোড নয়। সঠিক TC Card স্ক্যান করুন।`, 'dup');
         return;
       }
 
-      // ৪. বৈধ TC স্ক্যান হলে TC Information-এ বসবে এবং Process Dropdown আনলক হবে
       applyTcScan(code);
     }
 
@@ -508,6 +541,7 @@
       const tcCard = document.getElementById('tcStepCard');
       const tcBadge = document.getElementById('tcLockBadge');
       const procCard = document.getElementById('processStepCard');
+      const nextBox = document.getElementById('nextStepBox');
 
       renderOperatorCard();
       renderTcCard();
@@ -524,11 +558,26 @@
         tcBadge.textContent = 'LOCKED';
 
         procCard.classList.add('hidden');
+        nextBox.classList.add('hidden');
+        document.getElementById('processDropdown').value = '';
+      } else if (scanFlowState === 'OP_SCANNED_WAIT_NEXT') {
+        banner.className = 'step-banner ready-next';
+        banner.textContent = 'Operator Scanned — Click Next';
+        instr.textContent = 'Operator Information সম্পন্ন। TC Scan শুরু করতে নিচের "Next" বাটনে ক্লিক করুন।';
+        opBadge.className = 'badge-entries';
+        opBadge.textContent = 'SCANNED';
+
+        tcCard.classList.add('locked-box');
+        tcBadge.className = 'badge-lock';
+        tcBadge.textContent = 'LOCKED (CLICK NEXT)';
+
+        procCard.classList.add('hidden');
+        nextBox.classList.remove('hidden');
         document.getElementById('processDropdown').value = '';
       } else if (scanFlowState === 'WAIT_TC') {
         banner.className = 'step-banner tc-step';
-        banner.textContent = 'TC Card Scan (Unlocked)';
-        instr.textContent = 'Operator ID স্ক্যান হয়েছে। এখন TC Card স্ক্যান করুন।';
+        banner.textContent = 'TC Card Scan';
+        instr.textContent = 'এখন শুধু TC Card স্ক্যান করুন।';
         opBadge.className = 'badge-entries';
         opBadge.textContent = 'SCANNED';
 
@@ -537,6 +586,7 @@
         tcBadge.textContent = 'READY TO SCAN';
 
         procCard.classList.add('hidden');
+        nextBox.classList.add('hidden');
         document.getElementById('processDropdown').value = '';
       } else if (scanFlowState === 'WAIT_PROCESS') {
         banner.className = 'step-banner proc-step';
@@ -550,6 +600,7 @@
         tcBadge.textContent = 'SCANNED';
 
         procCard.classList.remove('hidden');
+        nextBox.classList.add('hidden');
         refreshProcessDropdown(currentTcData ? currentTcData.style : '');
       }
     }
@@ -666,6 +717,9 @@
     function testScanStep() {
       if (scanFlowState === 'WAIT_OP') {
         handleBarcodeInput('OP-9001|Md. Parvej Miah|Linking Line-02|2nd Floor|Linking');
+      } else if (scanFlowState === 'OP_SCANNED_WAIT_NEXT') {
+        playBeep('dup');
+        showNotification('আগে "Next → TC Scan" বাটনে ক্লিক করুন, তারপর TC স্ক্যান করুন।', 'dup');
       } else if (scanFlowState === 'WAIT_TC') {
         testTcSeq += 1;
         handleBarcodeInput(`TC-${testTcSeq}|1896|Blue|M|12`);
