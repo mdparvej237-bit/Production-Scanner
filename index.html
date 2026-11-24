@@ -230,15 +230,7 @@
           <div class="info-cell"><div class="info-lbl">Operator Name</div><div id="dOpName" class="info-val">-</div></div>
           <div class="info-cell"><div class="info-lbl">Floor</div><div id="dOpFloor" class="info-val">-</div></div>
           <div class="info-cell"><div class="info-lbl">Department</div><div id="dOpDept" class="info-val">-</div></div>
-          <div class="info-cell">
-            <div class="info-lbl">Jobtype</div>
-            <select id="dOpJobtype" onchange="onJobtypeOptionChange()" style="margin-top:4px;padding:7px 9px;font-size:13px;">
-              <option value="Regular">Regular</option>
-              <option value="OT">OT</option>
-              <option value="Sample">Sample</option>
-              <option value="Helper">Helper</option>
-            </select>
-          </div>
+          <div class="info-cell"><div class="info-lbl">Jobtype</div><div id="dOpJobtype" class="info-val">-</div></div>
           <div class="info-cell"><div class="info-lbl">Line</div><div id="dOpLine" class="info-val">-</div></div>
         </div>
       </div>
@@ -277,20 +269,6 @@
           <button type="button" class="btn-primary" style="width:100%;" onclick="confirmProcessEntry()">Confirm & Save Scan</button>
         </div>
         <div id="processActionMsg" class="msg"></div>
-      </div>
-
-      <!-- SCANNED HISTORY -->
-      <div class="card">
-        <div class="card-head">
-          <h2 class="card-title">Scanned Entries History</h2>
-          <span id="scannedTotalBadge" class="badge-entries">0 ENTRIES</span>
-        </div>
-        <table>
-          <thead>
-            <tr><th>OP ID</th><th>TC No.</th><th>Lot</th><th>Style</th><th>Size</th><th>Process</th><th>Qty</th><th>SAH</th></tr>
-          </thead>
-          <tbody id="scanDetailsTbody"></tbody>
-        </table>
       </div>
     </div>
 
@@ -370,33 +348,13 @@
       box.textContent = '';
     }
 
-    function onJobtypeOptionChange() {
-      const jtSel = document.getElementById('dOpJobtype');
-      if (currentOperator && jtSel) {
-        currentOperator.jobType = jtSel.value || 'Regular';
-      }
-    }
-
-    // Operator ফরম্যাট: OPID|NAME|FLOOR|DEPT|JOBTYPE|LINE
     function renderOperatorCard() {
       document.getElementById('dOpId').textContent = currentOperator ? currentOperator.operatorId : '-';
       document.getElementById('dOpName').textContent = currentOperator ? currentOperator.operatorName : '-';
       document.getElementById('dOpFloor').textContent = currentOperator ? currentOperator.floor : '-';
       document.getElementById('dOpDept').textContent = currentOperator ? currentOperator.dept : '-';
+      document.getElementById('dOpJobtype').textContent = currentOperator ? currentOperator.jobType : '-';
       document.getElementById('dOpLine').textContent = currentOperator ? currentOperator.line : '-';
-
-      const jtSel = document.getElementById('dOpJobtype');
-      if (jtSel) {
-        const val = (currentOperator && currentOperator.jobType) ? currentOperator.jobType : 'Regular';
-        const exists = Array.from(jtSel.options).some(o => o.value.toLowerCase() === val.toLowerCase());
-        if (!exists && val) {
-          const opt = document.createElement('option');
-          opt.value = val;
-          opt.textContent = val;
-          jtSel.appendChild(opt);
-        }
-        jtSel.value = exists ? Array.from(jtSel.options).find(o => o.value.toLowerCase() === val.toLowerCase()).value : val;
-      }
     }
 
     function renderTcCard(procVal = '-', smvVal = '-', sahVal = '-') {
@@ -508,13 +466,12 @@
       if (flowMode === 'SCAN_OP') {
         // ফরম্যাট: OPID|NAME|FLOOR|DEPT|JOBTYPE|LINE
         const parts = code.split('|').map(s => s.trim());
-        const jtSelVal = document.getElementById('dOpJobtype').value || 'Regular';
         currentOperator = {
           operatorId: parts[0] || code,
           operatorName: parts[1] || 'Md. Parvej Miah',
           floor: parts[2] || '2nd Floor',
           dept: parts[3] || 'Linking',
-          jobType: parts[4] || jtSelVal,
+          jobType: parts[4] || 'Regular',
           line: parts[5] || 'Linking Line-02'
         };
         flowMode = 'HOLD_AFTER_OP';
@@ -594,7 +551,6 @@
       );
       const smv = found ? Number(found.smv) : 0;
       const sah = Number(((currentTcData.bundleQty * smv) / 60).toFixed(2));
-      const jobTypeVal = document.getElementById('dOpJobtype').value || currentOperator.jobType || 'Regular';
 
       const record = {
         timestamp: new Date().toISOString(),
@@ -602,7 +558,7 @@
         operatorName: currentOperator.operatorName,
         floor: currentOperator.floor,
         dept: currentOperator.dept,
-        jobType: jobTypeVal,
+        jobType: currentOperator.jobType,
         line: currentOperator.line,
         tcNo: currentTcData.tcNo,
         lotNo: currentTcData.lotNo,
@@ -619,7 +575,6 @@
       scannedTcProcessSet.add(dupKey);
       scannedEntries.unshift(record);
       localStorage.setItem('scanned_entries_v4', JSON.stringify(scannedEntries));
-      renderScanDetails();
 
       flowMode = 'HOLD_AFTER_SAVE';
       updateFlowUI();
@@ -640,7 +595,6 @@
       currentOperator = null;
       currentTcData = null;
       flowMode = 'SCAN_OP';
-      document.getElementById('dOpJobtype').value = 'Regular';
       document.getElementById('processActionMsg').textContent = '';
       clearNotification();
       updateFlowUI();
@@ -657,22 +611,6 @@
         playBeep('dup');
         showNotification('পরের ধাপে যেতে "Next" বাটনে ক্লিক করুন।', 'dup');
       }
-    }
-
-    function renderScanDetails() {
-      document.getElementById('scannedTotalBadge').textContent = `${scannedEntries.length} ENTRIES`;
-      document.getElementById('scanDetailsTbody').innerHTML = scannedEntries.slice(0, 20).map(r => `
-        <tr>
-          <td>${esc(r.operatorId)}</td>
-          <td><b>${esc(r.tcNo)}</b></td>
-          <td>${esc(r.lotNo || '-')}</td>
-          <td>${esc(r.style)}</td>
-          <td>${esc(r.size || '-')}</td>
-          <td>${esc(r.process)}</td>
-          <td><b>${r.bundleQty}</b></td>
-          <td>${r.earnedSah}</td>
-        </tr>
-      `).join('');
     }
 
     function refreshProcessDropdown(styleFilter = '') {
@@ -772,7 +710,7 @@
         if (btn) btn.classList.toggle('active', v === view);
       });
       if (view === 'dashboard') { stopCamera(); loadDashboard(); }
-      if (view === 'operator') { updateFlowUI(); renderScanDetails(); }
+      if (view === 'operator') { updateFlowUI(); }
       if (view === 'admin') { stopCamera(); renderSavedSmvTable(); ensureAtLeastOneRow(); }
     }
 
@@ -937,7 +875,6 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       updateFlowUI();
-      renderScanDetails();
       let savedRole = '';
       try { savedRole = sessionStorage.getItem(SESSION_KEY) || ''; } catch (_) {}
       if (PINS[savedRole]) applyRoleUI(savedRole);
