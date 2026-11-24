@@ -1,19 +1,72 @@
-// doGet(e)-এর ভেতরে নির্বাচিত তারিখের সারিগুলো থেকে rawRecords তৈরি করুন:
-// কলাম ইনডেক্স আপনার শিট অনুযায়ী মিলিয়ে নেবেন (নিচে ০-ভিত্তিক ইনডেক্স দেখানো হলো):
-// B(1)=operatorId, G(6)=line, N(13)=bundleQty, O(14)=process, Q(16)=earnedSah
+function doPost(e) {
+  const lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(15000);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'BUSY',
+      message: 'সার্ভার ব্যস্ত, ১ সেকেন্ড পর আবার চেষ্টা করুন।'
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
 
-const rawRecords = [];
-for (let i = 1; i < rows.length; i++) {
-  const rowDate = Utilities.formatDate(new Date(rows[i][0]), Session.getScriptTimeZone(), 'yyyy-MM-dd');
-  if (rowDate === targetIsoDate) {
-    rawRecords.push({
-      operatorId: rows[i][1],
-      line: rows[i][6],
-      bundleQty: Number(rows[i][13] || 0),
-      process: rows[i][14],
-      earnedSah: Number(rows[i][16] || 0)
-    });
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+    // ১. Forecast Hour সেভ করার রিকোয়েস্ট আসলে
+    if (data.type === 'FORECAST_BATCH') {
+      let fcSheet = ss.getSheetByName('Forecast_Master');
+      if (!fcSheet) {
+        fcSheet = ss.insertSheet('Forecast_Master');
+        fcSheet.appendRow(['Date', 'Line', 'ForecastHour', 'ForecastPcs', 'UpdatedAt']);
+      }
+      const targetDate = String(data.date || '').trim();
+      const existing = fcSheet.getDataRange().getValues();
+      for (let i = existing.length - 1; i >= 1; i--) {
+        if (String(existing[i][0]).trim() === targetDate) {
+          fcSheet.deleteRow(i + 1);
+        }
+      }
+      (data.items || []).forEach(it => {
+        fcSheet.appendRow([targetDate, it.line, Number(it.hour || 0), Number(it.pcs || 0), new Date()]);
+      });
+      return ContentService.createTextOutput(JSON.stringify({ status: 'SUCCESS' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // ২. প্রোডাকশন এন্ট্রি সেভ (সার্ভার-সাইড ডুপ্লিকেট চেকসহ)
+    const sheet = ss.getSheetByName('Sheet1');
+    const rows = sheet.getDataRange().getValues();
+    const newTc = String(data.tcNo || '').trim().toLowerCase();
+    const newProc = String(data.process || '').trim().toLowerCase();
+
+    for (let i = 1; i < rows.length; i++) {
+      const existingTc = String(rows[i][7] || '').trim().toLowerCase();
+      const existingProc = String(rows[i][14] || '').trim().toLowerCase();
+      if (existingTc === newTc && existingProc === newProc && newTc !== '') {
+        return ContentService.createTextOutput(JSON.stringify({
+          status: 'DUPLICATE',
+          message: `TC ${data.tcNo} এই ${data.process} প্রসেসে আগেই এন্ট্রি হয়ে গেছে!`
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+
+    sheet.appendRow([
+      new Date(), data.operatorId, data.operatorName, data.floor,
+      data.dept, data.jobType, data.line, data.tcNo, data.lotNo,
+      data.buyer, data.style, data.color, data.size, data.bundleQty,
+      data.process, data.smv, data.earnedSah
+    ]);
+
+    return ContentService.createTextOutput(JSON.stringify({ status: 'SUCCESS' }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: 'ERROR',
+      message: err.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
   }
 }
-// এরপর JSON রেসপন্সে rawRecords এবং forecastMap যোগ করে দিন:
-// return ContentService.createTextOutput(JSON.stringify({ status: 'SUCCESS', ..., rawRecords, forecastMap }))...
