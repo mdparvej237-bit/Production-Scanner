@@ -57,7 +57,7 @@
     .info-val { font-size: 14px; color: var(--text); font-weight: 800; margin-top: 2px; }
 
     .btn-row { display: grid; grid-template-columns: 2.2fr 1fr; gap: 10px; margin-top: 14px; }
-    .btn-row-3 { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 10px; margin-top: 14px; }
+    .btn-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
 
     .btn-primary {
       background: linear-gradient(180deg, #3b82f6, var(--cobalt-dark));
@@ -65,7 +65,8 @@
     }
     .btn-next {
       background: linear-gradient(180deg, #059669, #047857);
-      color: #fff; border: none; border-radius: 11px; padding: 12px 14px; font-size: 15px; font-weight: 800; cursor: pointer;
+      color: #fff; border: none; border-radius: 12px; padding: 13px 16px; font-size: 16px; font-weight: 800; cursor: pointer;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.28);
     }
     .btn-sage {
       background: var(--sage); color: #102a1d; border: none;
@@ -93,7 +94,7 @@
       background: #172554; color: #dbeafe; border: 1px solid #3b82f6;
       border-radius: 10px; padding: 10px 12px; font-size: 15px; font-weight: 800; margin-bottom: 8px;
     }
-    .step-banner.ready-next { background: #1e3a8a; color: #fef08a; border-color: #facc15; }
+    .step-banner.hold-step { background: #1e3a8a; color: #fef08a; border-color: #facc15; }
     .step-banner.tc-step { background: #064e3b; color: #d1fae5; border-color: #10b981; }
     .step-banner.proc-step { background: #451a03; color: #fef3c7; border-color: #f59e0b; }
 
@@ -197,7 +198,7 @@
       <div class="card">
         <div class="card-head">
           <h2 class="card-title">Barcode Scanner</h2>
-          <button class="btn-refresh" onclick="toggleCamera()">Camera On/Off</button>
+          <button id="camToggleBtn" type="button" class="btn-refresh" onclick="toggleCamera()">Start Camera</button>
         </div>
 
         <div class="scanner-wrap">
@@ -208,15 +209,14 @@
 
         <div id="scanNotifyBox" class="notify-box"></div>
 
-        <!-- Operator Scan হওয়ার পর এই Next বক্স আসবে -->
-        <div id="nextStepBox" class="hidden" style="margin-top:12px;">
-          <button type="button" class="btn-next" style="width:100%;" onclick="goToTcScan()">Next → TC Scan</button>
+        <!-- স্ক্যান হয়ে গেলে এই NEXT বাটন দেখাবে -->
+        <div id="nextActionArea" class="hidden" style="margin-top:12px;">
+          <button id="nextBtnMain" type="button" class="btn-next" style="width:100%;" onclick="onNextButtonClick()">Next</button>
         </div>
 
-        <div class="btn-row-3">
-          <button type="button" class="btn-primary" onclick="testScanStep()">Test Scan Step</button>
-          <button type="button" class="btn-sage" onclick="nextTcScan()">Next TC Scan</button>
-          <button type="button" class="btn-sage" onclick="resetOperatorFlow()">Reset Flow</button>
+        <div class="btn-row-2">
+          <button type="button" class="btn-primary" onclick="testSingleScan()">Test Scan (1 বার)</button>
+          <button type="button" class="btn-sage" onclick="resetOperatorFlow()">Reset All</button>
         </div>
       </div>
 
@@ -314,10 +314,14 @@
     let html5QrScanner = null;
     let cameraRunning = false;
     let audioCtx = null;
-    let scanCooldownLock = false;
 
-    // Flow states: 'WAIT_OP' -> 'OP_SCANNED_WAIT_NEXT' -> 'WAIT_TC' -> 'WAIT_PROCESS'
-    let scanFlowState = 'WAIT_OP';
+    // States:
+    // 'SCAN_OP'        -> Operator ID স্ক্যান হবে
+    // 'HOLD_AFTER_OP'  -> Operator স্ক্যান হয়ে গেছে, Next ক্লিক না করা পর্যন্ত আর কোনো স্ক্যান হবে না
+    // 'SCAN_TC'        -> TC স্ক্যান হবে
+    // 'HOLD_AFTER_TC'  -> TC স্ক্যান হয়ে গেছে, Process সিলেক্ট করবে
+    // 'HOLD_AFTER_SAVE'-> Save হয়ে গেছে, Next ক্লিক করলে পরের TC স্ক্যান হবে
+    let flowMode = 'SCAN_OP';
     let currentOperator = null;
     let currentTcData = null;
 
@@ -328,161 +332,6 @@
 
     let scannedEntries = JSON.parse(localStorage.getItem('scanned_entries_v3') || '[]');
     const scannedTcProcessSet = new Set(scannedEntries.map(e => `${e.tcNo}__${e.process.toLowerCase()}`));
-
-    function triggerScanCooldown(ms = 1500) {
-      scanCooldownLock = true;
-      setTimeout(() => { scanCooldownLock = false; }, ms);
-    }
-
-    function isOperatorBarcode(code) {
-      const upper = String(code || '').trim().toUpperCase();
-      if (/^OP[-_ ]?\d+/i.test(upper)) return true;
-      const parts = upper.split('|').map(s => s.trim());
-      if (parts.length >= 3 && /^OP[-_ ]?\d+/i.test(parts[0])) return true;
-      return false;
-    }
-
-    function isTcBarcode(code) {
-      const upper = String(code || '').trim().toUpperCase();
-      if (isOperatorBarcode(upper)) return false;
-      if (/^TC[-_ ]?[A-Z0-9]+/i.test(upper)) return true;
-      if (/^\d{8,}$/.test(upper)) return true;
-      const parts = upper.split('|').map(s => s.trim());
-      if (parts.length >= 2 && !isOperatorBarcode(parts[0])) return true;
-      return false;
-    }
-
-    function applyOperatorScan(code) {
-      const parts = code.split('|').map(s => s.trim());
-      currentOperator = {
-        operatorId: parts[0] || code,
-        operatorName: parts[1] || 'Md. Parvej Miah',
-        line: parts[2] || 'Linking Line-02',
-        floor: parts[3] || '2nd Floor',
-        dept: parts[4] || 'Linking'
-      };
-      scanFlowState = 'OP_SCANNED_WAIT_NEXT';
-      updateFlowUI();
-      showNotification(`Operator "${currentOperator.operatorId}" স্ক্যান হয়েছে। পরবর্তী TC স্ক্যানে যেতে "Next" চাপুন।`, 'ok');
-    }
-
-    function goToTcScan() {
-      if (!currentOperator) {
-        playBeep('dup');
-        showNotification('আগে Operator ID স্ক্যান করুন।', 'dup');
-        return;
-      }
-      playBeep('ok');
-      clearNotification();
-      scanFlowState = 'WAIT_TC';
-      updateFlowUI();
-      showNotification('এখন শুধু TC Card স্ক্যান করুন।', 'ok');
-    }
-
-    function applyTcScan(code) {
-      const parts = code.split('|').map(s => s.trim());
-      currentTcData = {
-        tcNo: parts[0] || code,
-        style: parts[1] || '1896',
-        color: parts[2] || 'Blue',
-        size: parts[3] || 'M',
-        qty: Number(parts[4] || 12)
-      };
-      scanFlowState = 'WAIT_PROCESS';
-      updateFlowUI();
-      showNotification(`TC "${currentTcData.tcNo}" স্ক্যান হয়েছে। এখন Process Dropdown সিলেক্ট করুন।`, 'ok');
-    }
-
-    function handleBarcodeInput(rawCode) {
-      if (scanCooldownLock) return;
-      const code = String(rawCode || '').trim();
-      if (!code) return;
-
-      triggerScanCooldown(1500);
-      playBeep('ok');
-      clearNotification();
-
-      // Operator স্ক্যান হয়ে গেলে Next না চাপা পর্যন্ত বারবার Operator স্ক্যান হয়ে TC-এর জায়গা দখল করবে না
-      if (scanFlowState === 'OP_SCANNED_WAIT_NEXT') {
-        playBeep('dup');
-        showNotification('Operator তথ্য ইতিমধ্যে নেওয়া হয়েছে। TC স্ক্যান করতে "Next → TC Scan" বাটনে চাপুন।', 'dup');
-        return;
-      }
-
-      if (isOperatorBarcode(code)) {
-        applyOperatorScan(code);
-        return;
-      }
-
-      if (!currentOperator || scanFlowState === 'WAIT_OP') {
-        playBeep('dup');
-        showNotification('আগে Operator ID স্ক্যান করুন! Operator ID স্ক্যান না করা পর্যন্ত TC Scan লক।', 'dup');
-        return;
-      }
-
-      if (!isTcBarcode(code)) {
-        playBeep('dup');
-        showNotification(`"${code}" একটি বৈধ TC বারকোড নয়। সঠিক TC Card স্ক্যান করুন।`, 'dup');
-        return;
-      }
-
-      applyTcScan(code);
-    }
-
-    function handleLogin() {
-      const el = document.getElementById('pinField');
-      const rawPin = (el ? el.value : '').replace(/\s+/g, '').trim();
-      loginByPinValue(rawPin);
-    }
-
-    function quickLogin(pinCode) {
-      const el = document.getElementById('pinField');
-      if (el) el.value = pinCode;
-      loginByPinValue(pinCode);
-    }
-
-    function loginByPinValue(pin) {
-      const role = PINS[pin];
-      const msg = document.getElementById('loginMsg');
-      if (!role) {
-        msg.textContent = 'ভুল PIN! সঠিক PIN (1111 / 2222 / 9999) দিন।';
-        return;
-      }
-      msg.textContent = '';
-      try { sessionStorage.setItem(SESSION_KEY, role); } catch (_) {}
-      applyRoleUI(role);
-    }
-
-    function logoutSystem() {
-      try { sessionStorage.removeItem(SESSION_KEY); } catch (_) {}
-      stopCamera();
-      const el = document.getElementById('pinField');
-      if (el) el.value = '';
-      document.getElementById('loginMsg').textContent = '';
-      document.getElementById('loginCard').classList.remove('hidden');
-      document.getElementById('navBar').classList.add('hidden');
-      ['dashboard', 'operator', 'admin'].forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
-    }
-
-    function applyRoleUI(role) {
-      document.getElementById('loginCard').classList.add('hidden');
-      document.getElementById('navBar').classList.remove('hidden');
-      document.getElementById('btnTabDash').classList.toggle('hidden', role === 'operator');
-      document.getElementById('btnTabOp').classList.toggle('hidden', role === 'dashboard');
-      document.getElementById('btnTabAdmin').classList.toggle('hidden', role !== 'admin');
-      switchView(role);
-    }
-
-    function switchView(view) {
-      ['dashboard', 'operator', 'admin'].forEach(v => {
-        document.getElementById('view-' + v).classList.toggle('hidden', v !== view);
-        const btn = document.getElementById(v === 'dashboard' ? 'btnTabDash' : v === 'operator' ? 'btnTabOp' : 'btnTabAdmin');
-        if (btn) btn.classList.toggle('active', v === view);
-      });
-      if (view === 'dashboard') { stopCamera(); loadDashboard(); }
-      if (view === 'operator') { updateFlowUI(); renderScanDetails(); }
-      if (view === 'admin') { stopCamera(); renderSavedSmvTable(); ensureAtLeastOneRow(); }
-    }
 
     function playBeep(type = 'ok') {
       try {
@@ -541,67 +390,124 @@
       const tcCard = document.getElementById('tcStepCard');
       const tcBadge = document.getElementById('tcLockBadge');
       const procCard = document.getElementById('processStepCard');
-      const nextBox = document.getElementById('nextStepBox');
+      const nextArea = document.getElementById('nextActionArea');
+      const nextBtn = document.getElementById('nextBtnMain');
 
       renderOperatorCard();
       renderTcCard();
 
-      if (!currentOperator || scanFlowState === 'WAIT_OP') {
+      if (flowMode === 'SCAN_OP') {
         banner.className = 'step-banner';
         banner.textContent = 'Operator ID Scan';
-        instr.textContent = 'প্রথমে Operator ID স্ক্যান করুন। Operator ID স্ক্যান না করলে TC Scan লক থাকবে।';
+        instr.textContent = 'প্রথমে Operator ID স্ক্যান করুন। স্ক্যান হলে Next বাটন আসবে।';
         opBadge.className = 'badge-live';
         opBadge.textContent = 'WAITING SCAN';
-
         tcCard.classList.add('locked-box');
         tcBadge.className = 'badge-lock';
         tcBadge.textContent = 'LOCKED';
-
         procCard.classList.add('hidden');
-        nextBox.classList.add('hidden');
-        document.getElementById('processDropdown').value = '';
-      } else if (scanFlowState === 'OP_SCANNED_WAIT_NEXT') {
-        banner.className = 'step-banner ready-next';
-        banner.textContent = 'Operator Scanned — Click Next';
-        instr.textContent = 'Operator Information সম্পন্ন। TC Scan শুরু করতে নিচের "Next" বাটনে ক্লিক করুন।';
+        nextArea.classList.add('hidden');
+      } else if (flowMode === 'HOLD_AFTER_OP') {
+        banner.className = 'step-banner hold-step';
+        banner.textContent = 'Operator Scanned — Next';
+        instr.textContent = 'Operator তথ্য এসেছে। পরবর্তী TC স্ক্যান করতে "Next" বাটনে ক্লিক করুন।';
         opBadge.className = 'badge-entries';
         opBadge.textContent = 'SCANNED';
-
         tcCard.classList.add('locked-box');
         tcBadge.className = 'badge-lock';
         tcBadge.textContent = 'LOCKED (CLICK NEXT)';
-
         procCard.classList.add('hidden');
-        nextBox.classList.remove('hidden');
-        document.getElementById('processDropdown').value = '';
-      } else if (scanFlowState === 'WAIT_TC') {
+        nextArea.classList.remove('hidden');
+        nextBtn.textContent = 'Next';
+      } else if (flowMode === 'SCAN_TC') {
         banner.className = 'step-banner tc-step';
         banner.textContent = 'TC Card Scan';
-        instr.textContent = 'এখন শুধু TC Card স্ক্যান করুন।';
+        instr.textContent = 'এখন TC Card স্ক্যান করুন। স্ক্যান হলে Process সিলেক্ট করার অপশন আসবে।';
         opBadge.className = 'badge-entries';
         opBadge.textContent = 'SCANNED';
-
         tcCard.classList.remove('locked-box');
         tcBadge.className = 'badge-live';
         tcBadge.textContent = 'READY TO SCAN';
-
         procCard.classList.add('hidden');
-        nextBox.classList.add('hidden');
-        document.getElementById('processDropdown').value = '';
-      } else if (scanFlowState === 'WAIT_PROCESS') {
+        nextArea.classList.add('hidden');
+      } else if (flowMode === 'HOLD_AFTER_TC') {
         banner.className = 'step-banner proc-step';
-        banner.textContent = 'Select Process';
-        instr.textContent = 'TC স্ক্যান সম্পন্ন হয়েছে। নিচের Process Dropdown থেকে Process সিলেক্ট করুন।';
+        banner.textContent = 'TC Scanned — Select Process';
+        instr.textContent = 'TC স্ক্যান হয়েছে। নিচের Process Dropdown থেকে Process সিলেক্ট করুন।';
         opBadge.className = 'badge-entries';
         opBadge.textContent = 'SCANNED';
-
         tcCard.classList.remove('locked-box');
         tcBadge.className = 'badge-entries';
         tcBadge.textContent = 'SCANNED';
-
         procCard.classList.remove('hidden');
-        nextBox.classList.add('hidden');
+        nextArea.classList.add('hidden');
         refreshProcessDropdown(currentTcData ? currentTcData.style : '');
+      } else if (flowMode === 'HOLD_AFTER_SAVE') {
+        banner.className = 'step-banner hold-step';
+        banner.textContent = 'Saved — Click Next for Next Scan';
+        instr.textContent = 'পরের TC স্ক্যান করতে "Next" বাটনে ক্লিক করুন।';
+        opBadge.className = 'badge-entries';
+        opBadge.textContent = 'SCANNED';
+        tcCard.classList.remove('locked-box');
+        tcBadge.className = 'badge-entries';
+        tcBadge.textContent = 'SAVED';
+        procCard.classList.add('hidden');
+        nextArea.classList.remove('hidden');
+        nextBtn.textContent = 'Next';
+      }
+    }
+
+    function onNextButtonClick() {
+      playBeep('ok');
+      clearNotification();
+      currentTcData = null;
+      document.getElementById('processActionMsg').textContent = '';
+      flowMode = 'SCAN_TC';
+      updateFlowUI();
+      startCameraIfNeeded();
+    }
+
+    function handleBarcodeInput(rawCode) {
+      const code = String(rawCode || '').trim();
+      if (!code) return;
+
+      // কেবল SCAN_OP বা SCAN_TC মোডেই স্ক্যান গ্রহণ করবে; অন্য সময় স্ক্যান ব্লক থাকবে
+      if (flowMode !== 'SCAN_OP' && flowMode !== 'SCAN_TC') {
+        return;
+      }
+
+      // একটি বারকোড পড়ার সাথে সাথেই ক্যামেরা পজ/স্টপ করে দেব যাতে একই কোড বারবার না পড়ে
+      stopCamera();
+      playBeep('ok');
+      clearNotification();
+
+      if (flowMode === 'SCAN_OP') {
+        const parts = code.split('|').map(s => s.trim());
+        currentOperator = {
+          operatorId: parts[0] || code,
+          operatorName: parts[1] || 'Md. Parvej Miah',
+          line: parts[2] || 'Linking Line-02',
+          floor: parts[3] || '2nd Floor',
+          dept: parts[4] || 'Linking'
+        };
+        flowMode = 'HOLD_AFTER_OP';
+        updateFlowUI();
+        showNotification(`Operator "${currentOperator.operatorId}" স্ক্যান হয়েছে। পরের ধাপে যেতে "Next" চাপুন।`, 'ok');
+        return;
+      }
+
+      if (flowMode === 'SCAN_TC') {
+        const parts = code.split('|').map(s => s.trim());
+        currentTcData = {
+          tcNo: parts[0] || code,
+          style: parts[1] || '1896',
+          color: parts[2] || 'Blue',
+          size: parts[3] || 'M',
+          qty: Number(parts[4] || 12)
+        };
+        flowMode = 'HOLD_AFTER_TC';
+        updateFlowUI();
+        showNotification(`TC "${currentTcData.tcNo}" স্ক্যান হয়েছে। এখন Process Dropdown সিলেক্ট করুন।`, 'ok');
       }
     }
 
@@ -682,9 +588,9 @@
       localStorage.setItem('scanned_entries_v3', JSON.stringify(scannedEntries));
       renderScanDetails();
 
-      msgEl.style.color = '#15803d';
-      msgEl.textContent = 'এন্ট্রি সফলভাবে সংরক্ষিত হয়েছে। পরের TC স্ক্যানের জন্য প্রস্তুত।';
-      showNotification(`Saved: OP ${record.operatorId} | TC ${record.tcNo} | Process ${record.process} | SAH ${record.earnedSah}`, 'ok');
+      flowMode = 'HOLD_AFTER_SAVE';
+      updateFlowUI();
+      showNotification(`Saved: OP ${record.operatorId} | TC ${record.tcNo} | Process ${record.process} | SAH ${record.earnedSah}. পরের TC স্ক্যানে "Next" চাপুন।`, 'ok');
 
       try {
         await fetch(API_URL, {
@@ -693,39 +599,28 @@
           body: JSON.stringify(record)
         });
       } catch (_) {}
-
-      setTimeout(nextTcScan, 800);
-    }
-
-    function nextTcScan() {
-      currentTcData = null;
-      document.getElementById('processActionMsg').textContent = '';
-      scanFlowState = currentOperator ? 'WAIT_TC' : 'WAIT_OP';
-      updateFlowUI();
     }
 
     function resetOperatorFlow() {
+      stopCamera();
       currentOperator = null;
       currentTcData = null;
-      scanFlowState = 'WAIT_OP';
+      flowMode = 'SCAN_OP';
       document.getElementById('processActionMsg').textContent = '';
       clearNotification();
       updateFlowUI();
     }
 
     let testTcSeq = 500;
-    function testScanStep() {
-      if (scanFlowState === 'WAIT_OP') {
+    function testSingleScan() {
+      if (flowMode === 'SCAN_OP') {
         handleBarcodeInput('OP-9001|Md. Parvej Miah|Linking Line-02|2nd Floor|Linking');
-      } else if (scanFlowState === 'OP_SCANNED_WAIT_NEXT') {
-        playBeep('dup');
-        showNotification('আগে "Next → TC Scan" বাটনে ক্লিক করুন, তারপর TC স্ক্যান করুন।', 'dup');
-      } else if (scanFlowState === 'WAIT_TC') {
+      } else if (flowMode === 'SCAN_TC') {
         testTcSeq += 1;
         handleBarcodeInput(`TC-${testTcSeq}|1896|Blue|M|12`);
       } else {
         playBeep('dup');
-        showNotification('এখন Process Dropdown থেকে Process সিলেক্ট করুন।', 'dup');
+        showNotification('পরের ধাপে যেতে "Next" বাটনে ক্লিক করুন।', 'dup');
       }
     }
 
@@ -755,16 +650,30 @@
         list.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('');
     }
 
-    function toggleCamera() {
-      if (cameraRunning) { stopCamera(); return; }
-      if (typeof Html5Qrcode === 'undefined') { alert('ক্যামেরা লাইব্রেরি লোড হয়নি।'); return; }
-      html5QrScanner = new Html5Qrcode("reader");
+    function startCameraIfNeeded() {
+      if (cameraRunning) return;
+      if (typeof Html5Qrcode === 'undefined') return;
+      if (!html5QrScanner) html5QrScanner = new Html5Qrcode("reader");
       html5QrScanner.start(
         { facingMode: "environment" },
         { fps: 10, qrbox: { width: 240, height: 140 } },
         (decodedText) => handleBarcodeInput(decodedText)
-      ).then(() => { cameraRunning = true; })
-       .catch(err => alert('ক্যামেরা চালু করা যায়নি: ' + err));
+      ).then(() => {
+        cameraRunning = true;
+        document.getElementById('camToggleBtn').textContent = 'Stop Camera';
+      }).catch(() => {});
+    }
+
+    function toggleCamera() {
+      if (cameraRunning) {
+        stopCamera();
+      } else {
+        if (flowMode !== 'SCAN_OP' && flowMode !== 'SCAN_TC') {
+          showNotification('আগে "Next" বাটনে ক্লিক করুন, তারপর স্ক্যান হবে।', 'dup');
+          return;
+        }
+        startCameraIfNeeded();
+      }
     }
 
     function stopCamera() {
@@ -772,6 +681,63 @@
         html5QrScanner.stop().catch(() => {});
         cameraRunning = false;
       }
+      const btn = document.getElementById('camToggleBtn');
+      if (btn) btn.textContent = 'Start Camera';
+    }
+
+    function handleLogin() {
+      const el = document.getElementById('pinField');
+      const rawPin = (el ? el.value : '').replace(/\s+/g, '').trim();
+      loginByPinValue(rawPin);
+    }
+
+    function quickLogin(pinCode) {
+      const el = document.getElementById('pinField');
+      if (el) el.value = pinCode;
+      loginByPinValue(pinCode);
+    }
+
+    function loginByPinValue(pin) {
+      const role = PINS[pin];
+      const msg = document.getElementById('loginMsg');
+      if (!role) {
+        msg.textContent = 'ভুল PIN! সঠিক PIN (1111 / 2222 / 9999) দিন।';
+        return;
+      }
+      msg.textContent = '';
+      try { sessionStorage.setItem(SESSION_KEY, role); } catch (_) {}
+      applyRoleUI(role);
+    }
+
+    function logoutSystem() {
+      try { sessionStorage.removeItem(SESSION_KEY); } catch (_) {}
+      stopCamera();
+      const el = document.getElementById('pinField');
+      if (el) el.value = '';
+      document.getElementById('loginMsg').textContent = '';
+      document.getElementById('loginCard').classList.remove('hidden');
+      document.getElementById('navBar').classList.add('hidden');
+      ['dashboard', 'operator', 'admin'].forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
+    }
+
+    function applyRoleUI(role) {
+      document.getElementById('loginCard').classList.add('hidden');
+      document.getElementById('navBar').classList.remove('hidden');
+      document.getElementById('btnTabDash').classList.toggle('hidden', role === 'operator');
+      document.getElementById('btnTabOp').classList.toggle('hidden', role === 'dashboard');
+      document.getElementById('btnTabAdmin').classList.toggle('hidden', role !== 'admin');
+      switchView(role);
+    }
+
+    function switchView(view) {
+      ['dashboard', 'operator', 'admin'].forEach(v => {
+        document.getElementById('view-' + v).classList.toggle('hidden', v !== view);
+        const btn = document.getElementById(v === 'dashboard' ? 'btnTabDash' : v === 'operator' ? 'btnTabOp' : 'btnTabAdmin');
+        if (btn) btn.classList.toggle('active', v === view);
+      });
+      if (view === 'dashboard') { stopCamera(); loadDashboard(); }
+      if (view === 'operator') { updateFlowUI(); renderScanDetails(); }
+      if (view === 'admin') { stopCamera(); renderSavedSmvTable(); ensureAtLeastOneRow(); }
     }
 
     function ensureAtLeastOneRow() {
