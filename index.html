@@ -41,12 +41,13 @@
 
     label { display: block; font-size: 13px; font-weight: 700; color: #374151; margin: 10px 0 5px; }
     input, select {
-      width: 100%; padding: 10px 12px; border: 1px solid #d5d0c5;
-      border-radius: 11px; font-size: 14.5px; background: #fff; color: var(--text);
+      width: 100%; padding: 11px 12px; border: 1px solid #d5d0c5;
+      border-radius: 11px; font-size: 15px; background: #fff; color: var(--text);
     }
     input:focus, select:focus { outline: none; border-color: var(--cobalt); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
 
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
     .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
     .info-cell {
       background: #f8f7f3; border: 1px solid var(--border);
@@ -130,12 +131,21 @@
     <!-- PIN LOGIN -->
     <div id="loginCard" class="card">
       <h2 class="card-title">System PIN Login</h2>
-      <p class="hint" style="margin-top:4px;">PIN দিন (Dashboard: 1111 | Operator Scan: 2222 | Admin: 9999)</p>
-      <label for="pinField">Enter PIN</label>
-      <input id="pinField" type="password" inputmode="numeric" placeholder="PIN নম্বর লিখুন" onkeydown="if(event.key==='Enter') handleLogin()" />
-      <div style="margin-top:14px;">
-        <button class="btn-primary" style="width:100%;" onclick="handleLogin()">Login</button>
+      <p class="hint" style="margin-top:4px;">PIN লিখে Login চাপুন অথবা নিচের রোল বাটন চাপুন।</p>
+
+      <label for="pinField">PIN Code</label>
+      <input id="pinField" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 1111 / 2222 / 9999" onkeydown="if(event.key==='Enter') handleLogin()" />
+
+      <div style="margin-top:12px;">
+        <button type="button" class="btn-primary" style="width:100%;" onclick="handleLogin()">Login</button>
       </div>
+
+      <div class="grid-3">
+        <button type="button" class="btn-sage" onclick="quickLogin('1111')">Dashboard (1111)</button>
+        <button type="button" class="btn-sage" onclick="quickLogin('2222')">Operator (2222)</button>
+        <button type="button" class="btn-sage" onclick="quickLogin('9999')">Admin (9999)</button>
+      </div>
+
       <div id="loginMsg" class="msg" style="color:#b91c1c;"></div>
     </div>
 
@@ -200,7 +210,7 @@
         </div>
       </div>
 
-      <!-- 1. OPERATOR INFORMATION (COMPLETELY SEPARATE, FLOOR & DEPARTMENT SEPARATE) -->
+      <!-- OPERATOR INFORMATION -->
       <div class="card">
         <div class="card-head">
           <h2 class="card-title">Operator Information</h2>
@@ -215,7 +225,7 @@
         </div>
       </div>
 
-      <!-- 2. TC INFORMATION (COMPLETELY SEPARATE, COLOR & SIZE SEPARATE, LOCKED UNTIL OP ID SCANNED) -->
+      <!-- TC INFORMATION -->
       <div id="tcStepCard" class="card locked-box">
         <div class="card-head">
           <h2 class="card-title">TC Information</h2>
@@ -224,4 +234,617 @@
         <div class="info-grid">
           <div class="info-cell"><div class="info-lbl">TC No.</div><div id="dTcNo" class="info-val">-</div></div>
           <div class="info-cell"><div class="info-lbl">Style No.</div><div id="dTcStyle" class="info-val">-</div></div>
-          <div class="
+          <div class="info-cell"><div class="info-lbl">Color</div><div id="dTcColor" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">Size</div><div id="dTcSize" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">Bundle Qty</div><div id="dTcQty" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">SMV</div><div id="dTcSmv" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">Earned SAH</div><div id="dTcSah" class="info-val">-</div></div>
+        </div>
+      </div>
+
+      <!-- PROCESS DROPDOWN -->
+      <div id="processStepCard" class="card hidden">
+        <div class="card-head">
+          <h2 class="card-title">Select Process</h2>
+          <span class="badge-entries">UNLOCKED</span>
+        </div>
+        <label for="processDropdown">Process Dropdown</label>
+        <select id="processDropdown" onchange="onProcessSelected()">
+          <option value="">-- Process সিলেক্ট করুন --</option>
+        </select>
+        <div style="margin-top:12px;">
+          <button class="btn-primary" style="width:100%;" onclick="confirmProcessEntry()">Confirm & Save Scan</button>
+        </div>
+        <div id="processActionMsg" class="msg"></div>
+      </div>
+
+      <!-- SCANNED HISTORY -->
+      <div class="card">
+        <div class="card-head">
+          <h2 class="card-title">Scanned Entries History</h2>
+          <span id="scannedTotalBadge" class="badge-entries">0 ENTRIES</span>
+        </div>
+        <table>
+          <thead>
+            <tr><th>OP ID</th><th>TC No.</th><th>Line</th><th>Style</th><th>Process</th><th>Qty</th><th>SAH</th></tr>
+          </thead>
+          <tbody id="scanDetailsTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ADMIN VIEW -->
+    <div id="view-admin" class="hidden">
+      <div class="card">
+        <div class="card-head">
+          <h2 class="card-title">Style-wise Process & SMV (Dynamic Add + Edit)</h2>
+          <button class="btn-refresh" onclick="addProcessSmvRow()">+ Add Process & SMV</button>
+        </div>
+        <label for="adminStyleInput">Style No.</label>
+        <input id="adminStyleInput" type="text" placeholder="Style No. লিখুন (যেমন: 1896)" oninput="refreshProcessDropdown()" />
+        <div id="dynamicSmvRows"></div>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="saveAllStyleSmv()">Save Style Process & SMV</button>
+          <button class="btn-sage" onclick="clearDynamicSmvForm()">Clear</button>
+        </div>
+        <div id="adminSmvMsg" class="msg" style="color:#15803d;"></div>
+        <table>
+          <thead><tr><th>Style</th><th>Process</th><th>SMV</th><th>Edit</th></tr></thead>
+          <tbody id="savedSmvBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbw7j-f4pOE1kZvQKBhjYFov5ntrasH6KTsbNgyxXTaFHELOJdblVbfnSRifM9lhdUDA/exec';
+    const PINS = { '1111': 'dashboard', '2222': 'operator', '9999': 'admin' };
+    const SESSION_KEY = 'prod_system_role_v1';
+
+    let html5QrScanner = null;
+    let cameraRunning = false;
+    let audioCtx = null;
+
+    let scanFlowState = 'WAIT_OP';
+    let currentOperator = null;
+    let currentTcData = null;
+
+    let styleSmvMaster = JSON.parse(localStorage.getItem('style_smv_master') || 'null') || [
+      { style: '1896', process: 'Linking', smv: 12.0 },
+      { style: '1896', process: 'Ironing', smv: 8.28 }
+    ];
+
+    let scannedEntries = JSON.parse(localStorage.getItem('scanned_entries_v3') || '[]');
+    const scannedTcProcessSet = new Set(scannedEntries.map(e => `${e.tcNo}__${e.process.toLowerCase()}`));
+
+    function handleLogin() {
+      const el = document.getElementById('pinField');
+      const rawPin = (el ? el.value : '').replace(/\s+/g, '').trim();
+      loginByPinValue(rawPin);
+    }
+
+    function quickLogin(pinCode) {
+      const el = document.getElementById('pinField');
+      if (el) el.value = pinCode;
+      loginByPinValue(pinCode);
+    }
+
+    function loginByPinValue(pin) {
+      const role = PINS[pin];
+      const msg = document.getElementById('loginMsg');
+      if (!role) {
+        msg.textContent = 'ভুল PIN! সঠিক PIN (1111 / 2222 / 9999) দিন।';
+        return;
+      }
+      msg.textContent = '';
+      try { sessionStorage.setItem(SESSION_KEY, role); } catch (_) {}
+      applyRoleUI(role);
+    }
+
+    function logoutSystem() {
+      try { sessionStorage.removeItem(SESSION_KEY); } catch (_) {}
+      stopCamera();
+      const el = document.getElementById('pinField');
+      if (el) el.value = '';
+      document.getElementById('loginMsg').textContent = '';
+      document.getElementById('loginCard').classList.remove('hidden');
+      document.getElementById('navBar').classList.add('hidden');
+      ['dashboard', 'operator', 'admin'].forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
+    }
+
+    function applyRoleUI(role) {
+      document.getElementById('loginCard').classList.add('hidden');
+      document.getElementById('navBar').classList.remove('hidden');
+      document.getElementById('btnTabDash').classList.toggle('hidden', role === 'operator');
+      document.getElementById('btnTabOp').classList.toggle('hidden', role === 'dashboard');
+      document.getElementById('btnTabAdmin').classList.toggle('hidden', role !== 'admin');
+      switchView(role);
+    }
+
+    function switchView(view) {
+      ['dashboard', 'operator', 'admin'].forEach(v => {
+        document.getElementById('view-' + v).classList.toggle('hidden', v !== view);
+        const btn = document.getElementById(v === 'dashboard' ? 'btnTabDash' : v === 'operator' ? 'btnTabOp' : 'btnTabAdmin');
+        if (btn) btn.classList.toggle('active', v === view);
+      });
+      if (view === 'dashboard') { stopCamera(); loadDashboard(); }
+      if (view === 'operator') { updateFlowUI(); renderScanDetails(); }
+      if (view === 'admin') { stopCamera(); renderSavedSmvTable(); ensureAtLeastOneRow(); }
+    }
+
+    function playBeep(type = 'ok') {
+      try {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          audioCtx = new AudioContextClass();
+        }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = type === 'dup' ? 320 : 880;
+        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.19);
+      } catch (_) {}
+    }
+
+    function showNotification(text, kind = 'ok') {
+      const box = document.getElementById('scanNotifyBox');
+      box.className = 'notify-box ' + (kind === 'dup' ? 'notify-dup' : 'notify-ok');
+      box.textContent = text;
+    }
+
+    function clearNotification() {
+      const box = document.getElementById('scanNotifyBox');
+      box.className = 'notify-box';
+      box.textContent = '';
+    }
+
+    function renderOperatorCard() {
+      document.getElementById('dOpId').textContent = currentOperator ? currentOperator.operatorId : '-';
+      document.getElementById('dOpName').textContent = currentOperator ? currentOperator.operatorName : '-';
+      document.getElementById('dOpLine').textContent = currentOperator ? currentOperator.line : '-';
+      document.getElementById('dOpFloor').textContent = currentOperator ? currentOperator.floor : '-';
+      document.getElementById('dOpDept').textContent = currentOperator ? currentOperator.dept : '-';
+    }
+
+    function renderTcCard(smvVal = null, sahVal = null) {
+      document.getElementById('dTcNo').textContent = currentTcData ? currentTcData.tcNo : '-';
+      document.getElementById('dTcStyle').textContent = currentTcData ? currentTcData.style : '-';
+      document.getElementById('dTcColor').textContent = currentTcData ? currentTcData.color : '-';
+      document.getElementById('dTcSize').textContent = currentTcData ? currentTcData.size : '-';
+      document.getElementById('dTcQty').textContent = currentTcData ? currentTcData.qty : '-';
+      document.getElementById('dTcSmv').textContent = smvVal !== null ? smvVal : '-';
+      document.getElementById('dTcSah').textContent = sahVal !== null ? sahVal : '-';
+    }
+
+    function updateFlowUI() {
+      const banner = document.getElementById('scanStepBanner');
+      const instr = document.getElementById('scanInstructionText');
+      const opBadge = document.getElementById('opLockBadge');
+      const tcCard = document.getElementById('tcStepCard');
+      const tcBadge = document.getElementById('tcLockBadge');
+      const procCard = document.getElementById('processStepCard');
+
+      renderOperatorCard();
+      renderTcCard();
+
+      if (scanFlowState === 'WAIT_OP') {
+        banner.className = 'step-banner';
+        banner.textContent = 'Operator ID Scan';
+        instr.textContent = 'প্রথমে Operator ID স্ক্যান করুন। Operator ID স্ক্যান না করলে TC Scan লক থাকবে।';
+        opBadge.className = 'badge-live';
+        opBadge.textContent = 'WAITING SCAN';
+
+        tcCard.classList.add('locked-box');
+        tcBadge.className = 'badge-lock';
+        tcBadge.textContent = 'LOCKED';
+
+        procCard.classList.add('hidden');
+        document.getElementById('processDropdown').value = '';
+      } else if (scanFlowState === 'WAIT_TC') {
+        banner.className = 'step-banner tc-step';
+        banner.textContent = 'TC Card Scan (Unlocked)';
+        instr.textContent = 'Operator ID স্ক্যান হয়েছে। এখন TC Card স্ক্যান করুন।';
+        opBadge.className = 'badge-entries';
+        opBadge.textContent = 'SCANNED';
+
+        tcCard.classList.remove('locked-box');
+        tcBadge.className = 'badge-live';
+        tcBadge.textContent = 'READY TO SCAN';
+
+        procCard.classList.add('hidden');
+        document.getElementById('processDropdown').value = '';
+      } else if (scanFlowState === 'WAIT_PROCESS') {
+        banner.className = 'step-banner proc-step';
+        banner.textContent = 'Select Process';
+        instr.textContent = 'TC স্ক্যান সম্পন্ন হয়েছে। নিচের Process Dropdown থেকে Process সিলেক্ট করুন।';
+        opBadge.className = 'badge-entries';
+        opBadge.textContent = 'SCANNED';
+
+        tcCard.classList.remove('locked-box');
+        tcBadge.className = 'badge-entries';
+        tcBadge.textContent = 'SCANNED';
+
+        procCard.classList.remove('hidden');
+        refreshProcessDropdown(currentTcData ? currentTcData.style : '');
+      }
+    }
+
+    function handleBarcodeInput(rawCode) {
+      const code = String(rawCode || '').trim();
+      if (!code) return;
+
+      playBeep('ok');
+      clearNotification();
+
+      if (scanFlowState === 'WAIT_OP') {
+        const parts = code.split('|').map(s => s.trim());
+        currentOperator = {
+          operatorId: parts[0] || code,
+          operatorName: parts[1] || 'Sample OP',
+          line: parts[2] || 'Linking Line-02',
+          floor: parts[3] || '2nd Floor',
+          dept: parts[4] || 'Linking'
+        };
+        scanFlowState = 'WAIT_TC';
+        updateFlowUI();
+        showNotification(`Operator ID "${currentOperator.operatorId}" স্ক্যান হয়েছে। এখন TC Card স্ক্যান করুন।`, 'ok');
+        return;
+      }
+
+      if (scanFlowState === 'WAIT_TC') {
+        const parts = code.split('|').map(s => s.trim());
+        currentTcData = {
+          tcNo: parts[0] || code,
+          style: parts[1] || '1896',
+          color: parts[2] || 'Blue',
+          size: parts[3] || 'M',
+          qty: Number(parts[4] || 12)
+        };
+        scanFlowState = 'WAIT_PROCESS';
+        updateFlowUI();
+        showNotification(`TC "${currentTcData.tcNo}" স্ক্যান হয়েছে। এখন Process Dropdown সিলেক্ট করুন।`, 'ok');
+      }
+    }
+
+    function onProcessSelected() {
+      const proc = document.getElementById('processDropdown').value;
+      clearNotification();
+      if (!proc || !currentTcData) {
+        renderTcCard();
+        return;
+      }
+
+      const dupKey = `${currentTcData.tcNo}__${proc.toLowerCase()}`;
+      if (scannedTcProcessSet.has(dupKey)) {
+        playBeep('dup');
+        showNotification(`Notification: TC "${currentTcData.tcNo}" একই "${proc}" Process-এ দুবার স্ক্যান হবে না!`, 'dup');
+        document.getElementById('processDropdown').value = '';
+        renderTcCard();
+        return;
+      }
+
+      const found = styleSmvMaster.find(
+        x => x.style.toLowerCase() === currentTcData.style.toLowerCase() &&
+             x.process.toLowerCase() === proc.toLowerCase()
+      );
+      const smv = found ? Number(found.smv) : 0;
+      const sah = Number(((currentTcData.qty * smv) / 60).toFixed(2));
+      renderTcCard(smv, sah);
+    }
+
+    async function confirmProcessEntry() {
+      const proc = document.getElementById('processDropdown').value;
+      const msgEl = document.getElementById('processActionMsg');
+      msgEl.textContent = '';
+
+      if (!currentOperator || !currentTcData) {
+        showNotification('আগে Operator ID এবং TC Scan সম্পন্ন করুন।', 'dup');
+        return;
+      }
+      if (!proc) {
+        msgEl.style.color = '#b91c1c';
+        msgEl.textContent = 'Dropdown থেকে একটি Process সিলেক্ট করুন।';
+        return;
+      }
+
+      const dupKey = `${currentTcData.tcNo}__${proc.toLowerCase()}`;
+      if (scannedTcProcessSet.has(dupKey)) {
+        playBeep('dup');
+        showNotification(`Notification: TC "${currentTcData.tcNo}" এই "${proc}" Process-এ ইতিমধ্যে স্ক্যান করা হয়েছে!`, 'dup');
+        return;
+      }
+
+      const found = styleSmvMaster.find(
+        x => x.style.toLowerCase() === currentTcData.style.toLowerCase() &&
+             x.process.toLowerCase() === proc.toLowerCase()
+      );
+      const smv = found ? Number(found.smv) : 0;
+      const sah = Number(((currentTcData.qty * smv) / 60).toFixed(2));
+
+      const record = {
+        timestamp: new Date().toISOString(),
+        operatorId: currentOperator.operatorId,
+        operatorName: currentOperator.operatorName,
+        floor: currentOperator.floor,
+        dept: currentOperator.dept,
+        line: currentOperator.line,
+        tcNo: currentTcData.tcNo,
+        style: currentTcData.style,
+        color: currentTcData.color,
+        size: currentTcData.size,
+        bundleQty: currentTcData.qty,
+        process: proc,
+        smv,
+        earnedSah: sah
+      };
+
+      scannedTcProcessSet.add(dupKey);
+      scannedEntries.unshift(record);
+      localStorage.setItem('scanned_entries_v3', JSON.stringify(scannedEntries));
+      renderScanDetails();
+
+      msgEl.style.color = '#15803d';
+      msgEl.textContent = 'এন্ট্রি সফলভাবে সংরক্ষিত হয়েছে। পরের TC স্ক্যানের জন্য প্রস্তুত।';
+      showNotification(`Saved: OP ${record.operatorId} | TC ${record.tcNo} | Process ${record.process} | SAH ${record.earnedSah}`, 'ok');
+
+      try {
+        await fetch(API_URL, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(record)
+        });
+      } catch (_) {}
+
+      setTimeout(nextTcScan, 800);
+    }
+
+    function nextTcScan() {
+      currentTcData = null;
+      document.getElementById('processActionMsg').textContent = '';
+      scanFlowState = currentOperator ? 'WAIT_TC' : 'WAIT_OP';
+      updateFlowUI();
+    }
+
+    function resetOperatorFlow() {
+      currentOperator = null;
+      currentTcData = null;
+      scanFlowState = 'WAIT_OP';
+      document.getElementById('processActionMsg').textContent = '';
+      clearNotification();
+      updateFlowUI();
+    }
+
+    let testTcSeq = 500;
+    function testScanStep() {
+      if (scanFlowState === 'WAIT_OP') {
+        handleBarcodeInput('900001|Sample OP|Linking Line-02|2nd Floor|Linking');
+      } else if (scanFlowState === 'WAIT_TC') {
+        testTcSeq += 1;
+        handleBarcodeInput(`TC-${testTcSeq}|1896|Blue|M|12`);
+      } else {
+        playBeep('dup');
+        showNotification('এখন Process Dropdown থেকে Process সিলেক্ট করুন।', 'dup');
+      }
+    }
+
+    function renderScanDetails() {
+      document.getElementById('scannedTotalBadge').textContent = `${scannedEntries.length} ENTRIES`;
+      document.getElementById('scanDetailsTbody').innerHTML = scannedEntries.slice(0, 20).map(r => `
+        <tr>
+          <td>${esc(r.operatorId)}</td>
+          <td><b>${esc(r.tcNo)}</b></td>
+          <td>${esc(r.line)}</td>
+          <td>${esc(r.style)}</td>
+          <td>${esc(r.process)}</td>
+          <td><b>${r.bundleQty}</b></td>
+          <td>${r.earnedSah}</td>
+        </tr>
+      `).join('');
+    }
+
+    function refreshProcessDropdown(styleFilter = '') {
+      const dd = document.getElementById('processDropdown');
+      const defaults = ['Linking', 'Ironing', 'Sewing', 'Overlock', 'Checking'];
+      const custom = styleSmvMaster
+        .filter(x => !styleFilter || x.style.toLowerCase() === styleFilter.toLowerCase())
+        .map(x => x.process);
+      const list = Array.from(new Set([...custom, ...defaults]));
+      dd.innerHTML = '<option value="">-- Process সিলেক্ট করুন --</option>' +
+        list.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('');
+    }
+
+    function toggleCamera() {
+      if (cameraRunning) { stopCamera(); return; }
+      if (typeof Html5Qrcode === 'undefined') { alert('ক্যামেরা লাইব্রেরি লোড হয়নি।'); return; }
+      html5QrScanner = new Html5Qrcode("reader");
+      html5QrScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 240, height: 140 } },
+        (decodedText) => handleBarcodeInput(decodedText)
+      ).then(() => { cameraRunning = true; })
+       .catch(err => alert('ক্যামেরা চালু করা যায়নি: ' + err));
+    }
+
+    function stopCamera() {
+      if (html5QrScanner && cameraRunning) {
+        html5QrScanner.stop().catch(() => {});
+        cameraRunning = false;
+      }
+    }
+
+    function ensureAtLeastOneRow() {
+      const wrap = document.getElementById('dynamicSmvRows');
+      if (!wrap.children.length) addProcessSmvRow();
+    }
+
+    function addProcessSmvRow(processVal = '', smvVal = '') {
+      const wrap = document.getElementById('dynamicSmvRows');
+      const row = document.createElement('div');
+      row.className = 'dynamic-row';
+      row.innerHTML = `
+        <input type="text" class="dyn-proc" placeholder="Process (e.g. Linking)" value="${esc(processVal)}" />
+        <input type="number" step="0.01" class="dyn-smv" placeholder="SMV (e.g. 12.0)" value="${esc(smvVal)}" />
+        <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
+      `;
+      wrap.appendChild(row);
+    }
+
+    function clearDynamicSmvForm() {
+      document.getElementById('adminStyleInput').value = '';
+      document.getElementById('dynamicSmvRows').innerHTML = '';
+      addProcessSmvRow();
+      document.getElementById('adminSmvMsg').textContent = '';
+    }
+
+    async function saveAllStyleSmv() {
+      const style = document.getElementById('adminStyleInput').value.trim();
+      const msg = document.getElementById('adminSmvMsg');
+      const rows = Array.from(document.querySelectorAll('#dynamicSmvRows .dynamic-row'));
+      if (!style) { msg.style.color = '#b91c1c'; msg.textContent = 'আগে Style No. লিখুন।'; return; }
+
+      const newItems = [];
+      rows.forEach(r => {
+        const pr = r.querySelector('.dyn-proc').value.trim();
+        const smv = parseFloat(r.querySelector('.dyn-smv').value);
+        if (pr && !isNaN(smv) && smv > 0) newItems.push({ style, process: pr, smv });
+      });
+      if (!newItems.length) { msg.style.color = '#b91c1c'; msg.textContent = 'কমপক্ষে একটি Process ও SMV দিন।'; return; }
+
+      newItems.forEach(item => {
+        const idx = styleSmvMaster.findIndex(x => x.style.toLowerCase() === item.style.toLowerCase() && x.process.toLowerCase() === item.process.toLowerCase());
+        if (idx >= 0) styleSmvMaster[idx] = item;
+        else styleSmvMaster.push(item);
+      });
+
+      localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
+      renderSavedSmvTable();
+      refreshProcessDropdown(style);
+      msg.style.color = '#15803d';
+      msg.textContent = `${newItems.length}টি Process & SMV সেভ হয়েছে।`;
+
+      try {
+        await fetch(API_URL, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'STYLE_SMV_BATCH', items: newItems })
+        });
+      } catch (_) {}
+    }
+
+    function editSavedSmv(style, process, smv) {
+      document.getElementById('adminStyleInput').value = style;
+      document.getElementById('dynamicSmvRows').innerHTML = '';
+      addProcessSmvRow(process, smv);
+      document.getElementById('adminSmvMsg').textContent = 'ম্যানুয়ালি এডিট করে Save বাটনে চাপুন।';
+    }
+
+    function renderSavedSmvTable() {
+      document.getElementById('savedSmvBody').innerHTML = styleSmvMaster.map(item => `
+        <tr>
+          <td><b>${esc(item.style)}</b></td>
+          <td>${esc(item.process)}</td>
+          <td><b>${item.smv}</b></td>
+          <td><button class="btn-edit" onclick="editSavedSmv('${esc(item.style)}','${esc(item.process)}',${item.smv})">Edit</button></td>
+        </tr>
+      `).join('');
+    }
+
+    async function loadDashboard() {
+      const errEl = document.getElementById('dashErr');
+      errEl.textContent = '';
+      const dateSelect = document.getElementById('dateSelect');
+      const selectedDate = dateSelect.value;
+      const line = document.getElementById('lineInput').value.trim();
+      const style = document.getElementById('styleInput').value.trim();
+      document.getElementById('liveBadge').textContent = 'LOADING';
+
+      try {
+        const res = await fetch(`${API_URL}?${new URLSearchParams({ date: selectedDate, line, style })}`);
+        const data = await res.json();
+        if (data.status !== 'SUCCESS') {
+          errEl.textContent = data.message || 'ডাটা আনা যায়নি।';
+          document.getElementById('liveBadge').textContent = 'ERROR';
+          return;
+        }
+
+        const prev = dateSelect.value || data.selectedDate || '';
+        dateSelect.innerHTML = '<option value="">Date</option>';
+        (data.dates || []).forEach(d => {
+          const opt = document.createElement('option');
+          opt.value = d; opt.textContent = d;
+          if (d === prev) opt.selected = true;
+          dateSelect.appendChild(opt);
+        });
+        if (!dateSelect.value && data.selectedDate) dateSelect.value = data.selectedDate;
+
+        if (Array.isArray(data.smvList) && data.smvList.length) {
+          styleSmvMaster = data.smvList;
+          localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
+        }
+
+        renderLiveTable(data.liveOutput || []);
+        renderStyleBreakdown(data.styleDetails, style);
+        document.getElementById('liveBadge').textContent = 'LIVE';
+      } catch (e) {
+        errEl.textContent = 'সংযোগ সমস্যা: ' + e.message;
+        document.getElementById('liveBadge').textContent = 'ERROR';
+      }
+    }
+
+    function renderLiveTable(rows) {
+      const box = document.getElementById('liveResultArea');
+      if (!rows.length) { box.innerHTML = '<p class="hint">এখনও কোনো প্রোডাকশন ডাটা পাওয়া যায়নি।</p>'; return; }
+      let html = '<table><thead><tr><th>Line</th><th>Style</th><th>TC</th><th>Output (Qty)</th><th>SAH</th></tr></thead><tbody>';
+      rows.forEach(r => {
+        html += `<tr><td><b>${esc(r.line)}</b></td><td>${esc(r.styles || '-')}</td><td>${r.tcCount}</td><td><b>${r.totalQty}</b></td><td><b>${r.totalSah}</b></td></tr>`;
+      });
+      box.innerHTML = html + '</tbody></table>';
+    }
+
+    function renderStyleBreakdown(details, styleQuery) {
+      const badge = document.getElementById('entriesBadge');
+      const box = document.getElementById('styleResultArea');
+      if (!styleQuery || !details || details.mode === 'none') {
+        badge.textContent = '0 ENTRIES'; box.innerHTML = ''; return;
+      }
+      badge.textContent = `${details.entries || 0} ENTRIES`;
+      if (details.mode === 'line_style') {
+        const list = details.tcProcessBreakdown || [];
+        if (!list.length) { box.innerHTML = '<p class="hint" style="margin-top:8px;">কোনো এন্ট্রি পাওয়া যায়নি।</p>'; return; }
+        let html = '<table><thead><tr><th>TC No.</th><th>Process</th><th>Size</th><th>Qty</th></tr></thead><tbody>';
+        list.forEach(i => html += `<tr><td>${esc(i.tcNo)}</td><td>${esc(i.process)}</td><td>${esc(i.size)}</td><td><b>${i.qty}</b></td></tr>`);
+        box.innerHTML = html + '</tbody></table>';
+      } else {
+        const list = details.sizeBreakdown || [];
+        if (!list.length) { box.innerHTML = '<p class="hint" style="margin-top:8px;">কোনো Size breakdown পাওয়া যায়নি।</p>'; return; }
+        let html = '<table><thead><tr><th>Style</th><th>Size</th><th>Color</th><th>Qty</th></tr></thead><tbody>';
+        list.forEach(i => html += `<tr><td>${esc(i.style)}</td><td>${esc(i.size)}</td><td>${esc(i.color)}</td><td><b>${i.qty}</b></td></tr>`);
+        box.innerHTML = html + '</tbody></table>';
+      }
+    }
+
+    function clearSearch() {
+      document.getElementById('lineInput').value = '';
+      document.getElementById('styleInput').value = '';
+      loadDashboard();
+    }
+
+    function esc(v) { return String(v ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateFlowUI();
+      renderScanDetails();
+      let savedRole = '';
+      try { savedRole = sessionStorage.getItem(SESSION_KEY) || ''; } catch (_) {}
+      if (PINS[savedRole]) applyRoleUI(savedRole);
+      else if (Object.values(PINS).includes(savedRole)) applyRoleUI(savedRole);
+    });
+  </script>
+</body>
+</html>
