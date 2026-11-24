@@ -478,7 +478,6 @@
       return `${Number(parts[1])}/${Number(parts[2])}/${parts[0]}`;
     }
 
-    // Format current running date in Asia/Dhaka timezone
     function getTodayIso() {
       try {
         const parts = new Intl.DateTimeFormat('en-CA', {
@@ -497,6 +496,25 @@
         const m = String(now.getMonth() + 1).padStart(2, '0');
         const d = String(now.getDate()).padStart(2, '0');
         return `${y}-${m}-${d}`;
+      }
+    }
+
+    function getBdTimestampNow() {
+      try {
+        const parts = new Intl.DateTimeFormat('en-CA', {
+          timeZone: 'Asia/Dhaka',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        }).formatToParts(new Date());
+        const get = t => parts.find(p => p.type === t).value;
+        return `${get('year')}-${get('month')}-${get('day')} ${get('hour')}:${get('minute')}:${get('second')}`;
+      } catch (_) {
+        return new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Dhaka' });
       }
     }
 
@@ -1171,7 +1189,7 @@
       const sah = Number(((currentTcData.bundleQty * smv) / 60).toFixed(2));
 
       const record = {
-        timestamp: new Date().toISOString(),
+        timestamp: getBdTimestampNow(),
         operatorId: currentOperator.operatorId,
         operatorName: currentOperator.operatorName,
         floor: currentOperator.floor,
@@ -1326,7 +1344,10 @@
       if (rec.date && /^\d{4}-\d{2}-\d{2}$/.test(String(rec.date).trim())) {
         return String(rec.date).trim();
       }
-      const ts = rec.timestamp ? new Date(rec.timestamp) : null;
+      const tsStr = String(rec.timestamp || '').trim();
+      const m = tsStr.match(/^(\d{4}-\d{2}-\d{2})/);
+      if (m) return m[1];
+      const ts = tsStr ? new Date(tsStr) : null;
       if (ts && !isNaN(ts.getTime())) {
         try {
           const parts = new Intl.DateTimeFormat('en-CA', {
@@ -1358,7 +1379,6 @@
       document.getElementById('liveBadge').textContent = 'LOADING';
 
       try {
-        // Always pass activeIsoDate strictly so server never falls back to another date's rows
         const res = await fetch(`${API_URL}?${new URLSearchParams({ date: activeIsoDate, line, style, t: Date.now() })}`);
         const data = await res.json();
         if (data.status !== 'SUCCESS') {
@@ -1386,7 +1406,6 @@
           localStorage.setItem(FORECAST_STORAGE_KEY, JSON.stringify(forecastMaster));
         }
 
-        // Filter strictly to activeIsoDate on client as well so no other date's rows ever leak
         const allRecs = Array.isArray(data.records) ? data.records : (Array.isArray(data.rawRecords) ? data.rawRecords : []);
         const strictDateRecords = allRecs.filter(r => extractRecordIsoDate(r) === activeIsoDate);
 
