@@ -4,265 +4,639 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Production System</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
-    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-    body { margin: 0; background: #f3f6fb; color: #111827; }
+    :root {
+      --navy: #0c2340; --navy-2: #15365f; --cobalt: #2563eb; --cobalt-dark: #1d4ed8;
+      --sage: #8fb89f; --sage-soft: #e6f2eb; --sage-text: #23533b;
+      --amber-soft: #fef3c7; --amber-text: #b45309;
+      --bg: #f4f2ec; --card: #fdfcfa; --border: #e2dfd7; --text: #111827; --muted: #5b6472;
+    }
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+    body { margin: 0; background: var(--bg); color: var(--text); }
+
     .topbar {
-      background: #1d4ed8; color: #fff; padding: 14px 16px;
-      display: flex; justify-content: space-between; align-items: center;
+      background: linear-gradient(135deg, var(--navy), var(--navy-2));
+      color: #fff; padding: 13px 15px; display: flex; justify-content: space-between;
+      align-items: center; gap: 8px; flex-wrap: wrap;
+      box-shadow: 0 4px 14px rgba(12, 35, 64, 0.18);
     }
-    .topbar h1 { margin: 0; font-size: 18px; line-height: 1.2; }
-    .topbar-actions { display: flex; gap: 8px; }
-    .btn-pill {
-      border: none; border-radius: 999px; padding: 8px 14px;
-      font-weight: 600; font-size: 12px; cursor: pointer;
+    .topbar h1 { margin: 0; font-size: 17px; font-weight: 800; line-height: 1.15; }
+    .topbar-right { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+
+    .pill {
+      border: none; border-radius: 999px; padding: 7px 12px;
+      font-size: 12px; font-weight: 700; cursor: pointer;
     }
-    .btn-dash { background: #3b82f6; color: #fff; }
-    .btn-logout { background: #ef4444; color: #fff; }
-    .container { max-width: 720px; margin: 16px auto; padding: 0 12px 32px; }
+    .pill-tab { background: rgba(255, 255, 255, 0.15); color: #fff; }
+    .pill-tab.active { background: rgba(143, 184, 159, 0.32); color: #d1fae5; border: 1px solid rgba(143, 184, 159, 0.55); }
+    .pill-logout { background: #dc2626; color: #fff; }
+
+    .container { max-width: 760px; margin: 15px auto; padding: 0 12px 40px; }
     .card {
-      background: #fff; border-radius: 14px; padding: 16px;
-      margin-bottom: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+      padding: 16px; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(17, 24, 39, 0.05);
     }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .card-title { font-size: 18px; font-weight: 700; margin: 0; }
+    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; }
+    .card-title { margin: 0; font-size: 18px; font-weight: 800; }
+    .hint { margin: 0; color: var(--muted); font-size: 13.5px; line-height: 1.5; }
+
+    label { display: block; font-size: 13px; font-weight: 700; color: #374151; margin: 10px 0 5px; }
+    input, select {
+      width: 100%; padding: 10px 12px; border: 1px solid #d5d0c5;
+      border-radius: 11px; font-size: 14.5px; background: #fff; color: var(--text);
+    }
+    input:focus, select:focus { outline: none; border-color: var(--cobalt); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .btn-row { display: grid; grid-template-columns: 2.2fr 1fr; gap: 10px; margin-top: 14px; }
+    .btn-row-3 { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 10px; margin-top: 14px; }
+
+    .btn-primary {
+      background: linear-gradient(180deg, #3b82f6, var(--cobalt-dark));
+      color: #fff; border: none; border-radius: 11px; padding: 11px 14px; font-size: 14px; font-weight: 700; cursor: pointer;
+    }
+    .btn-sage {
+      background: var(--sage); color: #102a1d; border: none;
+      border-radius: 11px; padding: 11px 14px; font-size: 14px; font-weight: 700; cursor: pointer;
+    }
     .btn-refresh {
-      background: #e0e7ff; color: #1d4ed8; border: none;
-      border-radius: 10px; padding: 8px 12px; font-weight: 700; cursor: pointer;
+      background: var(--sage-soft); color: var(--sage-text); border: 1px solid #c6e0d0;
+      border-radius: 10px; padding: 7px 12px; font-weight: 700; font-size: 12.5px; cursor: pointer;
     }
-    label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 6px; color: #374151; }
-    select, input {
-      width: 100%; padding: 11px 12px; border: 1px solid #d1d5db;
-      border-radius: 10px; font-size: 15px; background: #fff;
+    .btn-edit {
+      background: var(--sage-soft); color: var(--sage-text); border: 1px solid #b8d8c5;
+      border-radius: 8px; padding: 5px 10px; font-size: 12px; font-weight: 700; cursor: pointer;
     }
-    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-    .actions { display: grid; grid-template-columns: 2.4fr 1fr; gap: 10px; margin-top: 14px; }
-    .btn-search {
-      background: linear-gradient(90deg, #1e3a8a, #2563eb); color: #fff;
-      border: none; border-radius: 10px; padding: 12px; font-size: 16px; font-weight: 700; cursor: pointer;
+
+    .badge-entries { background: #0f766e; color: #ecfdf5; padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+    .badge-live { background: var(--amber-soft); color: var(--amber-text); padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+
+    .scanner-wrap { background: #090d16; color: #fff; border-radius: 14px; padding: 14px; text-align: center; }
+    #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-top: 8px; }
+    .dup-banner {
+      margin-top: 10px; background: var(--amber-soft); border: 1px solid #fcd34d;
+      color: var(--amber-text); border-radius: 11px; padding: 9px 12px; font-size: 13px; font-weight: 700; display: none;
     }
-    .btn-clear {
-      background: #eef2ff; color: #1e3a8a; border: none;
-      border-radius: 10px; padding: 12px; font-size: 15px; font-weight: 700; cursor: pointer;
-    }
-    .badge-green {
-      background: #dcfce7; color: #15803d; padding: 5px 10px;
-      border-radius: 999px; font-size: 12px; font-weight: 800;
-    }
-    .badge-ready {
-      background: #fef3c7; color: #b45309; padding: 5px 10px;
-      border-radius: 999px; font-size: 12px; font-weight: 800;
-    }
-    .hint { color: #4b5563; font-size: 14px; line-height: 1.5; margin: 0; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
-    th, td { border-bottom: 1px solid #e5e7eb; padding: 8px 6px; text-align: left; }
-    th { background: #f8fafc; font-weight: 700; }
-    .error { color: #dc2626; font-size: 14px; font-weight: 600; margin-top: 8px; }
+    .dup-banner.show { display: block; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+    .stat-box { background: #f8f7f3; border: 1px solid var(--border); border-radius: 12px; padding: 10px; }
+    .stat-lbl { font-size: 11.5px; color: var(--sage-text); font-weight: 700; }
+    .stat-val { font-size: 20px; font-weight: 800; margin-top: 3px; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+    th, td { padding: 8px 6px; border-bottom: 1px solid #ece9e2; text-align: left; }
+    th { background: #f5f3ed; font-weight: 800; }
+    .inline-inp { padding: 5px 7px; font-size: 12.5px; border-radius: 8px; }
+    .msg { margin-top: 8px; font-size: 13px; font-weight: 700; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
   <div class="topbar">
     <h1>PRODUCTION<br/>SYSTEM</h1>
-    <div class="topbar-actions">
-      <button class="btn-pill btn-dash" onclick="loadProduction()">VIEW DASHBOARD</button>
-      <button class="btn-pill btn-logout" onclick="clearFilters()">Logout</button>
+    <div id="navBar" class="topbar-right hidden">
+      <button id="btnTabDash" class="pill pill-tab" onclick="switchView('dashboard')">Dashboard</button>
+      <button id="btnTabOp" class="pill pill-tab" onclick="switchView('operator')">Barcode Scan</button>
+      <button id="btnTabAdmin" class="pill pill-tab" onclick="switchView('admin')">Admin</button>
+      <button class="pill pill-logout" onclick="logoutSystem()">Logout</button>
     </div>
   </div>
 
   <div class="container">
-    <div class="card">
-      <div class="card-header">
-        <h2 class="card-title">Search Production</h2>
-        <button class="btn-refresh" onclick="loadProduction()">Refresh Live</button>
+    <!-- PIN LOGIN CARD -->
+    <div id="loginCard" class="card">
+      <h2 class="card-title">System PIN Login</h2>
+      <p class="hint" style="margin-top:4px;">আপনার রোল অনুযায়ী PIN দিন (Dashboard: 1111 | Operator Scan: 2222 | Admin: 9999)</p>
+      <label for="pinField">Enter PIN</label>
+      <input id="pinField" type="password" inputmode="numeric" placeholder="PIN নম্বর লিখুন" onkeydown="if(event.key==='Enter') handleLogin()" />
+      <div style="margin-top:14px;">
+        <button class="btn-primary" style="width:100%;" onclick="handleLogin()">Login</button>
       </div>
-
-      <label for="dateSelect">Date</label>
-      <select id="dateSelect" onchange="loadProduction()"></select>
-
-      <div class="row-2">
-        <div>
-          <label for="lineInput">Line (Optional)</label>
-          <input id="lineInput" type="text" placeholder="e.g. Linking Line-02" />
-        </div>
-        <div>
-          <label for="styleInput">Style No.</label>
-          <input id="styleInput" type="text" placeholder="e.g. 1896" />
-        </div>
-      </div>
-
-      <div class="actions">
-        <button class="btn-search" onclick="loadProduction()">Search</button>
-        <button class="btn-clear" onclick="clearFilters()">Clear</button>
-      </div>
-      <div id="statusMsg" class="error"></div>
+      <div id="loginMsg" class="msg" style="color:#b91c1c;"></div>
     </div>
 
-    <div class="card">
-      <div class="card-header">
-        <h2 class="card-title">Style Search Details</h2>
-        <span id="entriesBadge" class="badge-green">0 ENTRIES</span>
+    <!-- DASHBOARD PAGE -->
+    <div id="view-dashboard" class="hidden">
+      <div class="card">
+        <div class="card-head">
+          <h2 class="card-title">Search Production</h2>
+          <button class="btn-refresh" onclick="loadDashboard()">Refresh Live</button>
+        </div>
+
+        <label for="dateSelect">Date</label>
+        <select id="dateSelect" onchange="loadDashboard()">
+          <option value="">Date</option>
+        </select>
+
+        <div class="grid-2">
+          <div><label for="lineInput">Line (Optional)</label><input id="lineInput" type="text" placeholder="e.g. Linking Line-02" /></div>
+          <div><label for="styleInput">Style No.</label><input id="styleInput" type="text" placeholder="e.g. 1896" /></div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-primary" onclick="loadDashboard()">Search</button>
+          <button class="btn-sage" onclick="clearSearch()">Clear</button>
+        </div>
+        <div id="dashErr" class="msg" style="color:#b91c1c;"></div>
       </div>
-      <div id="styleDetailsBox">
-        <p class="hint">
-          শুধু Style দিলে Size-wise breakdown দেখানো হবে; আর Line + Style দিলে কোন কোন TC এন্ট্রি হয়েছে এবং কোন Process-এ কত প্রোডাকশন হয়েছে তার বিস্তারিত দেখাবে।
-        </p>
+
+      <div class="card">
+        <div class="card-head">
+          <h2 class="card-title">Style Search Details</h2>
+          <span id="entriesBadge" class="badge-entries">0 ENTRIES</span>
+        </div>
+        <p class="hint">শুধু Style দিলে Size-wise breakdown দেখানো হবে; আর Line + Style দিলে কোন কোন TC এন্ট্রি হয়েছে এবং কোন Process-এ কত প্রোডাকশন হয়েছে তার বিস্তারিত দেখাবে।</p>
+        <div id="styleResultArea"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2 class="card-title">Live Line-wise Output Production</h2>
+          <span id="liveBadge" class="badge-live">LIVE</span>
+        </div>
+        <div id="liveResultArea"><p class="hint">এখনও কোনো প্রোডাকশন ডাটা পাওয়া যায়নি।</p></div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-header">
-        <h2 class="card-title">Live Line-wise Output Production</h2>
-        <span id="liveBadge" class="badge-ready">READY</span>
+    <!-- OPERATOR BARCODE SCAN PAGE -->
+    <div id="view-operator" class="hidden">
+      <div class="card">
+        <div class="card-head">
+          <h2 class="card-title">Barcode Scanner</h2>
+          <button class="btn-refresh" onclick="toggleCamera()">Camera On/Off</button>
+        </div>
+        <div class="scanner-wrap">
+          <div style="font-size:15px;font-weight:800;">Scan Travel Card (TC) / Operator ID</div>
+          <div id="reader"></div>
+        </div>
+        <div id="dupAlert" class="dup-banner">Duplicate Scan Alert - এই TC এবং Process ইতিমধ্যে এন্ট্রি হয়েছে!</div>
       </div>
-      <div id="liveOutputBox">
-        <p class="hint">এখনও কোনো প্রোডাকশন ডাটা পাওয়া যায়নি।</p>
+
+      <div class="card">
+        <div class="grid-2">
+          <div><label for="opScanId">Operator ID</label><input id="opScanId" type="text" placeholder="e.g. 900001" /></div>
+          <div><label for="opScanName">Operator Name</label><input id="opScanName" type="text" placeholder="e.g. Sample OP" /></div>
+        </div>
+
+        <label for="tcInput">Travel Card (TC No.)</label>
+        <input id="tcInput" type="text" placeholder="e.g. 11223344670" onchange="checkDuplicate()" />
+
+        <div class="grid-2">
+          <div><label for="opLineInput">Line</label><input id="opLineInput" type="text" placeholder="e.g. Linking Line-02" /></div>
+          <div><label for="opStyleInput">Style No.</label><input id="opStyleInput" type="text" placeholder="e.g. 1896" /></div>
+        </div>
+
+        <div class="grid-3">
+          <div><label for="opColorInput">Color</label><input id="opColorInput" type="text" placeholder="e.g. Blue" /></div>
+          <div><label for="opSizeInput">Size</label><input id="opSizeInput" type="text" placeholder="e.g. M" /></div>
+          <div><label for="opQtyInput">Bundle Qty</label><input id="opQtyInput" type="number" placeholder="e.g. 12" /></div>
+        </div>
+
+        <label for="opProcessSelect">Process</label>
+        <input id="opProcessSelect" type="text" list="processOptions" placeholder="e.g. Linking" onchange="checkDuplicate()" />
+        <datalist id="processOptions">
+          <option value="Linking"></option>
+          <option value="Ironing"></option>
+          <option value="Sewing"></option>
+          <option value="Overlock"></option>
+          <option value="Checking"></option>
+        </datalist>
+
+        <div class="btn-row-3">
+          <button class="btn-primary" onclick="submitScan()">Submit Scan</button>
+          <button class="btn-sage" onclick="clearOpScan()">Clear</button>
+          <button class="btn-sage" onclick="scanNext()">Scan Next</button>
+        </div>
+        <div id="opScanMsg" class="msg"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN PAGE -->
+    <div id="view-admin" class="hidden">
+      <div class="card">
+        <div class="card-head">
+          <h2 class="card-title">Quick Summary Stats</h2>
+          <button class="btn-refresh" onclick="loadDashboard()">Refresh</button>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-box"><div class="stat-lbl">Active Operators</div><div class="stat-val" id="statOps">145</div></div>
+          <div class="stat-box"><div class="stat-lbl">Active Lines</div><div class="stat-val" id="statLines">12</div></div>
+          <div class="stat-box"><div class="stat-lbl">Active Styles</div><div class="stat-val" id="statStyles">2</div></div>
+        </div>
+
+        <div class="grid-2">
+          <div><label for="adminOpId">Operator ID</label><input id="adminOpId" type="text" placeholder="e.g. OP-9001" /></div>
+          <div><label for="adminOpName">Operator Name</label><input id="adminOpName" type="text" placeholder="e.g. Md. Parvej Miah" /></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="addOperator()">Add Operator</button>
+          <button class="btn-sage" onclick="clearAdminOp()">Clear</button>
+        </div>
+        <div id="adminOpMsg" class="msg" style="color:#15803d;"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2 class="card-title">Style-wise Process & SMV</h2>
+          <span class="badge-entries">ADD + EDIT</span>
+        </div>
+        <div class="grid-3">
+          <div><label for="smvStyle">Style No.</label><input id="smvStyle" type="text" placeholder="e.g. 1896" /></div>
+          <div><label for="smvProcess">Process</label><input id="smvProcess" type="text" placeholder="e.g. Linking" /></div>
+          <div><label for="smvVal">SMV</label><input id="smvVal" type="number" step="0.01" placeholder="e.g. 12.0" /></div>
+        </div>
+        <div class="btn-row">
+          <button id="smvBtn" class="btn-primary" onclick="saveStyleSmv()">Add Style Process & SMV</button>
+          <button class="btn-sage" onclick="resetSmvForm()">Reset</button>
+        </div>
+        <div id="smvMsg" class="msg" style="color:#15803d;"></div>
+
+        <table>
+          <thead><tr><th>Style</th><th>Process</th><th>SMV</th><th>Action</th></tr></thead>
+          <tbody id="smvBody"></tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2 class="card-title">Recent Assignments</h2>
+          <span class="hint">ম্যানুয়ালি Edit করুন</span>
+        </div>
+        <table>
+          <thead><tr><th>Operator</th><th>Line</th><th>Status</th><th>Edit</th></tr></thead>
+          <tbody id="assignBody"></tbody>
+        </table>
       </div>
     </div>
   </div>
 
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbw7j-f4pOE1kZvQKBhjYFov5ntrasH6KTsbNgyxXTaFHELOJdblVbfnSRifM9lhdUDA/exec';
+    const PINS = { '1111': 'dashboard', '2222': 'operator', '9999': 'admin' };
+    const SESSION_KEY = 'prod_system_role';
 
-    async function loadProduction() {
-      const statusEl = document.getElementById('statusMsg');
-      statusEl.textContent = '';
+    let html5QrScanner = null;
+    let cameraRunning = false;
 
-      const dateSelect = document.getElementById('dateSelect');
-      const currentDate = dateSelect.value;
-      const line = document.getElementById('lineInput').value.trim();
-      const style = document.getElementById('styleInput').value.trim();
+    function handleLogin() {
+      const pin = document.getElementById('pinField').value.trim();
+      const role = PINS[pin];
+      const msg = document.getElementById('loginMsg');
+      if (!role) {
+        msg.textContent = 'ভুল PIN দিয়েছেন! সঠিক PIN দিন।';
+        return;
+      }
+      msg.textContent = '';
+      sessionStorage.setItem(SESSION_KEY, role);
+      applyRoleUI(role);
+    }
 
-      const qs = new URLSearchParams({
-        date: currentDate,
-        line: line,
-        style: style
+    function logoutSystem() {
+      sessionStorage.removeItem(SESSION_KEY);
+      stopCameraIfRunning();
+      document.getElementById('pinField').value = '';
+      document.getElementById('loginCard').classList.remove('hidden');
+      document.getElementById('navBar').classList.add('hidden');
+      ['dashboard', 'operator', 'admin'].forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
+    }
+
+    function applyRoleUI(role) {
+      document.getElementById('loginCard').classList.add('hidden');
+      document.getElementById('navBar').classList.remove('hidden');
+
+      document.getElementById('btnTabDash').classList.toggle('hidden', role === 'operator');
+      document.getElementById('btnTabOp').classList.toggle('hidden', role === 'dashboard');
+      document.getElementById('btnTabAdmin').classList.toggle('hidden', role !== 'admin');
+
+      switchView(role);
+    }
+
+    function switchView(view) {
+      ['dashboard', 'operator', 'admin'].forEach(v => {
+        document.getElementById('view-' + v).classList.toggle('hidden', v !== view);
+        const btn = document.getElementById(v === 'dashboard' ? 'btnTabDash' : v === 'operator' ? 'btnTabOp' : 'btnTabAdmin');
+        if (btn) btn.classList.toggle('active', v === view);
       });
 
+      if (view === 'dashboard') { stopCameraIfRunning(); loadDashboard(); }
+      if (view === 'admin') { stopCameraIfRunning(); renderAdminTables(); }
+    }
+
+    function toggleCamera() {
+      if (cameraRunning) {
+        stopCameraIfRunning();
+        return;
+      }
+      if (typeof Html5Qrcode === 'undefined') {
+        alert('ক্যামেরা লাইব্রেরি লোড হয়নি। ইন্টারনেট সংযোগ চেক করুন।');
+        return;
+      }
+      html5QrScanner = new Html5Qrcode("reader");
+      html5QrScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 240, height: 140 } },
+        (decodedText) => {
+          const val = decodedText.trim();
+          const opField = document.getElementById('opScanId');
+          const tcField = document.getElementById('tcInput');
+          if (!opField.value.trim() && val.length <= 7) {
+            opField.value = val;
+          } else {
+            tcField.value = val;
+            checkDuplicate();
+          }
+        }
+      ).then(() => { cameraRunning = true; })
+       .catch(err => alert('ক্যামেরা চালু করা যায়নি: ' + err));
+    }
+
+    function stopCameraIfRunning() {
+      if (html5QrScanner && cameraRunning) {
+        html5QrScanner.stop().catch(() => {});
+        cameraRunning = false;
+      }
+    }
+
+    async function loadDashboard() {
+      const errEl = document.getElementById('dashErr');
+      errEl.textContent = '';
+      const dateSelect = document.getElementById('dateSelect');
+      const selectedDate = dateSelect.value;
+      const line = document.getElementById('lineInput').value.trim();
+      const style = document.getElementById('styleInput').value.trim();
       document.getElementById('liveBadge').textContent = 'LOADING';
 
       try {
-        const res = await fetch(`${API_URL}?${qs.toString()}`);
+        const res = await fetch(`${API_URL}?${new URLSearchParams({ date: selectedDate, line, style })}`);
         const data = await res.json();
-
-        const isOk = data.status === 'SUCCESS' || data.success === true;
-        if (!isOk) {
-          statusEl.textContent = data.message || 'ডাটা আনা যায়নি।';
+        if (data.status !== 'SUCCESS') {
+          errEl.textContent = data.message || 'ডাটা আনা যায়নি।';
           document.getElementById('liveBadge').textContent = 'ERROR';
           return;
         }
 
-        const prevVal = dateSelect.value || data.selectedDate || '';
-        dateSelect.innerHTML = '';
-        if (data.dates && data.dates.length > 0) {
-          data.dates.forEach(d => {
-            const opt = document.createElement('option');
-            opt.value = d;
-            opt.textContent = d;
-            if (d === prevVal) opt.selected = true;
-            dateSelect.appendChild(opt);
-          });
-          if (!dateSelect.value && data.selectedDate) {
-            dateSelect.value = data.selectedDate;
-          }
-        } else {
+        const prev = dateSelect.value || data.selectedDate || '';
+        dateSelect.innerHTML = '<option value="">Date</option>';
+        (data.dates || []).forEach(d => {
           const opt = document.createElement('option');
-          opt.value = '';
-          opt.textContent = 'কোনো তারিখ পাওয়া যায়নি';
+          opt.value = d; opt.textContent = d;
+          if (d === prev) opt.selected = true;
           dateSelect.appendChild(opt);
+        });
+        if (!dateSelect.value && data.selectedDate) dateSelect.value = data.selectedDate;
+
+        if (Array.isArray(data.smvList) && data.smvList.length) {
+          data.smvList.forEach((item, idx) => {
+            const exists = styleSmvList.some(x => x.style.toLowerCase() === item.style.toLowerCase() && x.process.toLowerCase() === item.process.toLowerCase());
+            if (!exists) styleSmvList.push({ id: Date.now() + idx, style: item.style, process: item.process, smv: item.smv });
+          });
+          saveAdminData();
         }
 
-        renderLiveOutput(data.liveOutput || []);
-        renderStyleDetails(data.styleDetails, style);
+        renderLiveTable(data.liveOutput || []);
+        renderStyleBreakdown(data.styleDetails, style);
         document.getElementById('liveBadge').textContent = 'LIVE';
-
-      } catch (err) {
-        statusEl.textContent = 'নেটওয়ার্ক বা Web App পারমিশন সমস্যা: ' + err.message;
+      } catch (e) {
+        errEl.textContent = 'সংযোগ সমস্যা: ' + e.message;
         document.getElementById('liveBadge').textContent = 'ERROR';
       }
     }
 
-    function renderLiveOutput(list) {
-      const box = document.getElementById('liveOutputBox');
-      if (!list.length) {
-        box.innerHTML = '<p class="hint">এখনও কোনো প্রোডাকশন ডাটা পাওয়া যায়নি।</p>';
-        return;
-      }
+    function renderLiveTable(rows) {
+      const box = document.getElementById('liveResultArea');
+      if (!rows.length) { box.innerHTML = '<p class="hint">এখনও কোনো প্রোডাকশন ডাটা পাওয়া যায়নি।</p>'; return; }
       let html = '<table><thead><tr><th>Line</th><th>Style</th><th>TC</th><th>Output (Qty)</th><th>SAH</th></tr></thead><tbody>';
-      list.forEach(r => {
-        html += `<tr>
-          <td>${escapeHtml(r.line)}</td>
-          <td>${escapeHtml(r.styles || '-')}</td>
-          <td>${r.tcCount}</td>
-          <td><b>${r.totalQty}</b></td>
-          <td>${r.totalSah}</td>
-        </tr>`;
+      rows.forEach(r => {
+        html += `<tr><td><b>${esc(r.line)}</b></td><td>${esc(r.styles || '-')}</td><td>${r.tcCount}</td><td><b>${r.totalQty}</b></td><td><b>${r.totalSah}</b></td></tr>`;
       });
-      html += '</tbody></table>';
-      box.innerHTML = html;
+      box.innerHTML = html + '</tbody></table>';
     }
 
-    function renderStyleDetails(details, styleQuery) {
+    function renderStyleBreakdown(details, styleQuery) {
       const badge = document.getElementById('entriesBadge');
-      const box = document.getElementById('styleDetailsBox');
-
+      const box = document.getElementById('styleResultArea');
       if (!styleQuery || !details || details.mode === 'none') {
-        badge.textContent = '0 ENTRIES';
-        box.innerHTML = '<p class="hint">শুধু Style দিলে Size-wise breakdown দেখানো হবে; আর Line + Style দিলে কোন কোন TC এন্ট্রি হয়েছে এবং কোন Process-এ কত প্রোডাকশন হয়েছে তার বিস্তারিত দেখাবে।</p>';
-        return;
+        badge.textContent = '0 ENTRIES'; box.innerHTML = ''; return;
       }
-
-      badge.textContent = `${details.entries} ENTRIES`;
-
+      badge.textContent = `${details.entries || 0} ENTRIES`;
       if (details.mode === 'line_style') {
-        if (!details.tcProcessBreakdown.length) {
-          box.innerHTML = '<p class="hint">এই Line এবং Style-এর কোনো এন্ট্রি পাওয়া যায়নি।</p>';
-          return;
-        }
+        const list = details.tcProcessBreakdown || [];
+        if (!list.length) { box.innerHTML = '<p class="hint" style="margin-top:8px;">কোনো এন্ট্রি পাওয়া যায়নি।</p>'; return; }
         let html = '<table><thead><tr><th>TC No.</th><th>Process</th><th>Size</th><th>Qty</th></tr></thead><tbody>';
-        details.tcProcessBreakdown.forEach(item => {
-          html += `<tr>
-            <td>${escapeHtml(item.tcNo)}</td>
-            <td>${escapeHtml(item.process)}</td>
-            <td>${escapeHtml(item.size)}</td>
-            <td><b>${item.qty}</b></td>
-          </tr>`;
-        });
-        html += '</tbody></table>';
-        box.innerHTML = html;
+        list.forEach(i => html += `<tr><td>${esc(i.tcNo)}</td><td>${esc(i.process)}</td><td>${esc(i.size)}</td><td><b>${i.qty}</b></td></tr>`);
+        box.innerHTML = html + '</tbody></table>';
       } else {
-        if (!details.sizeBreakdown.length) {
-          box.innerHTML = '<p class="hint">এই Style-এর কোনো Size breakdown পাওয়া যায়নি।</p>';
-          return;
-        }
+        const list = details.sizeBreakdown || [];
+        if (!list.length) { box.innerHTML = '<p class="hint" style="margin-top:8px;">কোনো Size breakdown পাওয়া যায়নি।</p>'; return; }
         let html = '<table><thead><tr><th>Style</th><th>Size</th><th>Color</th><th>Qty</th></tr></thead><tbody>';
-        details.sizeBreakdown.forEach(item => {
-          html += `<tr>
-            <td>${escapeHtml(item.style)}</td>
-            <td>${escapeHtml(item.size)}</td>
-            <td>${escapeHtml(item.color)}</td>
-            <td><b>${item.qty}</b></td>
-          </tr>`;
-        });
-        html += '</tbody></table>';
-        box.innerHTML = html;
+        list.forEach(i => html += `<tr><td>${esc(i.style)}</td><td>${esc(i.size)}</td><td>${esc(i.color)}</td><td><b>${i.qty}</b></td></tr>`);
+        box.innerHTML = html + '</tbody></table>';
       }
     }
 
-    function clearFilters() {
+    function clearSearch() {
       document.getElementById('lineInput').value = '';
       document.getElementById('styleInput').value = '';
-      loadProduction();
+      loadDashboard();
     }
 
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+    const loggedKeys = new Set(JSON.parse(localStorage.getItem('scanned_tc_keys') || '[]'));
+
+    function checkDuplicate() {
+      const tc = document.getElementById('tcInput').value.trim();
+      const proc = document.getElementById('opProcessSelect').value.trim().toLowerCase();
+      const banner = document.getElementById('dupAlert');
+      if (tc && proc && loggedKeys.has(`${tc}__${proc}`)) {
+        banner.classList.add('show');
+        return true;
+      }
+      banner.classList.remove('show');
+      return false;
     }
 
-    window.addEventListener('DOMContentLoaded', loadProduction);
+    async function submitScan() {
+      const msg = document.getElementById('opScanMsg');
+      msg.style.color = '#1d4ed8';
+
+      const operatorId = document.getElementById('opScanId').value.trim();
+      const operatorName = document.getElementById('opScanName').value.trim();
+      const tcNo = document.getElementById('tcInput').value.trim();
+      const line = document.getElementById('opLineInput').value.trim();
+      const style = document.getElementById('opStyleInput').value.trim();
+      const color = document.getElementById('opColorInput').value.trim();
+      const size = document.getElementById('opSizeInput').value.trim();
+      const process = document.getElementById('opProcessSelect').value.trim();
+      const bundleQty = Number(document.getElementById('opQtyInput').value || 0);
+
+      if (!operatorId || !tcNo || !style || !process || bundleQty <= 0) {
+        msg.style.color = '#b91c1c';
+        msg.textContent = 'Operator ID, TC No., Style, Process এবং Bundle Qty দিন।';
+        return;
+      }
+      if (checkDuplicate()) {
+        msg.style.color = '#b45309';
+        msg.textContent = 'Duplicate Scan! এই TC ও Process ইতিমধ্যে এন্ট্রি হয়েছে।';
+        return;
+      }
+
+      const matchedSmv = styleSmvList.find(x => x.style.toLowerCase() === style.toLowerCase() && x.process.toLowerCase() === process.toLowerCase());
+      const smv = matchedSmv ? Number(matchedSmv.smv) : 0;
+      const earnedSah = Number(((bundleQty * smv) / 60).toFixed(4));
+
+      msg.textContent = 'সাবমিট হচ্ছে...';
+      try {
+        await fetch(API_URL, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            timestamp: new Date().toISOString(),
+            operatorId, operatorName, line, tcNo, style, color, size, bundleQty, process, smv, earnedSah
+          })
+        });
+        loggedKeys.add(`${tcNo}__${process.toLowerCase()}`);
+        localStorage.setItem('scanned_tc_keys', JSON.stringify(Array.from(loggedKeys)));
+        msg.style.color = '#15803d';
+        msg.textContent = 'স্ক্যান সফলভাবে শিটে সেভ হয়েছে।';
+      } catch (e) {
+        msg.style.color = '#b91c1c';
+        msg.textContent = 'সাবমিট সমস্যা: ' + e.message;
+      }
+    }
+
+    function clearOpScan() {
+      ['opScanId', 'opScanName', 'tcInput', 'opLineInput', 'opStyleInput', 'opColorInput', 'opSizeInput', 'opQtyInput', 'opProcessSelect']
+        .forEach(id => document.getElementById(id).value = '');
+      document.getElementById('dupAlert').classList.remove('show');
+      document.getElementById('opScanMsg').textContent = '';
+    }
+
+    function scanNext() {
+      document.getElementById('tcInput').value = '';
+      document.getElementById('opQtyInput').value = '';
+      document.getElementById('dupAlert').classList.remove('show');
+      document.getElementById('tcInput').focus();
+    }
+
+    let styleSmvList = JSON.parse(localStorage.getItem('style_smv_list') || 'null') || [
+      { id: 1, style: '1896', process: 'Linking', smv: 12.0 },
+      { id: 2, style: '1896', process: 'Ironing', smv: 8.28 }
+    ];
+    let assignments = JSON.parse(localStorage.getItem('op_assignments') || 'null') || [
+      { id: 1, op: 'OP-9001 - Md. Parvej Miah', line: 'Linking Line-02', status: 'Active' },
+      { id: 2, op: 'OP-9002 - Sample OP', line: 'Linking Line-01', status: 'Active' }
+    ];
+    let editingSmvId = null;
+    let editingAssignId = null;
+
+    function saveAdminData() {
+      localStorage.setItem('style_smv_list', JSON.stringify(styleSmvList));
+      localStorage.setItem('op_assignments', JSON.stringify(assignments));
+    }
+
+    function addOperator() {
+      const id = document.getElementById('adminOpId').value.trim();
+      const name = document.getElementById('adminOpName').value.trim();
+      const msg = document.getElementById('adminOpMsg');
+      if (!id || !name) { msg.style.color = '#b91c1c'; msg.textContent = 'Operator ID ও Name লিখুন।'; return; }
+      assignments.unshift({ id: Date.now(), op: `${id} - ${name}`, line: 'Linking Line-02', status: 'Active' });
+      saveAdminData(); clearAdminOp(); renderAssignTable();
+      msg.style.color = '#15803d'; msg.textContent = 'Operator যুক্ত হয়েছে।';
+    }
+
+    function clearAdminOp() {
+      document.getElementById('adminOpId').value = '';
+      document.getElementById('adminOpName').value = '';
+    }
+
+    async function saveStyleSmv() {
+      const style = document.getElementById('smvStyle').value.trim();
+      const process = document.getElementById('smvProcess').value.trim();
+      const smv = parseFloat(document.getElementById('smvVal').value);
+      const msg = document.getElementById('smvMsg');
+      if (!style || !process || isNaN(smv) || smv <= 0) {
+        msg.style.color = '#b91c1c'; msg.textContent = 'Style, Process এবং SMV সঠিকভাবে দিন।'; return;
+      }
+      if (editingSmvId !== null) {
+        styleSmvList = styleSmvList.map(x => x.id === editingSmvId ? { ...x, style, process, smv } : x);
+        editingSmvId = null; msg.textContent = 'SMV আপডেট হয়েছে।';
+      } else {
+        styleSmvList.push({ id: Date.now(), style, process, smv });
+        msg.textContent = 'Style Process ও SMV যুক্ত হয়েছে।';
+      }
+      msg.style.color = '#15803d'; saveAdminData(); resetSmvForm(); renderSmvTable();
+      try {
+        await fetch(API_URL, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'STYLE_SMV', style, process, smv })
+        });
+      } catch (_) {}
+    }
+
+    function editSmvRow(id) {
+      const target = styleSmvList.find(x => x.id === id);
+      if (!target) return;
+      editingSmvId = id;
+      document.getElementById('smvStyle').value = target.style;
+      document.getElementById('smvProcess').value = target.process;
+      document.getElementById('smvVal').value = target.smv;
+      document.getElementById('smvBtn').textContent = 'Save Edited SMV';
+    }
+
+    function resetSmvForm() {
+      editingSmvId = null;
+      document.getElementById('smvStyle').value = '';
+      document.getElementById('smvProcess').value = '';
+      document.getElementById('smvVal').value = '';
+      document.getElementById('smvBtn').textContent = 'Add Style Process & SMV';
+    }
+
+    function editAssignRow(id) { editingAssignId = id; renderAssignTable(); }
+    function saveAssignRow(id) {
+      const op = document.getElementById(`aOp_${id}`).value.trim();
+      const line = document.getElementById(`aLine_${id}`).value.trim();
+      const status = document.getElementById(`aSt_${id}`).value;
+      assignments = assignments.map(r => r.id === id ? { ...r, op: op || r.op, line: line || r.line, status } : r);
+      editingAssignId = null; saveAdminData(); renderAssignTable();
+    }
+
+    function renderSmvTable() {
+      document.getElementById('smvBody').innerHTML = styleSmvList.map(item => `
+        <tr><td><b>${esc(item.style)}</b></td><td>${esc(item.process)}</td><td><b>${item.smv}</b></td>
+        <td><button class="btn-edit" onclick="editSmvRow(${item.id})">Edit</button></td></tr>
+      `).join('');
+      const uniq = new Set(styleSmvList.map(x => x.style.toLowerCase()));
+      document.getElementById('statStyles').textContent = uniq.size;
+    }
+
+    function renderAssignTable() {
+      document.getElementById('assignBody').innerHTML = assignments.map(row => {
+        if (editingAssignId === row.id) {
+          return `<tr>
+            <td><input id="aOp_${row.id}" class="inline-inp" value="${esc(row.op)}" /></td>
+            <td><input id="aLine_${row.id}" class="inline-inp" value="${esc(row.line)}" /></td>
+            <td><select id="aSt_${row.id}" class="inline-inp">
+              <option value="Active" ${row.status === 'Active' ? 'selected' : ''}>Active</option>
+              <option value="Pending" ${row.status === 'Pending' ? 'selected' : ''}>Pending</option>
+            </select></td>
+            <td><button class="btn-edit" onclick="saveAssignRow(${row.id})">Save</button></td>
+          </tr>`;
+        }
+        return `<tr><td>${esc(row.op)}</td><td>${esc(row.line)}</td><td><b>${esc(row.status)}</b></td>
+          <td><button class="btn-edit" onclick="editAssignRow(${row.id})">Edit</button></td></tr>`;
+      }).join('');
+    }
+
+    function renderAdminTables() { renderSmvTable(); renderAssignTable(); }
+    function esc(v) { return String(v ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedRole = sessionStorage.getItem(SESSION_KEY);
+      if (savedRole) applyRoleUI(savedRole);
+    });
   </script>
 </body>
 </html>
