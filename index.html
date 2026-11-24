@@ -15,7 +15,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%230c2340'/%3E%3Crect x='34' y='42' width='124' height='108' rx='18' fill='%2315365f' stroke='%2322c55e' stroke-width='8'/%3E%3Cpath d='M56 72h80M56 98h56' stroke='%23ffffff' stroke-width='10' stroke-linecap='round'/%3E%3Ccircle cx='130' cy='122' r='13' fill='%2322c55e'/%3E%3C/svg%3E" />
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%230c2340'/%3E%3Crect x='34' y='42' width='124' height='108' rx='18' fill='%2315365f' stroke='%2322c55e' stroke-width='8'/%3E%3Cpath d='M56 72h80M56 98h56' stroke='%23ffffff' stroke-width='10' stroke-linecap='round'/%3E%3Ccircle cx='130' cy='122' r='13' fill='%2322c55e'/%3E%3C/svg%3E" />
 
-  <script src="https://unpkg.com/html5-qrcode" type="javascript"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
     :root {
       --navy: #0c2340; --navy-2: #15365f; --cobalt: #2563eb; --cobalt-dark: #1d4ed8;
@@ -141,7 +141,7 @@
     .step-banner.tc-step { background: #064e3b; color: #d1fae5; border-color: #10b981; }
     .step-banner.proc-step { background: #451a03; color: #fef3c7; border-color: #f59e0b; }
 
-    #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-top: 8px; }
+    #reader { width: 100%; min-height: 220px; border-radius: 10px; overflow: hidden; margin-top: 8px; background: #000; }
 
     .notify-box {
       margin-top: 10px; border-radius: 11px; padding: 10px 12px;
@@ -406,7 +406,7 @@
       <div id="admin-sec-forecast" class="card hidden">
         <div class="card-head">
           <h2 class="card-title">Forecast Hour & Target Pcs</h2>
-          <button type="button" class="btn-primary" onclick="saveForecastForDate()">Save / Update Forecast</button>
+          <button type="button" class="btn-primary" onclick="saveForecastForDate()">Save Forecast</button>
         </div>
         <p class="hint">যেকোনো তারিখ সিলেক্ট করে <b>Forecast Hour</b> ও <b>Forecast Pcs</b> সেভ করার পরও যেকোনো সময় সংখ্যা বদলে আবার <b>Save / Update Forecast</b> চাপলেই সাথে সাথে পরিবর্তন আপডেট হবে।</p>
 
@@ -1320,18 +1320,56 @@
       }
     }
 
-    function startCameraIfNeeded() {
-      if (cameraRunning) return;
-      if (typeof Html5Qrcode === 'undefined') return;
-      if (!html5QrScanner) html5QrScanner = new Html5Qrcode("reader");
-      html5QrScanner.start(
-        { facingMode: "environment" },
+    function runScannerStart(cameraConfig) {
+      return html5QrScanner.start(
+        cameraConfig,
         { fps: 10, qrbox: { width: 240, height: 140 } },
         (decodedText) => handleBarcodeInput(decodedText)
-      ).then(() => {
-        cameraRunning = true;
-        document.getElementById('camToggleBtn').textContent = 'Stop Camera';
-      }).catch(() => {});
+      );
+    }
+
+    function startCameraIfNeeded() {
+      if (cameraRunning) return;
+      if (typeof Html5Qrcode === 'undefined') {
+        showNotification('Barcode scanner library লোড হয়নি। পেজ রিফ্রেশ করুন।', 'dup');
+        return;
+      }
+      const readerEl = document.getElementById('reader');
+      if (readerEl) readerEl.innerHTML = '';
+      html5QrScanner = new Html5Qrcode("reader");
+
+      runScannerStart({ facingMode: "environment" })
+        .then(() => {
+          cameraRunning = true;
+          clearNotification();
+          document.getElementById('camToggleBtn').textContent = 'Stop Camera';
+        })
+        .catch(() => {
+          if (typeof Html5Qrcode.getCameras === 'function') {
+            Html5Qrcode.getCameras().then((devices) => {
+              if (!devices || !devices.length) {
+                cameraRunning = false;
+                document.getElementById('camToggleBtn').textContent = 'Start Camera';
+                showNotification('ফোনে কোনো ক্যামেরা পাওয়া যায়নি বা Camera Permission দেওয়া নেই।', 'dup');
+                return;
+              }
+              const backCam = devices.find(d => /back|rear|environment/i.test(d.label)) || devices[devices.length - 1];
+              return runScannerStart(backCam.id).then(() => {
+                cameraRunning = true;
+                clearNotification();
+                document.getElementById('camToggleBtn').textContent = 'Stop Camera';
+              });
+            }).catch((err) => {
+              cameraRunning = false;
+              document.getElementById('camToggleBtn').textContent = 'Start Camera';
+              showNotification('ক্যামেরা চালু হয়নি: ' + (err && err.message ? err.message : 'Camera permission Allow করুন।'), 'dup');
+            });
+          } else {
+            cameraRunning = false;
+            document.getElementById('camToggleBtn').textContent = 'Start Camera';
+            showNotification('ক্যামেরা চালু হয়নি। ব্রাউজার/অ্যাপের Camera Permission চেক করুন।', 'dup');
+          }
+        });
     }
 
     function toggleCamera() {
@@ -1347,12 +1385,18 @@
     }
 
     function stopCamera() {
-      if (html5QrScanner && cameraRunning) {
-        html5QrScanner.stop().catch(() => {});
-        cameraRunning = false;
-      }
       const btn = document.getElementById('camToggleBtn');
       if (btn) btn.textContent = 'Start Camera';
+      if (html5QrScanner && cameraRunning) {
+        html5QrScanner.stop().then(() => {
+          html5QrScanner.clear();
+          cameraRunning = false;
+        }).catch(() => {
+          cameraRunning = false;
+        });
+      } else {
+        cameraRunning = false;
+      }
     }
 
     function handleLogin() {
