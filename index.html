@@ -744,10 +744,10 @@
         <section class="card">
           <div class="view-section-title">
             <span>Live Line-wise Output Production</span>
-            <span class="badge badge-ready" id="liveSyncStatus">LIVE</span>
+            <span class="badge badge-ready" id="liveSyncStatus">FAST SYNC</span>
           </div>
           <div id="lineWiseLiveContainer">
-            <div class="muted-note">লাইভ প্রোডাকশন ডাটা লোড হচ্ছে...</div>
+            <div class="muted-note">ক্যাশড ও লাইভ ডাটা প্রস্তুত হচ্ছে...</div>
           </div>
         </section>
       </div>
@@ -760,6 +760,7 @@
 
   <script>
     const DEFAULT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwu8AwaJOoAzzI5DQmZ90sOVk8Hx_n421aYK8HejeIbImCpXHdnXfrQhKL241j4t7qACg/exec";
+    const CACHE_KEY = "CACHED_PRODUCTION_RECORDS_V1";
     const ROLE_PINS = {
       ADMIN: "1234",
       OPERATOR: "1111",
@@ -772,7 +773,24 @@
     let editingIndex = null;
     let qrScanner = null;
     let liveRefreshTimer = null;
-    let allProductionRecords = [];
+
+    function loadCachedRecords() {
+      try {
+        const raw = localStorage.getItem(CACHE_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        return Array.isArray(arr) ? arr.map(r => ({ ...r, cleanDate: normalizeRecordDate(r) })) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveCachedRecords(arr) {
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(arr));
+      } catch (e) {}
+    }
+
+    let allProductionRecords = loadCachedRecords();
 
     let operatorData = { id: "", name: "", floor: "", dep: "", jobType: "", line: "" };
     let tcData = { tc: "", lotNo: "", buyer: "", style: "", color: "", size: "", bundleQty: "" };
@@ -848,8 +866,10 @@
         document.getElementById("scannerWorkspace").style.display = "none";
         document.getElementById("bottomSaveBar").style.display = "none";
         document.getElementById("viewDashboard").style.display = "flex";
+        renderLineWiseLive(allProductionRecords);
+        runSearch();
         loadProductionRecords(false);
-        liveRefreshTimer = setInterval(() => loadProductionRecords(false), 12000);
+        liveRefreshTimer = setInterval(() => loadProductionRecords(false), 15000);
       } else {
         document.getElementById("viewDashboard").style.display = "none";
         document.getElementById("scannerWorkspace").style.display = "flex";
@@ -858,7 +878,6 @@
         resetScanFlow();
         renderProcessDropdown();
         renderAdminProcessList();
-        loadProductionRecords(false);
       }
       showToast(`${role} Dashboard-এ স্বাগতম!`, "ok");
     }
@@ -1126,7 +1145,7 @@
       }
       qrScanner.start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 240, height: 180 } },
+        { fps: 12, qrbox: { width: 240, height: 180 } },
         decodedText => {
           stopCamera();
           handleScannedValue(type, decodedText);
@@ -1159,6 +1178,7 @@
       localStorage.setItem("GAS_WEB_APP_URL", url);
       document.getElementById("settingsPanel").classList.remove("open");
       showToast("Script URL সেভ হয়েছে।", "ok");
+      loadProductionRecords(true);
     }
 
     function saveToGoogleSheet() {
@@ -1217,6 +1237,7 @@
             ...payload,
             cleanDate: normalizeRecordDate(payload)
           });
+          saveCachedRecords(allProductionRecords);
           showToast(`ডাটা Google Sheet-এ পাঠানো হয়েছে! (TC: ${tcVal} | Process: ${procName})`, "ok");
           resetScanFlow();
         })
@@ -1259,10 +1280,18 @@
       return "";
     }
 
+    function fetchWithTimeout(url, ms = 6000) {
+      return Promise.race([
+        fetch(url),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("TIMEOUT")), ms))
+      ]);
+    }
+
     function loadProductionRecords(showMsg = false) {
       const badge = document.getElementById("liveSyncStatus");
-      if (badge) badge.textContent = "SYNCING...";
-      fetch(getScriptUrl())
+      if (badge) badge.textContent = "SYNCING";
+
+      fetchWithTimeout(getScriptUrl(), 6000)
         .then(res => res.json())
         .then(data => {
           if (data && data.status === "SUCCESS" && Array.isArray(data.records)) {
@@ -1276,24 +1305,30 @@
               }
               return norm;
             });
+            saveCachedRecords(allProductionRecords);
             if (currentRole === "VIEW") {
               renderLineWiseLive(allProductionRecords);
               runSearch();
             }
             if (badge) badge.textContent = "LIVE";
-            if (showMsg) showToast("লাইভ ডাটা আপডেট হয়েছে।", "ok");
+            if (showMsg) showToast("লাইভ ডাটা আপডেট হয়েছে!", "ok");
           } else {
-            if (badge) badge.textContent = "LIVE";
+            if (badge) badge.textContent = allProductionRecords.length ? "CACHED" : "READY";
           }
         })
         .catch(() => {
-          if (badge) badge.textContent = "OFFLINE";
+          if (currentRole === "VIEW") {
+            renderLineWiseLive(allProductionRecords);
+            runSearch();
+          }
+          if (badge) badge.textContent = allProductionRecords.length ? "CACHED" : "READY";
+          if (showMsg) showToast("ক্যাশড ডাটা দেখানো হচ্ছে (নেটওয়ার্ক ধীর)।", "err");
         });
     }
 
     function renderLineWiseLive(records) {
       const container = document.getElementById("lineWiseLiveContainer");
-      if (!records.length) {
+      if (!records || !records.length) {
         container.innerHTML = '<div class="muted-note">এখনও কোনো প্রোডাকশন ডাটা পাওয়া যায়নি।</div>';
         return;
       }
@@ -1464,6 +1499,9 @@
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
     }
+
+    // Pre-fetch in background as soon as page opens for instant View Dashboard load
+    loadProductionRecords(false);
   </script>
 </body>
 </html>
