@@ -48,6 +48,14 @@
     input:focus, select:focus { outline: none; border-color: var(--cobalt); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
 
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+    .info-cell {
+      background: #f8f7f3; border: 1px solid var(--border);
+      border-radius: 10px; padding: 9px 11px; font-size: 13px;
+    }
+    .info-lbl { font-size: 11.5px; color: var(--muted); font-weight: 700; }
+    .info-val { font-size: 14px; color: var(--text); font-weight: 800; margin-top: 2px; }
+
     .btn-row { display: grid; grid-template-columns: 2.2fr 1fr; gap: 10px; margin-top: 14px; }
     .btn-row-3 { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 10px; margin-top: 14px; }
 
@@ -90,16 +98,10 @@
       margin-top: 10px; border-radius: 11px; padding: 10px 12px;
       font-size: 13.5px; font-weight: 800; display: none;
     }
-    .notify-dup {
-      display: block; background: var(--red-soft); border: 1px solid #f87171; color: var(--red-text);
-    }
-    .notify-ok {
-      display: block; background: var(--sage-soft); border: 1px solid #8fb89f; color: var(--sage-text);
-    }
+    .notify-dup { display: block; background: var(--red-soft); border: 1px solid #f87171; color: var(--red-text); }
+    .notify-ok { display: block; background: var(--sage-soft); border: 1px solid #8fb89f; color: var(--sage-text); }
 
-    .locked-box {
-      opacity: 0.55; pointer-events: none; user-select: none;
-    }
+    .locked-box { opacity: 0.55; pointer-events: none; user-select: none; }
 
     .dynamic-row {
       display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px;
@@ -110,7 +112,6 @@
     table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
     th, td { padding: 8px 6px; border-bottom: 1px solid #ece9e2; text-align: left; }
     th { background: #f5f3ed; font-weight: 800; }
-    .inline-inp { padding: 5px 7px; font-size: 12.5px; border-radius: 8px; }
     .msg { margin-top: 8px; font-size: 13px; font-weight: 700; }
     .hidden { display: none !important; }
   </style>
@@ -200,67 +201,61 @@
         </div>
       </div>
 
-      <!-- STEP 1: OPERATOR ID -->
+      <!-- SEPARATE CARD: OPERATOR INFORMATION -->
       <div class="card">
         <div class="card-head">
-          <h2 class="card-title">Step 1: Operator ID</h2>
+          <h2 class="card-title">Operator Information</h2>
           <span id="opLockBadge" class="badge-live">WAITING SCAN</span>
         </div>
-        <div class="grid-2">
-          <div><label>Operator ID</label><input id="opIdVal" type="text" readonly placeholder="Operator ID Scan করুন" /></div>
-          <div><label>Operator Name & Line</label><input id="opInfoVal" type="text" readonly placeholder="স্ক্যান হলে আসবে" /></div>
+        <div class="info-grid">
+          <div class="info-cell"><div class="info-lbl">Operator ID</div><div id="dOpId" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">Operator Name</div><div id="dOpName" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">Line</div><div id="dOpLine" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">Floor / Dept</div><div id="dOpFloorDept" class="info-val">-</div></div>
         </div>
       </div>
 
-      <!-- STEP 2: TC SCAN (LOCKED UNTIL OPERATOR ID SCANNED) -->
+      <!-- SEPARATE CARD: TC INFORMATION (LOCKED UNTIL OPERATOR ID SCANNED) -->
       <div id="tcStepCard" class="card locked-box">
         <div class="card-head">
-          <h2 class="card-title">Step 2: TC Card Scan</h2>
+          <h2 class="card-title">TC Information</h2>
           <span id="tcLockBadge" class="badge-lock">LOCKED</span>
         </div>
-        <div class="grid-2">
-          <div><label>TC No.</label><input id="tcNoVal" type="text" readonly placeholder="TC Scan করুন" /></div>
-          <div><label>Style / Color / Size</label><input id="tcMetaVal" type="text" readonly placeholder="স্ক্যান হলে আসবে" /></div>
-        </div>
-        <div class="grid-2">
-          <div><label>Bundle Qty</label><input id="tcQtyVal" type="text" readonly placeholder="স্ক্যান হলে আসবে" /></div>
-          <div><label>SMV & SAH</label><input id="tcSahVal" type="text" readonly placeholder="Process সিলেক্ট করলে হিসাব হবে" /></div>
+        <div class="info-grid">
+          <div class="info-cell"><div class="info-lbl">TC No.</div><div id="dTcNo" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">Style No.</div><div id="dTcStyle" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">Color / Size</div><div id="dTcColorSize" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">Bundle Qty</div><div id="dTcQty" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">SMV</div><div id="dTcSmv" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">Earned SAH</div><div id="dTcSah" class="info-val">-</div></div>
         </div>
       </div>
 
-      <!-- STEP 3: PROCESS DROPDOWN (ONLY APPEARS AFTER TC SCAN) -->
+      <!-- SEPARATE CARD: PROCESS DROPDOWN (ONLY APPEARS AFTER TC SCAN) -->
       <div id="processStepCard" class="card hidden">
         <div class="card-head">
-          <h2 class="card-title">Step 3: Select Process</h2>
+          <h2 class="card-title">Select Process</h2>
           <span class="badge-entries">UNLOCKED</span>
         </div>
-
         <label for="processDropdown">Process Dropdown</label>
         <select id="processDropdown" onchange="onProcessSelected()">
           <option value="">-- Process সিলেক্ট করুন --</option>
-          <option value="Linking">Linking</option>
-          <option value="Ironing">Ironing</option>
-          <option value="Sewing">Sewing</option>
-          <option value="Overlock">Overlock</option>
-          <option value="Checking">Checking</option>
         </select>
-
         <div style="margin-top:12px;">
           <button class="btn-primary" style="width:100%;" onclick="confirmProcessEntry()">Confirm & Save Scan</button>
         </div>
         <div id="processActionMsg" class="msg"></div>
       </div>
 
-      <!-- SCANNED DETAILS -->
+      <!-- ALL SCANNED LOG TABLE -->
       <div class="card">
         <div class="card-head">
-          <h2 class="card-title">Scanned Details</h2>
+          <h2 class="card-title">Scanned Entries History</h2>
           <span id="scannedTotalBadge" class="badge-entries">0 ENTRIES</span>
         </div>
-        <div id="latestDetailBox" class="hint">এখনও কোনো স্ক্যান সম্পন্ন হয়নি।</div>
         <table>
           <thead>
-            <tr><th>OP ID</th><th>TC No.</th><th>Process</th><th>Style</th><th>Qty</th><th>SAH</th></tr>
+            <tr><th>OP ID</th><th>TC No.</th><th>Line</th><th>Style</th><th>Process</th><th>Qty</th><th>SAH</th></tr>
           </thead>
           <tbody id="scanDetailsTbody"></tbody>
         </table>
@@ -299,7 +294,6 @@
     let cameraRunning = false;
     let audioCtx = null;
 
-    // Flow State: 'WAIT_OP' -> 'WAIT_TC' -> 'WAIT_PROCESS'
     let scanFlowState = 'WAIT_OP';
     let currentOperator = null;
     let currentTcData = null;
@@ -318,9 +312,7 @@
           const AudioContextClass = window.AudioContext || window.webkitAudioContext;
           audioCtx = new AudioContextClass();
         }
-        if (audioCtx.state === 'suspended') {
-          audioCtx.resume();
-        }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = 'sine';
@@ -346,6 +338,22 @@
       box.textContent = '';
     }
 
+    function renderOperatorCard() {
+      document.getElementById('dOpId').textContent = currentOperator ? currentOperator.operatorId : '-';
+      document.getElementById('dOpName').textContent = currentOperator ? currentOperator.operatorName : '-';
+      document.getElementById('dOpLine').textContent = currentOperator ? currentOperator.line : '-';
+      document.getElementById('dOpFloorDept').textContent = currentOperator ? `${currentOperator.floor} / ${currentOperator.dept}` : '-';
+    }
+
+    function renderTcCard(smvVal = null, sahVal = null) {
+      document.getElementById('dTcNo').textContent = currentTcData ? currentTcData.tcNo : '-';
+      document.getElementById('dTcStyle').textContent = currentTcData ? currentTcData.style : '-';
+      document.getElementById('dTcColorSize').textContent = currentTcData ? `${currentTcData.color} / ${currentTcData.size}` : '-';
+      document.getElementById('dTcQty').textContent = currentTcData ? currentTcData.qty : '-';
+      document.getElementById('dTcSmv').textContent = smvVal !== null ? smvVal : '-';
+      document.getElementById('dTcSah').textContent = sahVal !== null ? sahVal : '-';
+    }
+
     function updateFlowUI() {
       const banner = document.getElementById('scanStepBanner');
       const instr = document.getElementById('scanInstructionText');
@@ -353,6 +361,9 @@
       const tcCard = document.getElementById('tcStepCard');
       const tcBadge = document.getElementById('tcLockBadge');
       const procCard = document.getElementById('processStepCard');
+
+      renderOperatorCard();
+      renderTcCard();
 
       if (scanFlowState === 'WAIT_OP') {
         banner.className = 'step-banner';
@@ -400,57 +411,55 @@
       const code = String(rawCode || '').trim();
       if (!code) return;
 
-      // প্রতিবার স্ক্যান হলেই Beep Sound বাজবে
       playBeep('ok');
       clearNotification();
 
       if (scanFlowState === 'WAIT_OP') {
+        // ফরম্যাট: OPID|NAME|LINE|FLOOR|DEPT
         const parts = code.split('|').map(s => s.trim());
         currentOperator = {
           operatorId: parts[0] || code,
           operatorName: parts[1] || 'Sample OP',
-          line: parts[2] || 'Linking Line-02'
+          line: parts[2] || 'Linking Line-02',
+          floor: parts[3] || '2nd Floor',
+          dept: parts[4] || 'Linking'
         };
-        document.getElementById('opIdVal').value = currentOperator.operatorId;
-        document.getElementById('opInfoVal').value = `${currentOperator.operatorName} (${currentOperator.line})`;
-
         scanFlowState = 'WAIT_TC';
         updateFlowUI();
-        showNotification(`Operator ID "${currentOperator.operatorId}" স্ক্যান হয়েছে। এখন TC Scan করুন।`, 'ok');
+        showNotification(`Operator ID "${currentOperator.operatorId}" স্ক্যান হয়েছে। এখন TC Card স্ক্যান করুন।`, 'ok');
         return;
       }
 
       if (scanFlowState === 'WAIT_TC') {
-        // ফরম্যাট: TCNO|STYLE|COLOR|SIZE|QTY অথবা শুধু TCNO
+        // ফরম্যাট: TCNO|STYLE|COLOR|SIZE|QTY
         const parts = code.split('|').map(s => s.trim());
-        const tcNo = parts[0] || code;
-        const style = parts[1] || '1896';
-        const color = parts[2] || 'Blue';
-        const size = parts[3] || 'M';
-        const qty = Number(parts[4] || 12);
-
-        currentTcData = { tcNo, style, color, size, qty };
-        document.getElementById('tcNoVal').value = tcNo;
-        document.getElementById('tcMetaVal').value = `${style} | ${color} | ${size}`;
-        document.getElementById('tcQtyVal').value = qty;
-        document.getElementById('tcSahVal').value = 'Process সিলেক্ট করুন';
-
+        currentTcData = {
+          tcNo: parts[0] || code,
+          style: parts[1] || '1896',
+          color: parts[2] || 'Blue',
+          size: parts[3] || 'M',
+          qty: Number(parts[4] || 12)
+        };
         scanFlowState = 'WAIT_PROCESS';
         updateFlowUI();
-        showNotification(`TC "${tcNo}" স্ক্যান হয়েছে। এখন Process Dropdown সিলেক্ট করুন।`, 'ok');
+        showNotification(`TC "${currentTcData.tcNo}" স্ক্যান হয়েছে। এখন Process Dropdown সিলেক্ট করুন।`, 'ok');
       }
     }
 
     function onProcessSelected() {
       const proc = document.getElementById('processDropdown').value;
       clearNotification();
-      if (!proc || !currentTcData) return;
+      if (!proc || !currentTcData) {
+        renderTcCard();
+        return;
+      }
 
       const dupKey = `${currentTcData.tcNo}__${proc.toLowerCase()}`;
       if (scannedTcProcessSet.has(dupKey)) {
         playBeep('dup');
-        showNotification(`Notification: TC "${currentTcData.tcNo}" এই "${proc}" Process-এ ইতিমধ্যে স্ক্যান করা হয়েছে! দ্বিতীয়বার স্ক্যান হবে না।`, 'dup');
+        showNotification(`Notification: TC "${currentTcData.tcNo}" একই "${proc}" Process-এ দুবার স্ক্যান হবে না!`, 'dup');
         document.getElementById('processDropdown').value = '';
+        renderTcCard();
         return;
       }
 
@@ -460,7 +469,7 @@
       );
       const smv = found ? Number(found.smv) : 0;
       const sah = Number(((currentTcData.qty * smv) / 60).toFixed(2));
-      document.getElementById('tcSahVal').value = `SMV: ${smv} | SAH: ${sah}`;
+      renderTcCard(smv, sah);
     }
 
     async function confirmProcessEntry() {
@@ -481,7 +490,7 @@
       const dupKey = `${currentTcData.tcNo}__${proc.toLowerCase()}`;
       if (scannedTcProcessSet.has(dupKey)) {
         playBeep('dup');
-        showNotification(`Notification: TC "${currentTcData.tcNo}" একই Process "${proc}"-এ দুবার স্ক্যান হবে না!`, 'dup');
+        showNotification(`Notification: TC "${currentTcData.tcNo}" এই "${proc}" Process-এ ইতিমধ্যে স্ক্যান করা হয়েছে!`, 'dup');
         return;
       }
 
@@ -496,6 +505,8 @@
         timestamp: new Date().toISOString(),
         operatorId: currentOperator.operatorId,
         operatorName: currentOperator.operatorName,
+        floor: currentOperator.floor,
+        dept: currentOperator.dept,
         line: currentOperator.line,
         tcNo: currentTcData.tcNo,
         style: currentTcData.style,
@@ -513,7 +524,7 @@
       renderScanDetails();
 
       msgEl.style.color = '#15803d';
-      msgEl.textContent = 'ডাটা সংরক্ষিত হয়েছে। Next TC Scan-এর জন্য প্রস্তুত।';
+      msgEl.textContent = 'এন্ট্রি সফলভাবে সংরক্ষিত হয়েছে। পরের TC স্ক্যানের জন্য প্রস্তুত।';
       showNotification(`Saved: OP ${record.operatorId} | TC ${record.tcNo} | Process ${record.process} | SAH ${record.earnedSah}`, 'ok');
 
       try {
@@ -529,17 +540,8 @@
 
     function nextTcScan() {
       currentTcData = null;
-      document.getElementById('tcNoVal').value = '';
-      document.getElementById('tcMetaVal').value = '';
-      document.getElementById('tcQtyVal').value = '';
-      document.getElementById('tcSahVal').value = '';
       document.getElementById('processActionMsg').textContent = '';
-
-      if (currentOperator) {
-        scanFlowState = 'WAIT_TC';
-      } else {
-        scanFlowState = 'WAIT_OP';
-      }
+      scanFlowState = currentOperator ? 'WAIT_TC' : 'WAIT_OP';
       updateFlowUI();
     }
 
@@ -547,12 +549,6 @@
       currentOperator = null;
       currentTcData = null;
       scanFlowState = 'WAIT_OP';
-      document.getElementById('opIdVal').value = '';
-      document.getElementById('opInfoVal').value = '';
-      document.getElementById('tcNoVal').value = '';
-      document.getElementById('tcMetaVal').value = '';
-      document.getElementById('tcQtyVal').value = '';
-      document.getElementById('tcSahVal').value = '';
       document.getElementById('processActionMsg').textContent = '';
       clearNotification();
       updateFlowUI();
@@ -561,7 +557,7 @@
     let testTcSeq = 500;
     function testScanStep() {
       if (scanFlowState === 'WAIT_OP') {
-        handleBarcodeInput('900001|Sample OP|Linking Line-02');
+        handleBarcodeInput('900001|Sample OP|Linking Line-02|2nd Floor|Linking');
       } else if (scanFlowState === 'WAIT_TC') {
         testTcSeq += 1;
         handleBarcodeInput(`TC-${testTcSeq}|1896|Blue|M|12`);
@@ -573,21 +569,13 @@
 
     function renderScanDetails() {
       document.getElementById('scannedTotalBadge').textContent = `${scannedEntries.length} ENTRIES`;
-      if (!scannedEntries.length) {
-        document.getElementById('latestDetailBox').textContent = 'এখনও কোনো স্ক্যান সম্পন্ন হয়নি।';
-        document.getElementById('scanDetailsTbody').innerHTML = '';
-        return;
-      }
-      const last = scannedEntries[0];
-      document.getElementById('latestDetailBox').innerHTML =
-        `<b>সর্বশেষ এন্ট্রি:</b> Operator <b>${esc(last.operatorId)}</b> (${esc(last.operatorName)}) | Line <b>${esc(last.line)}</b> | TC <b>${esc(last.tcNo)}</b> | Style <b>${esc(last.style)}</b> (${esc(last.color)}/${esc(last.size)}) | Process <b>${esc(last.process)}</b> | Qty <b>${last.bundleQty}</b> | SMV <b>${last.smv}</b> | SAH <b>${last.earnedSah}</b>`;
-
       document.getElementById('scanDetailsTbody').innerHTML = scannedEntries.slice(0, 20).map(r => `
         <tr>
           <td>${esc(r.operatorId)}</td>
           <td><b>${esc(r.tcNo)}</b></td>
-          <td>${esc(r.process)}</td>
+          <td>${esc(r.line)}</td>
           <td>${esc(r.style)}</td>
+          <td>${esc(r.process)}</td>
           <td><b>${r.bundleQty}</b></td>
           <td>${r.earnedSah}</td>
         </tr>
@@ -605,10 +593,9 @@
         list.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('');
     }
 
-    // --- CAMERA ---
     function toggleCamera() {
       if (cameraRunning) { stopCamera(); return; }
-      if (typeof Html5Qrcode === 'undefined') { alert('ক্যামেরা লাইব্রেরি লোড হয়নি।'); return; }
+      if (typeof Html5Qrcode === 'undefined') { alert('ক্যামেরা লোড হয়নি।'); return; }
       html5QrScanner = new Html5Qrcode("reader");
       html5QrScanner.start(
         { facingMode: "environment" },
@@ -625,7 +612,6 @@
       }
     }
 
-    // --- AUTH & NAVIGATION ---
     function handleLogin() {
       const pin = document.getElementById('pinField').value.trim();
       const role = PINS[pin];
@@ -665,7 +651,6 @@
       if (view === 'admin') { stopCamera(); renderSavedSmvTable(); ensureAtLeastOneRow(); }
     }
 
-    // --- ADMIN SMV ---
     function ensureAtLeastOneRow() {
       const wrap = document.getElementById('dynamicSmvRows');
       if (!wrap.children.length) addProcessSmvRow();
@@ -743,7 +728,6 @@
       `).join('');
     }
 
-    // --- DASHBOARD ---
     async function loadDashboard() {
       const errEl = document.getElementById('dashErr');
       errEl.textContent = '';
