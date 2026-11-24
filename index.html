@@ -39,7 +39,6 @@
     .card-title { margin: 0; font-size: 18px; font-weight: 800; }
     .hint { margin: 0; color: var(--muted); font-size: 13.5px; line-height: 1.5; }
 
-    /* Admin Sub-Menu Bar */
     .admin-menubar {
       display: flex; gap: 8px; flex-wrap: wrap;
       background: #f1efe9; border: 1px solid var(--border);
@@ -104,6 +103,7 @@
     .badge-entries { background: #0f766e; color: #ecfdf5; padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 800; }
     .badge-live { background: var(--amber-soft); color: var(--amber-text); padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 800; }
     .badge-lock { background: var(--red-soft); color: var(--red-text); padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+    .badge-count { background: #e0e7ff; color: #1e3a8a; padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 800; }
 
     .scanner-wrap { background: #090d16; color: #fff; border-radius: 14px; padding: 14px; text-align: center; }
     .step-banner {
@@ -131,7 +131,21 @@
       padding: 8px; border-radius: 10px; border: 1px solid var(--border);
     }
 
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+    .style-group-list { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .style-group-card {
+      border: 1px solid var(--border); border-radius: 12px;
+      background: #faf9f5; overflow: hidden;
+    }
+    .style-group-header {
+      width: 100%; border: none; background: #f2efe8;
+      padding: 12px 14px; display: flex; justify-content: space-between;
+      align-items: center; gap: 10px; cursor: pointer; text-align: left;
+      font-size: 15px; font-weight: 800; color: var(--text);
+    }
+    .style-group-header:hover { background: #e9e5dc; }
+    .style-group-body { padding: 4px 12px 12px; background: #fff; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
     th, td { padding: 8px 6px; border-bottom: 1px solid #ece9e2; text-align: left; }
     th { background: #f5f3ed; font-weight: 800; }
     .msg { margin-top: 8px; font-size: 13px; font-weight: 700; }
@@ -209,7 +223,7 @@
       </div>
     </div>
 
-    <!-- OPERATOR BARCODE SCAN VIEW (UNCHANGED AS REQUESTED) -->
+    <!-- OPERATOR BARCODE SCAN VIEW -->
     <div id="view-operator" class="hidden">
       <div class="card">
         <div class="card-head">
@@ -277,10 +291,11 @@
           <h2 class="card-title">Select Process</h2>
           <span class="badge-entries">UNLOCKED</span>
         </div>
-        <label for="processDropdown">Process Dropdown</label>
+        <label for="processDropdown">Process Dropdown (Style অনুযায়ী)</label>
         <select id="processDropdown" onchange="onProcessSelected()">
           <option value="">-- Process সিলেক্ট করুন --</option>
         </select>
+        <div id="styleProcessHint" class="hint" style="margin-top:6px;"></div>
         <div style="margin-top:12px;">
           <button type="button" class="btn-primary" style="width:100%;" onclick="confirmProcessEntry()">Confirm & Save Scan</button>
         </div>
@@ -308,7 +323,7 @@
         <p class="hint">Style No. লিখে নিচে যত খুশি তত Process ও SMV যুক্ত করুন অথবা পুরনো কোনো এন্ট্রি Edit করে বদলান।</p>
 
         <label for="adminStyleInput">Style No.</label>
-        <input id="adminStyleInput" type="text" placeholder="Style No. লিখুন (যেমন: 1896)" oninput="refreshProcessDropdown()" />
+        <input id="adminStyleInput" type="text" placeholder="Style No. লিখুন (যেমন: 1896)" />
 
         <div id="dynamicSmvRows"></div>
 
@@ -319,20 +334,15 @@
         <div id="adminSmvMsg" class="msg" style="color:#15803d;"></div>
       </div>
 
-      <!-- SECTION 2: LIST + CHANGE / EDIT / DELETE SMV -->
+      <!-- SECTION 2: STYLE-ONLY ACCORDION LIST -->
       <div id="admin-sec-list" class="card hidden">
         <div class="card-head">
           <h2 class="card-title">Saved Style Process & SMV</h2>
           <button type="button" class="btn-refresh" onclick="switchAdminSection('form')">+ New Add</button>
         </div>
-        <p class="hint">কোনো Style-এর Process বা SMV পরিবর্তন করতে চাইলে <b>Edit</b> চাপুন, অথবা বাদ দিতে <b>Delete</b> চাপুন।</p>
+        <p class="hint">শুধু <b>Style</b> দেখাচ্ছে। যেকোনো <b>Style</b>-এ ক্লিক করলে তার <b>Process</b> ও <b>SMV</b> দেখাবে।</p>
 
-        <table>
-          <thead>
-            <tr><th>Style</th><th>Process</th><th>SMV</th><th>Action</th></tr>
-          </thead>
-          <tbody id="savedSmvBody"></tbody>
-        </table>
+        <div id="styleAccordionList" class="style-group-list"></div>
       </div>
     </div>
   </div>
@@ -352,11 +362,45 @@
 
     let styleSmvMaster = JSON.parse(localStorage.getItem('style_smv_master') || 'null') || [
       { style: '1896', process: 'Linking', smv: 12.0 },
-      { style: '1896', process: 'Ironing', smv: 8.28 }
+      { style: '1896', process: 'Ironing', smv: 8.28 },
+      { style: '1895', process: 'Interlock', smv: 1.2 },
+      { style: '1895', process: 'Shoulder join', smv: 1.5 },
+      { style: '1895', process: 'Sleeve join', smv: 3.5 }
     ];
+
+    let expandedStyles = new Set();
 
     let scannedEntries = JSON.parse(localStorage.getItem('scanned_entries_v4') || '[]');
     const scannedTcProcessSet = new Set(scannedEntries.map(e => `${e.tcNo}__${e.process.toLowerCase()}`));
+
+    function getProcessesForStyle(styleName) {
+      const target = String(styleName || '').trim().toLowerCase();
+      if (!target) return [];
+      return styleSmvMaster.filter(x => String(x.style || '').trim().toLowerCase() === target);
+    }
+
+    function populateProcessDropdownForStyle(styleName) {
+      const dd = document.getElementById('processDropdown');
+      const hintEl = document.getElementById('styleProcessHint');
+      const matched = getProcessesForStyle(styleName);
+
+      if (matched.length > 0) {
+        dd.innerHTML = '<option value="">-- Process সিলেক্ট করুন --</option>' +
+          matched.map(item => `<option value="${esc(item.process)}">${esc(item.process)} (SMV: ${item.smv})</option>`).join('');
+        if (hintEl) {
+          hintEl.textContent = `Style "${styleName}" এর ${matched.length}টি Process পাওয়া গেছে। আপনি যে Process-এ কাজ করছেন সেটি সিলেক্ট করুন।`;
+        }
+      } else {
+        const defaults = ['Linking', 'Ironing', 'Sewing', 'Overlock', 'Checking'];
+        dd.innerHTML = '<option value="">-- Process সিলেক্ট করুন --</option>' +
+          defaults.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('');
+        if (hintEl) {
+          hintEl.textContent = styleName
+            ? `Style "${styleName}" এর জন্য Admin-এ আলাদা Process সেভ করা নেই, সাধারণ Process দেখানো হচ্ছে।`
+            : 'Process সিলেক্ট করুন।';
+        }
+      }
+    }
 
     function switchAdminSection(sec) {
       const isForm = sec === 'form';
@@ -394,6 +438,33 @@
       document.getElementById('adminSmvMsg').textContent = '';
     }
 
+    function insertGroupedByStyle(itemsToInsert) {
+      itemsToInsert.forEach(item => {
+        const matchIdx = styleSmvMaster.findIndex(
+          x => x.style.toLowerCase() === item.style.toLowerCase() &&
+               x.process.toLowerCase() === item.process.toLowerCase()
+        );
+        if (matchIdx >= 0) {
+          styleSmvMaster[matchIdx] = { ...styleSmvMaster[matchIdx], style: item.style, process: item.process, smv: item.smv };
+          return;
+        }
+
+        let lastStyleIdx = -1;
+        for (let i = styleSmvMaster.length - 1; i >= 0; i--) {
+          if (styleSmvMaster[i].style.toLowerCase() === item.style.toLowerCase()) {
+            lastStyleIdx = i;
+            break;
+          }
+        }
+
+        if (lastStyleIdx >= 0) {
+          styleSmvMaster.splice(lastStyleIdx + 1, 0, item);
+        } else {
+          styleSmvMaster.push(item);
+        }
+      });
+    }
+
     async function saveAllStyleSmv() {
       const style = document.getElementById('adminStyleInput').value.trim();
       const msg = document.getElementById('adminSmvMsg');
@@ -408,22 +479,19 @@
       });
       if (!newItems.length) { msg.style.color = '#b91c1c'; msg.textContent = 'কমপক্ষে একটি Process ও SMV দিন।'; return; }
 
-      newItems.forEach(item => {
-        const idx = styleSmvMaster.findIndex(
-          x => x.style.toLowerCase() === item.style.toLowerCase() &&
-               x.process.toLowerCase() === item.process.toLowerCase()
-        );
-        if (idx >= 0) styleSmvMaster[idx] = item;
-        else styleSmvMaster.push(item);
-      });
+      insertGroupedByStyle(newItems);
+      expandedStyles.add(style.toLowerCase());
 
       localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
       renderSavedSmvTable();
-      refreshProcessDropdown(style);
+      if (currentTcData && currentTcData.style.toLowerCase() === style.toLowerCase()) {
+        populateProcessDropdownForStyle(currentTcData.style);
+      }
+
       document.getElementById('adminFormTitle').textContent = 'Style, Process & SMV';
       document.getElementById('saveSmvBtn').textContent = 'Save Style Process & SMV';
       msg.style.color = '#15803d';
-      msg.textContent = `${newItems.length}টি Process & SMV সেভ/আপডেট হয়েছে।`;
+      msg.textContent = `${style} Style-এ ${newItems.length}টি Process & SMV সেভ হয়েছে।`;
 
       try {
         await fetch(API_URL, {
@@ -432,6 +500,12 @@
           body: JSON.stringify({ type: 'STYLE_SMV_BATCH', items: newItems })
         });
       } catch (_) {}
+    }
+
+    function toggleStyleExpand(styleLower) {
+      if (expandedStyles.has(styleLower)) expandedStyles.delete(styleLower);
+      else expandedStyles.add(styleLower);
+      renderSavedSmvTable();
     }
 
     function editSavedSmv(style, process, smv) {
@@ -462,20 +536,59 @@
     }
 
     function renderSavedSmvTable() {
-      document.getElementById('savedSmvBody').innerHTML = styleSmvMaster.map(item => `
-        <tr>
-          <td><b>${esc(item.style)}</b></td>
-          <td>${esc(item.process)}</td>
-          <td><b>${item.smv}</b></td>
-          <td style="display:flex;gap:6px;">
-            <button type="button" class="btn-edit" onclick="editSavedSmv('${esc(item.style)}','${esc(item.process)}',${item.smv})">Edit</button>
-            <button type="button" class="btn-remove" onclick="deleteSavedSmv('${esc(item.style)}','${esc(item.process)}')">Delete</button>
-          </td>
-        </tr>
-      `).join('');
+      const container = document.getElementById('styleAccordionList');
+      if (!styleSmvMaster.length) {
+        container.innerHTML = '<p class="hint">কোনো Style Process & SMV সেভ করা নেই।</p>';
+        return;
+      }
+
+      const groups = [];
+      const groupMap = {};
+      styleSmvMaster.forEach(item => {
+        const key = item.style.toLowerCase();
+        if (!groupMap[key]) {
+          groupMap[key] = { style: item.style, key: key, items: [] };
+          groups.push(groupMap[key]);
+        }
+        groupMap[key].items.push(item);
+      });
+
+      container.innerHTML = groups.map(g => {
+        const isOpen = expandedStyles.has(g.key);
+        const rowsHtml = g.items.map(it => `
+          <tr>
+            <td>${esc(it.process)}</td>
+            <td><b>${it.smv}</b></td>
+            <td style="display:flex;gap:6px;">
+              <button type="button" class="btn-edit" onclick="editSavedSmv('${esc(it.style)}','${esc(it.process)}',${it.smv})">Edit</button>
+              <button type="button" class="btn-remove" onclick="deleteSavedSmv('${esc(it.style)}','${esc(it.process)}')">Delete</button>
+            </td>
+          </tr>
+        `).join('');
+
+        return `
+          <div class="style-group-card">
+            <button type="button" class="style-group-header" onclick="toggleStyleExpand('${esc(g.key)}')">
+              <span>Style: <b>${esc(g.style)}</b></span>
+              <span style="display:flex;align-items:center;gap:8px;">
+                <span class="badge-count">${g.items.length} Process</span>
+                <span>${isOpen ? '▲' : '▼'}</span>
+              </span>
+            </button>
+            <div class="style-group-body ${isOpen ? '' : 'hidden'}">
+              <table>
+                <thead>
+                  <tr><th>Process</th><th>SMV</th><th>Action</th></tr>
+                </thead>
+                <tbody>${rowsHtml}</tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
-    // --- OPERATOR ENTRY (UNTOUCHED) ---
+    // --- OPERATOR ENTRY ---
     function playBeep(type = 'ok') {
       try {
         if (!audioCtx) {
@@ -580,7 +693,7 @@
       } else if (flowMode === 'HOLD_AFTER_TC') {
         banner.className = 'step-banner proc-step';
         banner.textContent = 'TC Scanned — Select Process';
-        instr.textContent = 'TC স্ক্যান হয়েছে। নিচের Process Dropdown থেকে Process সিলেক্ট করুন।';
+        instr.textContent = 'TC স্ক্যান হয়েছে। Style অনুযায়ী নিচের Process Dropdown থেকে আপনার Process সিলেক্ট করুন।';
         opBadge.className = 'badge-entries';
         opBadge.textContent = 'SCANNED';
         tcCard.classList.remove('locked-box');
@@ -588,7 +701,7 @@
         tcBadge.textContent = 'SCANNED';
         procCard.classList.remove('hidden');
         nextArea.classList.add('hidden');
-        refreshProcessDropdown(currentTcData ? currentTcData.style : '');
+        populateProcessDropdownForStyle(currentTcData ? currentTcData.style : '');
       } else if (flowMode === 'HOLD_AFTER_SAVE') {
         banner.className = 'step-banner hold-step';
         banner.textContent = 'Saved — Click Next for Next Scan';
@@ -652,7 +765,7 @@
         };
         flowMode = 'HOLD_AFTER_TC';
         updateFlowUI();
-        showNotification(`TC "${currentTcData.tcNo}" স্ক্যান হয়েছে। এখন Process Dropdown সিলেক্ট করুন।`, 'ok');
+        showNotification(`TC "${currentTcData.tcNo}" (Style: ${currentTcData.style}) স্ক্যান হয়েছে। এখন আপনার Process সিলেক্ট করুন।`, 'ok');
       }
     }
 
@@ -770,17 +883,6 @@
         playBeep('dup');
         showNotification('পরের ধাপে যেতে "Next" বাটনে ক্লিক করুন।', 'dup');
       }
-    }
-
-    function refreshProcessDropdown(styleFilter = '') {
-      const dd = document.getElementById('processDropdown');
-      const defaults = ['Linking', 'Ironing', 'Sewing', 'Overlock', 'Checking'];
-      const custom = styleSmvMaster
-        .filter(x => !styleFilter || x.style.toLowerCase() === styleFilter.toLowerCase())
-        .map(x => x.process);
-      const list = Array.from(new Set([...custom, ...defaults]));
-      dd.innerHTML = '<option value="">-- Process সিলেক্ট করুন --</option>' +
-        list.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('');
     }
 
     function startCameraIfNeeded() {
@@ -902,7 +1004,7 @@
         if (!dateSelect.value && data.selectedDate) dateSelect.value = data.selectedDate;
 
         if (Array.isArray(data.smvList) && data.smvList.length) {
-          styleSmvMaster = data.smvList;
+          insertGroupedByStyle(data.smvList);
           localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
         }
 
