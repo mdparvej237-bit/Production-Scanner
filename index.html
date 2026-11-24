@@ -127,6 +127,7 @@
 
     .badge-entries { background: #0f766e; color: #ecfdf5; padding: 5px 11px; border-radius: 999px; font-size: 14px; font-weight: 800; text-align: center; }
     .badge-live { background: var(--amber-soft); color: var(--amber-text); padding: 5px 11px; border-radius: 999px; font-size: 14px; font-weight: 800; text-align: center; }
+    .badge-running-date { background: #e6f2eb; color: #23533b; border: 1px solid #8fb89f; padding: 5px 14px; border-radius: 999px; font-size: 15px; font-weight: 800; text-align: center; }
     .badge-upto { background: #dbeafe; color: #1e3a8a; border: 1px solid #93c5fd; padding: 5px 14px; border-radius: 999px; font-size: 15px; font-weight: 800; text-align: center; }
     .badge-lock { background: var(--red-soft); color: var(--red-text); padding: 5px 11px; border-radius: 999px; font-size: 14px; font-weight: 800; text-align: center; }
     .badge-count { background: #e0e7ff; color: #1e3a8a; padding: 4px 10px; border-radius: 999px; font-size: 13.5px; font-weight: 800; text-align: center; }
@@ -224,16 +225,18 @@
           <h2 class="card-title">Live Line-wise Output & Efficiency</h2>
           <p class="hint" style="margin-top:2px;">In-time 8:00 AM | Lunch 1:00 PM–2:00 PM বাদে লাইভ আপডেট (Max Forecast Hour সীমাবদ্ধ)</p>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;">
+            <span id="runningDateBadge" class="badge-running-date">Running Date: -</span>
             <span id="upToTimeBadge" class="badge-upto">Up to 8:00 AM</span>
             <span id="liveBadge" class="badge-live">LIVE</span>
+            <button class="btn-refresh" onclick="resetToRunningDateAndLoad()">Today (Running)</button>
             <button class="btn-refresh" onclick="loadDashboard()">Refresh Live</button>
             <button id="toggleSearchBtn" class="btn-sage" style="padding:8px 12px;font-size:14.5px;" onclick="toggleSearchSection()">Show Search Details</button>
           </div>
         </div>
 
         <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;margin-bottom:8px;">
-          <div style="min-width:190px;">
-            <label for="dashDatePicker" style="margin-top:2px;">Dashboard Date</label>
+          <div style="min-width:210px;">
+            <label for="dashDatePicker" style="margin-top:2px;">Select Date (Change to View Other Date)</label>
             <input id="dashDatePicker" type="date" onchange="onDashboardDateChange()" />
           </div>
           <div id="dashSummaryInfo" class="hint" style="padding-top:16px;"></div>
@@ -251,7 +254,7 @@
             <button class="btn-remove" onclick="toggleSearchSection()">Hide Search</button>
           </div>
           <label for="dateSelect">Date (From Sheet)</label>
-          <select id="dateSelect" onchange="loadDashboard()"><option value="">Date</option></select>
+          <select id="dateSelect" onchange="onSheetDateSelectChange()"><option value="">Date</option></select>
           <div class="grid-2">
             <div><label for="lineInput">Line (Optional)</label><input id="lineInput" type="text" placeholder="e.g. Linking Line-02" /></div>
             <div><label for="styleInput">Style No.</label><input id="styleInput" type="text" placeholder="e.g. 1896" /></div>
@@ -475,22 +478,46 @@
       return `${Number(parts[1])}/${Number(parts[2])}/${parts[0]}`;
     }
 
+    // Format current running date in Asia/Dhaka timezone
     function getTodayIso() {
-      const now = new Date();
-      const y = now.getFullYear();
-      const m = String(now.getMonth() + 1).padStart(2, '0');
-      const d = String(now.getDate()).padStart(2, '0');
-      return `${y}-${m}-${d}`;
+      try {
+        const parts = new Intl.DateTimeFormat('en-CA', {
+          timeZone: 'Asia/Dhaka',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        }).formatToParts(new Date());
+        const y = parts.find(p => p.type === 'year').value;
+        const m = parts.find(p => p.type === 'month').value;
+        const d = parts.find(p => p.type === 'day').value;
+        return `${y}-${m}-${d}`;
+      } catch (_) {
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const d = String(now.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+    }
+
+    function updateRunningDateBadge() {
+      const runningIso = getTodayIso();
+      const badge = document.getElementById('runningDateBadge');
+      if (badge) {
+        badge.textContent = `Running Date: ${formatDisplayDate(runningIso)}`;
+      }
     }
 
     function initForecastDates() {
+      updateRunningDateBadge();
+      const runningIso = getTodayIso();
       const fcPicker = document.getElementById('forecastCustomDate');
       if (fcPicker && !fcPicker.value) {
-        fcPicker.value = getTodayIso();
+        fcPicker.value = runningIso;
       }
       const dashPicker = document.getElementById('dashDatePicker');
       if (dashPicker && !dashPicker.value) {
-        dashPicker.value = getTodayIso();
+        dashPicker.value = runningIso;
       }
     }
 
@@ -593,10 +620,10 @@
 
     function getElapsedWorkInfo(selectedIsoDate) {
       const now = new Date();
-      const todayIso = getTodayIso();
+      const runningIso = getTodayIso();
       let currentDecimalHour = now.getHours() + (now.getMinutes() / 60);
 
-      if (selectedIsoDate && selectedIsoDate < todayIso) {
+      if (selectedIsoDate && selectedIsoDate < runningIso) {
         currentDecimalHour = 23;
       }
 
@@ -632,6 +659,30 @@
     }
 
     function onDashboardDateChange() {
+      const dashPicker = document.getElementById('dashDatePicker');
+      const dateSelect = document.getElementById('dateSelect');
+      if (dashPicker && dateSelect && dashPicker.value) {
+        dateSelect.value = dashPicker.value;
+      }
+      loadDashboard();
+    }
+
+    function onSheetDateSelectChange() {
+      const dateSelect = document.getElementById('dateSelect');
+      const dashPicker = document.getElementById('dashDatePicker');
+      if (dateSelect && dashPicker && dateSelect.value) {
+        dashPicker.value = dateSelect.value;
+      }
+      loadDashboard();
+    }
+
+    function resetToRunningDateAndLoad() {
+      updateRunningDateBadge();
+      const runningIso = getTodayIso();
+      const dashPicker = document.getElementById('dashDatePicker');
+      const dateSelect = document.getElementById('dateSelect');
+      if (dashPicker) dashPicker.value = runningIso;
+      if (dateSelect) dateSelect.value = runningIso;
       loadDashboard();
     }
 
@@ -1261,6 +1312,7 @@
       });
       if (view === 'dashboard') {
         stopCamera();
+        updateRunningDateBadge();
         const dashPicker = document.getElementById('dashDatePicker');
         if (dashPicker && !dashPicker.value) dashPicker.value = getTodayIso();
         loadDashboard();
@@ -1269,21 +1321,45 @@
       if (view === 'admin') { stopCamera(); switchAdminSection('form'); renderSavedSmvTable(); syncSmvMasterFromServer(); }
     }
 
+    function extractRecordIsoDate(rec) {
+      if (!rec) return '';
+      if (rec.date && /^\d{4}-\d{2}-\d{2}$/.test(String(rec.date).trim())) {
+        return String(rec.date).trim();
+      }
+      const ts = rec.timestamp ? new Date(rec.timestamp) : null;
+      if (ts && !isNaN(ts.getTime())) {
+        try {
+          const parts = new Intl.DateTimeFormat('en-CA', {
+            timeZone: 'Asia/Dhaka',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          }).formatToParts(ts);
+          return `${parts.find(p => p.type === 'year').value}-${parts.find(p => p.type === 'month').value}-${parts.find(p => p.type === 'day').value}`;
+        } catch (_) {
+          return ts.toISOString().slice(0, 10);
+        }
+      }
+      return '';
+    }
+
     async function loadDashboard() {
       const errEl = document.getElementById('dashErr');
       errEl.textContent = '';
 
+      updateRunningDateBadge();
+      const runningIso = getTodayIso();
       const dashPicker = document.getElementById('dashDatePicker');
-      const activeIsoDate = (dashPicker && dashPicker.value) ? dashPicker.value : getTodayIso();
+      const activeIsoDate = (dashPicker && dashPicker.value) ? dashPicker.value : runningIso;
 
       const dateSelect = document.getElementById('dateSelect');
-      const selectedDate = dateSelect.value || activeIsoDate;
       const line = document.getElementById('lineInput').value.trim();
       const style = document.getElementById('styleInput').value.trim();
       document.getElementById('liveBadge').textContent = 'LOADING';
 
       try {
-        const res = await fetch(`${API_URL}?${new URLSearchParams({ date: selectedDate, line, style, t: Date.now() })}`);
+        // Always pass activeIsoDate strictly so server never falls back to another date's rows
+        const res = await fetch(`${API_URL}?${new URLSearchParams({ date: activeIsoDate, line, style, t: Date.now() })}`);
         const data = await res.json();
         if (data.status !== 'SUCCESS') {
           errEl.textContent = data.message || 'ডাটা আনা যায়নি।';
@@ -1291,7 +1367,7 @@
           return;
         }
 
-        const prev = dateSelect.value || data.selectedDate || '';
+        const prev = dateSelect.value || activeIsoDate;
         dateSelect.innerHTML = '<option value="">Date</option>';
         (data.dates || []).forEach(d => {
           const opt = document.createElement('option');
@@ -1299,7 +1375,6 @@
           if (d === prev) opt.selected = true;
           dateSelect.appendChild(opt);
         });
-        if (!dateSelect.value && data.selectedDate) dateSelect.value = data.selectedDate;
 
         if (Array.isArray(data.smvList) && data.smvList.length) {
           insertGroupedByStyle(data.smvList);
@@ -1311,10 +1386,14 @@
           localStorage.setItem(FORECAST_STORAGE_KEY, JSON.stringify(forecastMaster));
         }
 
+        // Filter strictly to activeIsoDate on client as well so no other date's rows ever leak
+        const allRecs = Array.isArray(data.records) ? data.records : (Array.isArray(data.rawRecords) ? data.rawRecords : []);
+        const strictDateRecords = allRecs.filter(r => extractRecordIsoDate(r) === activeIsoDate);
+
         const workInfo = getElapsedWorkInfo(activeIsoDate);
         document.getElementById('upToTimeBadge').textContent = workInfo.upToLabel;
 
-        renderLiveEfficiencyTable(data, activeIsoDate, workInfo);
+        renderLiveEfficiencyTable(strictDateRecords, activeIsoDate, runningIso, workInfo);
         renderStyleBreakdown(data.styleDetails, style);
         document.getElementById('liveBadge').textContent = 'LIVE';
       } catch (e) {
@@ -1347,8 +1426,8 @@
       return `
         <tr>
           <td><b>${esc(ln)}</b></td>
-          <td>${fcHour || '-'}</td>
-          <td>${fcPcs || '-'}</td>
+          <td>${fcHour || 0}</td>
+          <td>${fcPcs || 0}</td>
           <td><b>${upToTarget}</b></td>
           <td><b>${outputQty}</b></td>
           <td class="${devClass}">${devText}</td>
@@ -1381,7 +1460,7 @@
       `;
     }
 
-    function renderLiveEfficiencyTable(data, isoDate, workInfo) {
+    function renderLiveEfficiencyTable(strictDateRecords, isoDate, runningIso, workInfo) {
       const box = document.getElementById('liveResultArea');
       const dayForecast = forecastMaster[isoDate] || {};
 
@@ -1395,39 +1474,21 @@
         };
       });
 
-      const records = Array.isArray(data.rawRecords) ? data.rawRecords : null;
-      if (records) {
-        records.forEach(r => {
-          const ln = normalizeLineName(r.line);
-          if (!ln) return;
-          if (!lineStats[ln]) {
-            lineStats[ln] = { line: ln, uniqueOpIds: new Set(), outputQty: 0, earnedSah: 0 };
-          }
-          const opId = String(r.operatorId || '').trim();
-          if (opId) lineStats[ln].uniqueOpIds.add(opId);
+      strictDateRecords.forEach(r => {
+        const ln = normalizeLineName(r.line);
+        if (!ln) return;
+        if (!lineStats[ln]) {
+          lineStats[ln] = { line: ln, uniqueOpIds: new Set(), outputQty: 0, earnedSah: 0 };
+        }
+        const opId = String(r.operatorId || '').trim();
+        if (opId) lineStats[ln].uniqueOpIds.add(opId);
 
-          const proc = String(r.process || '').trim().toLowerCase();
-          if (proc === 'output') {
-            lineStats[ln].outputQty += Number(r.bundleQty || r.qty || 0);
-          }
-          lineStats[ln].earnedSah += Number(r.earnedSah || 0);
-        });
-      } else {
-        (data.liveOutput || []).forEach(r => {
-          const ln = normalizeLineName(r.line);
-          if (!ln) return;
-          if (!lineStats[ln]) {
-            lineStats[ln] = { line: ln, uniqueOpIds: new Set(), outputQty: 0, earnedSah: 0 };
-          }
-          if (Array.isArray(r.operatorIds)) {
-            r.operatorIds.forEach(id => { if (id) lineStats[ln].uniqueOpIds.add(String(id).trim()); });
-          } else if (r.manpower) {
-            for (let k = 0; k < Number(r.manpower); k++) lineStats[ln].uniqueOpIds.add(`M_${k}`);
-          }
-          lineStats[ln].outputQty += Number(r.outputQty !== undefined ? r.outputQty : (r.totalQty || 0));
-          lineStats[ln].earnedSah += Number(r.totalSah || 0);
-        });
-      }
+        const proc = String(r.process || '').trim().toLowerCase();
+        if (proc === 'output') {
+          lineStats[ln].outputQty += Number(r.bundleQty || r.qty || 0);
+        }
+        lineStats[ln].earnedSah += Number(r.earnedSah || 0);
+      });
 
       const floor3Sum = { forecastHr: 0, forecastPcs: 0, target: 0, output: 0, manpower: 0, wh: 0, sah: 0, effSum: 0, effCount: 0 };
       const floor2Sum = { forecastHr: 0, forecastPcs: 0, target: 0, output: 0, manpower: 0, wh: 0, sah: 0, effSum: 0, effCount: 0 };
@@ -1507,9 +1568,12 @@
         ? (floorAvgParts.reduce((a, b) => a + b, 0) / floorAvgParts.length).toFixed(1) + '%'
         : '0.0%';
 
-      const maxCapText = workInfo.maxForecastHr > 0 ? ` | Max Forecast Cap: ${workInfo.maxForecastHr} hr` : '';
+      const dateModeLabel = (isoDate === runningIso)
+        ? `Running Date: ${formatDisplayDate(runningIso)}`
+        : `Selected Date: ${formatDisplayDate(isoDate)} (Running: ${formatDisplayDate(runningIso)})`;
+
       document.getElementById('dashSummaryInfo').textContent =
-        `Date: ${formatDisplayDate(isoDate)} | Effective Hours: ${workInfo.elapsedHours.toFixed(1)} hr${maxCapText}`;
+        `${dateModeLabel} | Effective Hours: ${workInfo.elapsedHours.toFixed(1)} hr`;
 
       box.innerHTML = `
         <table>
