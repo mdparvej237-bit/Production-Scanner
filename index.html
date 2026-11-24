@@ -15,7 +15,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%230c2340'/%3E%3Crect x='34' y='42' width='124' height='108' rx='18' fill='%2315365f' stroke='%2322c55e' stroke-width='8'/%3E%3Cpath d='M56 72h80M56 98h56' stroke='%23ffffff' stroke-width='10' stroke-linecap='round'/%3E%3Ccircle cx='130' cy='122' r='13' fill='%2322c55e'/%3E%3C/svg%3E" />
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%230c2340'/%3E%3Crect x='34' y='42' width='124' height='108' rx='18' fill='%2315365f' stroke='%2322c55e' stroke-width='8'/%3E%3Cpath d='M56 72h80M56 98h56' stroke='%23ffffff' stroke-width='10' stroke-linecap='round'/%3E%3Ccircle cx='130' cy='122' r='13' fill='%2322c55e'/%3E%3C/svg%3E" />
 
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script src="https://unpkg.com/html5-qrcode" type="javascript"></script>
   <style>
     :root {
       --navy: #0c2340; --navy-2: #15365f; --cobalt: #2563eb; --cobalt-dark: #1d4ed8;
@@ -182,6 +182,7 @@
     th { background: #f5f3ed; font-weight: 800; color: #1f2937; }
     tr.floor-sub-row td { background: #e8f0fe; font-weight: 800; color: #0c2340; border-top: 2px solid #93c5fd; border-bottom: 2px solid #93c5fd; }
     tr.grand-total-row td { background: #0c2340; font-weight: 800; color: #ffffff; border-top: 2px solid #0c2340; }
+    tr.fc-highlight td { background: #fef9c3 !important; transition: background 0.4s ease; }
 
     .dev-pos { background: #dcfce7 !important; color: #166534 !important; font-weight: 800; }
     .dev-neg { background: #fee2e2 !important; color: #991b1b !important; font-weight: 800; }
@@ -405,9 +406,9 @@
       <div id="admin-sec-forecast" class="card hidden">
         <div class="card-head">
           <h2 class="card-title">Forecast Hour & Target Pcs</h2>
-          <button type="button" class="btn-primary" onclick="saveForecastForDate()">Save Forecast</button>
+          <button type="button" class="btn-primary" onclick="saveForecastForDate()">Save / Update Forecast</button>
         </div>
-        <p class="hint">যেকোনো মাস বা দিনের তারিখ সিলেক্ট করে প্রতিটি লাইনের জন্য <b>Forecast Hour</b> এবং <b>Forecast Pcs</b> বসান। ড্যাশবোর্ডে প্রতি ঘণ্টার টার্গেট অটোমেটিক হিসাব হবে (১:০০ PM–২:০০ PM লাঞ্চ টাইম বাদে)।</p>
+        <p class="hint">যেকোনো তারিখ সিলেক্ট করে <b>Forecast Hour</b> ও <b>Forecast Pcs</b> সেভ করার পরও যেকোনো সময় সংখ্যা বদলে আবার <b>Save / Update Forecast</b> চাপলেই সাথে সাথে পরিবর্তন আপডেট হবে।</p>
 
         <div style="max-width:320px;margin:0 auto 12px;">
           <label for="forecastCustomDate">Pick Any Date (Previous / Current / Next Month)</label>
@@ -432,7 +433,14 @@
         </div>
 
         <div style="margin-top:14px;">
-          <button type="button" class="btn-primary" style="width:100%;" onclick="saveForecastForDate()">Save All 33 Lines Forecast</button>
+          <button type="button" class="btn-primary" style="width:100%;" onclick="saveForecastForDate()">Save / Update All 33 Lines Forecast</button>
+        </div>
+
+        <!-- SAVED FORECAST LIST WITH DIRECT EDIT -->
+        <div style="margin-top:22px;padding-top:16px;border-top:2px solid var(--border);">
+          <h3 class="card-title" style="font-size:18px;margin-bottom:6px;">Saved Forecast List (Click Edit to Change)</h3>
+          <p class="hint">যে লাইনের Forecast Hour বা Forecast Pcs পরিবর্তন করতে চান, তার পাশে <b>Edit</b> বাটনে ক্লিক করুন।</p>
+          <div id="savedForecastQuickList" class="table-scroll"></div>
         </div>
       </div>
     </div>
@@ -543,6 +551,7 @@
       const iso = document.getElementById('forecastCustomDate').value;
       if (!iso) return;
       renderForecastTable(iso);
+      renderSavedForecastQuickList(iso);
     }
 
     function renderForecastTable(isoDate) {
@@ -566,6 +575,65 @@
           </tr>
         `;
       }).join('');
+    }
+
+    function renderSavedForecastQuickList(isoDate) {
+      const box = document.getElementById('savedForecastQuickList');
+      if (!box) return;
+      const dateStr = isoDate || document.getElementById('forecastCustomDate').value || getTodayIso();
+      const dayData = forecastMaster[dateStr] || {};
+
+      const rowsHtml = ALL_LINKING_LINES.map(line => {
+        const rec = dayData[line] || { hour: '', pcs: '' };
+        const h = parseFloat(rec.hour);
+        const p = parseFloat(rec.pcs);
+        const hrDisplay = (rec.hour !== '' && !isNaN(h)) ? h : '-';
+        const pcsDisplay = (rec.pcs !== '' && !isNaN(p)) ? p : '-';
+        const perHr = (h > 0 && p > 0) ? (p / h).toFixed(1) : '-';
+
+        return `
+          <tr>
+            <td><b>${esc(line)}</b></td>
+            <td>${hrDisplay}</td>
+            <td>${pcsDisplay}</td>
+            <td>${perHr}</td>
+            <td><button type="button" class="btn-edit" onclick="focusForecastLineForEdit('${esc(line)}')">Edit</button></td>
+          </tr>
+        `;
+      }).join('');
+
+      box.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Line</th>
+              <th>Saved Hour (${esc(formatDisplayDate(dateStr))})</th>
+              <th>Saved Pcs</th>
+              <th>Per Hour Target</th>
+              <th>Change</th>
+            </tr>
+          </thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      `;
+    }
+
+    function focusForecastLineForEdit(lineName) {
+      const tr = document.querySelector(`#forecastLinesBody tr[data-line="${lineName}"]`);
+      if (!tr) return;
+      document.querySelectorAll('#forecastLinesBody tr.fc-highlight').forEach(el => el.classList.remove('fc-highlight'));
+      tr.classList.add('fc-highlight');
+      const hrInput = tr.querySelector('.fc-hour');
+      if (hrInput) {
+        tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        hrInput.focus();
+        hrInput.select();
+      }
+      const msg = document.getElementById('forecastMsg');
+      if (msg) {
+        msg.style.color = '#1d4ed8';
+        msg.textContent = `${lineName} সিলেক্ট হয়েছে—Forecast Hour বা Forecast Pcs বদলে "Save / Update Forecast" চাপুন।`;
+      }
     }
 
     function updateForecastRowPreview(inputEl) {
@@ -596,10 +664,11 @@
 
       forecastMaster[isoDate] = dayRecord;
       localStorage.setItem(FORECAST_STORAGE_KEY, JSON.stringify(forecastMaster));
+      renderSavedForecastQuickList(isoDate);
 
       const msg = document.getElementById('forecastMsg');
       msg.style.color = '#15803d';
-      msg.textContent = `Date ${formatDisplayDate(isoDate)} এর Forecast Hour ও Pcs সেভ হয়েছে।`;
+      msg.textContent = `Date ${formatDisplayDate(isoDate)} এর Forecast Hour ও Pcs সেভ/আপডেট হয়েছে।`;
 
       try {
         await fetch(API_URL, {
@@ -770,7 +839,9 @@
       else if (isList) renderSavedSmvTable();
       else if (isForecast) {
         initForecastDates();
-        renderForecastTable(document.getElementById('forecastCustomDate').value);
+        const curDate = document.getElementById('forecastCustomDate').value;
+        renderForecastTable(curDate);
+        renderSavedForecastQuickList(curDate);
       }
     }
 
