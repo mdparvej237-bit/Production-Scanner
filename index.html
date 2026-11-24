@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Production Barcode Scanner</title>
+  <title>Garment Production Scanner & Live Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     :root {
@@ -13,10 +13,11 @@
       --muted: #64748b;
       --indigo: #312e81;
       --blue: #1d4ed8;
-      --cyan: #06b6d4;
+      --cyan: #0284c7;
+      --teal: #0d9488;
       --green: #059669;
       --green-dark: #047857;
-      --amber: #f59e0b;
+      --amber: #d97706;
       --red: #dc2626;
       --border: #cbd5e1;
     }
@@ -38,7 +39,7 @@
 
     .app-shell {
       width: 100%;
-      max-width: 440px;
+      max-width: 460px;
       min-height: 100vh;
       background: #f8fafc;
       display: flex;
@@ -55,58 +56,44 @@
       top: 0;
       z-index: 50;
       box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16);
-    }
-
-    .header-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      margin-bottom: 10px;
     }
 
     .brand-title {
-      font-size: 1rem;
+      font-size: 0.98rem;
       font-weight: 800;
       letter-spacing: 0.3px;
     }
 
-    .status-pill {
-      background: rgba(16, 185, 129, 0.22);
-      border: 1px solid #34d399;
-      color: #ecfdf5;
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .role-badge {
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: #ffffff;
       font-size: 0.72rem;
-      font-weight: 700;
-      padding: 3px 9px;
+      font-weight: 800;
+      padding: 4px 10px;
       border-radius: 999px;
       white-space: nowrap;
     }
 
-    .role-tabs {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-      background: rgba(15, 23, 42, 0.32);
-      padding: 4px;
-      border-radius: 10px;
-    }
-
-    .role-btn {
+    .btn-logout {
+      background: #ef4444;
+      color: #ffffff;
       border: none;
-      background: transparent;
-      color: #e2e8f0;
-      padding: 7px 6px;
-      border-radius: 7px;
-      font-size: 0.78rem;
-      font-weight: 700;
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 0.74rem;
+      font-weight: 800;
       cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .role-btn.active {
-      background: #ffffff;
-      color: var(--indigo);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     }
 
     .content {
@@ -126,8 +113,109 @@
       box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
     }
 
-    .live-card {
-      border-left: 5px solid var(--cyan);
+    .login-card {
+      margin-top: 12px;
+      border-top: 5px solid var(--blue);
+    }
+
+    .login-title {
+      font-size: 1.12rem;
+      font-weight: 800;
+      color: var(--indigo);
+      margin-bottom: 4px;
+    }
+
+    .login-sub {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .field-group {
+      margin-bottom: 12px;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 5px;
+    }
+
+    .input-field, .select-field {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.92rem;
+      background: #ffffff;
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .btn-primary {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 13px 14px;
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--indigo), var(--blue));
+      cursor: pointer;
+    }
+
+    .btn-single-scan {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 17px 14px;
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--cyan), var(--teal));
+      box-shadow: 0 7px 18px rgba(2, 132, 199, 0.28);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .btn-single-scan.tc-mode {
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      box-shadow: 0 7px 18px rgba(37, 99, 235, 0.28);
+    }
+
+    .btn-single-scan.completed-mode {
+      background: linear-gradient(135deg, var(--green), var(--green-dark));
+      box-shadow: 0 7px 18px rgba(5, 150, 105, 0.25);
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .btn-mini {
+      border: none;
+      border-radius: 9px;
+      padding: 9px 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: #e0e7ff;
+      color: var(--indigo);
+      white-space: nowrap;
+    }
+
+    .demo-strip {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .info-block-title {
@@ -175,29 +263,9 @@
       margin: 10px 0;
     }
 
-    .step-card {
-      position: relative;
-      transition: 0.2s;
-    }
-
     .step-locked {
       opacity: 0.58;
       background: #f1f5f9;
-      border-color: #cbd5e1;
-    }
-
-    .step-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      gap: 8px;
-    }
-
-    .step-title {
-      font-size: 0.96rem;
-      font-weight: 800;
-      color: var(--ink);
     }
 
     .badge {
@@ -225,78 +293,96 @@
       color: #475569;
     }
 
-    .btn-big-scan {
-      width: 100%;
-      border: none;
-      border-radius: 12px;
-      padding: 15px 14px;
-      font-size: 1.02rem;
-      font-weight: 800;
-      color: #ffffff;
-      background: linear-gradient(135deg, #0284c7, #06b6d4);
-      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.28);
-      cursor: pointer;
+    .step-head {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-      gap: 8px;
       margin-bottom: 10px;
-    }
-
-    .btn-big-scan:active {
-      transform: scale(0.99);
-    }
-
-    .input-row {
-      display: flex;
       gap: 8px;
-      margin-bottom: 8px;
     }
 
-    .input-field, .select-field {
-      width: 100%;
-      padding: 11px 12px;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      font-size: 0.92rem;
-      background: #ffffff;
+    .step-title {
+      font-size: 0.96rem;
+      font-weight: 800;
       color: var(--ink);
-      font-weight: 600;
-    }
-
-    .btn-mini {
-      border: none;
-      border-radius: 9px;
-      padding: 8px 10px;
-      font-size: 0.76rem;
-      font-weight: 700;
-      cursor: pointer;
-      background: #e0e7ff;
-      color: var(--indigo);
-    }
-
-    .demo-strip {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
     }
 
     .admin-box {
       margin-top: 12px;
       padding: 12px;
-      border-radius: 10px;
+      border-radius: 12px;
       background: #eff6ff;
-      border: 1.5px dashed #3b82f6;
+      border: 1.5px solid #93c5fd;
     }
 
-    .admin-title {
-      font-size: 0.8rem;
-      font-weight: 800;
-      color: var(--blue);
-      margin-bottom: 8px;
+    .process-list {
+      margin-top: 10px;
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .process-item {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 9px 11px;
+      display: flex;
       align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .process-meta {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .process-smv {
+      font-size: 0.76rem;
+      color: var(--blue);
+      font-weight: 800;
+    }
+
+    .item-btns {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-edit {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #f59e0b;
+      border-radius: 7px;
+      padding: 5px 9px;
+      font-size: 0.74rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-del {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+      border-radius: 7px;
+      padding: 5px 9px;
+      font-size: 0.74rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-cancel-edit {
+      background: #e2e8f0;
+      color: #334155;
+      border: none;
+      border-radius: 9px;
+      padding: 9px 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 6px;
+      width: 100%;
     }
 
     .btn-add {
@@ -309,6 +395,63 @@
       font-weight: 700;
       cursor: pointer;
       width: 100%;
+    }
+
+    .view-section-title {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--indigo);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .line-box {
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .line-header {
+      font-size: 0.86rem;
+      font-weight: 800;
+      color: var(--blue);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .proc-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 7px 10px;
+      margin-bottom: 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .size-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .size-chip {
+      background: #e0f2fe;
+      border: 1px solid #7dd3fc;
+      color: #0369a1;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.74rem;
+      font-weight: 800;
     }
 
     #readerWrap {
@@ -347,12 +490,13 @@
       position: fixed;
       bottom: 0;
       width: 100%;
-      max-width: 440px;
+      max-width: 460px;
       background: #ffffff;
       border-top: 1px solid #e2e8f0;
       padding: 10px 14px;
       z-index: 60;
       box-shadow: 0 -4px 14px rgba(15, 23, 42, 0.08);
+      display: none;
     }
 
     .btn-save {
@@ -373,7 +517,7 @@
     }
 
     .settings-toggle {
-      margin-top: 8px;
+      margin-top: 6px;
       width: 100%;
       background: transparent;
       border: 1px dashed #94a3b8;
@@ -397,154 +541,186 @@
       display: block;
     }
 
-    .view-only-banner {
-      background: #fef3c7;
-      border: 1.5px solid var(--amber);
-      color: #78350f;
-      padding: 10px 12px;
-      border-radius: 10px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      display: none;
+    .muted-note {
+      font-size: 0.74rem;
+      color: var(--muted);
+      margin-top: 6px;
     }
   </style>
 </head>
 <body>
   <div class="app-shell">
     <header class="top-header">
-      <div class="header-top">
-        <div class="brand-title">PRODUCTION SCANNER</div>
-        <div class="status-pill" id="rolePill">OPERATOR</div>
-      </div>
-      <div class="role-tabs">
-        <button class="role-btn" id="tabAdmin" onclick="switchRole('ADMIN')">Admin</button>
-        <button class="role-btn active" id="tabOperator" onclick="switchRole('OPERATOR')">Operator</button>
-        <button class="role-btn" id="tabViewer" onclick="switchRole('VIEWER')">View Only</button>
+      <div class="brand-title">PRODUCTION SYSTEM</div>
+      <div class="header-actions" id="headerSessionBox" style="display:none;">
+        <span class="role-badge" id="activeRoleBadge">-</span>
+        <button class="btn-logout" onclick="logout()">Logout</button>
       </div>
     </header>
 
     <main class="content">
-      <div id="viewOnlyBanner" class="view-only-banner">
-        View Only Mode: আপনি শুধু স্ক্যান তথ্য ও Process/SMV দেখতে পারবেন। স্ক্যান বা সেভ করার অনুমতি নেই।
-      </div>
-
       <div id="toastBox" class="toast"></div>
 
-      <!-- Live Display -->
-      <section class="card live-card">
-        <div class="info-block-title">Operator Information</div>
-        <div class="info-grid">
-          <div class="info-cell"><span class="info-label">ID No.</span><span class="info-val" id="dOpId">-</span></div>
-          <div class="info-cell"><span class="info-label">Name</span><span class="info-val" id="dOpName">-</span></div>
-          <div class="info-cell"><span class="info-label">Floor</span><span class="info-val" id="dOpFloor">-</span></div>
-          <div class="info-cell"><span class="info-label">Dep</span><span class="info-val" id="dOpDep">-</span></div>
-          <div class="info-cell"><span class="info-label">Job Type</span><span class="info-val" id="dOpJob">-</span></div>
-          <div class="info-cell"><span class="info-label">Line</span><span class="info-val" id="dOpLine">-</span></div>
-        </div>
+      <!-- SEPARATE LOGIN SCREEN -->
+      <section class="card login-card" id="loginScreen">
+        <div class="login-title">Dashboard Login</div>
+        <div class="login-sub">আপনার রোল নির্বাচন করে PIN দিয়ে নিজ নিজ ড্যাশবোর্ডে প্রবেশ করুন।</div>
 
-        <div class="divider"></div>
-
-        <div class="info-block-title">TC Information</div>
-        <div class="info-grid">
-          <div class="info-cell"><span class="info-label">TC</span><span class="info-val" id="dTcNo">-</span></div>
-          <div class="info-cell"><span class="info-label">Lot No.</span><span class="info-val" id="dTcLot">-</span></div>
-          <div class="info-cell"><span class="info-label">Buyer</span><span class="info-val" id="dTcBuyer">-</span></div>
-          <div class="info-cell"><span class="info-label">Style</span><span class="info-val" id="dTcStyle">-</span></div>
-          <div class="info-cell"><span class="info-label">Color</span><span class="info-val" id="dTcColor">-</span></div>
-          <div class="info-cell"><span class="info-label">Size</span><span class="info-val" id="dTcSize">-</span></div>
-          <div class="info-cell"><span class="info-label">Bundle Qty</span><span class="info-val" id="dTcQty">-</span></div>
-          <div class="info-cell"><span class="info-label">Process / SMV</span><span class="info-val" id="dProcSmv">-</span></div>
-        </div>
-      </section>
-
-      <!-- Camera View -->
-      <div id="readerWrap">
-        <div id="reader"></div>
-        <button class="btn-mini" style="margin-top:8px;width:100%;" onclick="stopCamera()">Close Camera</button>
-      </div>
-
-      <!-- Step 1: Operator Barcode -->
-      <section class="card step-card" id="step1Card">
-        <div class="step-head">
-          <div class="step-title">1. Operator Barcode</div>
-          <span class="badge badge-ready" id="badge1">READY</span>
-        </div>
-        <div id="opControls">
-          <button class="btn-big-scan" onclick="guardedScan('OP')">SCAN OPERATOR BARCODE</button>
-          <div class="input-row">
-            <input
-              type="text"
-              id="opManualInput"
-              class="input-field"
-              placeholder="ID No.|Name|Floor|Dep|Job Type|Line"
-              onkeydown="if(event.key==='Enter') handleTextInput('OP', this.value)"
-            />
-            <button class="btn-mini" onclick="handleTextInput('OP', document.getElementById('opManualInput').value)">Apply</button>
-          </div>
-          <div class="demo-strip">
-            <button class="btn-mini" onclick="fillDemo('OP')">Demo Operator Scan</button>
-            <button class="btn-mini" onclick="resetAll()">Reset</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Step 2: TC Barcode (Locked until Step 1) -->
-      <section class="card step-card step-locked" id="step2Card" onclick="handleLockedStepClick(2)">
-        <div class="step-head">
-          <div class="step-title">2. TC Barcode</div>
-          <span class="badge badge-locked" id="badge2">LOCKED</span>
-        </div>
-        <div id="tcControls">
-          <button class="btn-big-scan" id="btnScanTc" disabled onclick="event.stopPropagation(); guardedScan('TC')">SCAN TC BARCODE</button>
-          <div class="input-row" onclick="event.stopPropagation()">
-            <input
-              type="text"
-              id="tcManualInput"
-              class="input-field"
-              placeholder="TC|Lot No.|Buyer|Style|Color|Size|Bundle Qty"
-              disabled
-              onkeydown="if(event.key==='Enter') handleTextInput('TC', this.value)"
-            />
-            <button class="btn-mini" id="btnApplyTc" disabled onclick="handleTextInput('TC', document.getElementById('tcManualInput').value)">Apply</button>
-          </div>
-          <div class="demo-strip" onclick="event.stopPropagation()">
-            <button class="btn-mini" id="btnDemoTc" disabled onclick="fillDemo('TC')">Demo TC Scan</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Step 3: Process Dropdown & Admin Process/SMV Setup -->
-      <section class="card step-card step-locked" id="step3Card" onclick="handleLockedStepClick(3)">
-        <div class="step-head">
-          <div class="step-title">3. Select Process</div>
-          <span class="badge badge-locked" id="badge3">LOCKED</span>
-        </div>
-        <div onclick="event.stopPropagation()">
-          <select id="processSelect" class="select-field" disabled onchange="onProcessChange()">
-            <option value="">-- Select Process --</option>
+        <div class="field-group">
+          <label class="field-label" for="loginRole">Select Role</label>
+          <select id="loginRole" class="select-field" onchange="onLoginRoleChange()">
+            <option value="OPERATOR">Operator Dashboard</option>
+            <option value="ADMIN">Admin Dashboard</option>
+            <option value="VIEW">View Dashboard (Live & Search)</option>
           </select>
         </div>
 
-        <!-- Admin Only Process & SMV Manager -->
-        <div class="admin-box" id="adminProcessBox" style="display:none;" onclick="event.stopPropagation()">
-          <div class="admin-title">
-            <span>Admin: Add Process & SMV</span>
+        <div class="field-group">
+          <label class="field-label" for="loginPin">Access PIN</label>
+          <input type="password" id="loginPin" class="input-field" placeholder="Enter PIN" onkeydown="if(event.key==='Enter') handleLogin()" />
+          <div class="muted-note" id="pinHint">Default Operator PIN: 1111</div>
+        </div>
+
+        <button class="btn-primary" onclick="handleLogin()">Login to Dashboard</button>
+
+        <div id="loginSettingsArea" style="margin-top:12px;">
+          <button class="settings-toggle" onclick="toggleSettings()">Google Sheet Script URL Settings</button>
+          <div class="settings-panel" id="settingsPanel">
+            <input type="url" id="scriptUrlInput" class="input-field" placeholder="https://script.google.com/macros/s/.../exec" style="margin-bottom:8px;" />
+            <button class="btn-add" onclick="saveScriptUrl()">Save Script URL</button>
           </div>
-          <div class="input-row">
-            <input type="text" id="newProcessName" class="input-field" placeholder="Process name (e.g. Linking)" />
-            <input type="number" step="0.01" id="newProcessSmv" class="input-field" placeholder="SMV (e.g. 0.45)" style="max-width:120px;" />
-          </div>
-          <button class="btn-add" onclick="addProcessSmv()">+ Add Process & SMV</button>
         </div>
       </section>
 
-      <!-- Script URL Settings -->
-      <div id="bottomSettingsArea">
-        <button class="settings-toggle" onclick="toggleSettings()">Google Sheet Script URL Settings</button>
-        <div class="settings-panel" id="settingsPanel">
-          <input type="url" id="scriptUrlInput" class="input-field" placeholder="https://script.google.com/macros/s/.../exec" style="margin-bottom:8px;" />
-          <button class="btn-add" onclick="saveScriptUrl()">Save Script URL</button>
+      <!-- OPERATOR & ADMIN SCANNER WORKSPACE -->
+      <div id="scannerWorkspace" style="display:none; flex-direction:column; gap:14px;">
+        <!-- Single Dynamic Scan Button Card -->
+        <section class="card">
+          <div class="step-head">
+            <div class="step-title">Barcode Scan Action</div>
+            <span class="badge badge-ready" id="scanPhaseBadge">STEP 1 OF 2</span>
+          </div>
+
+          <button id="btnDynamicScan" class="btn-single-scan" onclick="triggerDynamicScan()">
+            Operator ID Scan
+          </button>
+
+          <div class="input-row">
+            <input
+              type="text"
+              id="dynamicManualInput"
+              class="input-field"
+              placeholder="Operator ID Scan করলে এখানে ID|Name|Floor|Dep|Job|Line দিন"
+              onkeydown="if(event.key==='Enter') applyDynamicManual()"
+            />
+            <button class="btn-mini" onclick="applyDynamicManual()">Apply</button>
+          </div>
+
+          <div class="demo-strip">
+            <button class="btn-mini" id="btnDemoStep" onclick="fillCurrentStepDemo()">Demo Scan</button>
+            <button class="btn-mini" onclick="resetScanFlow()">Reset Flow</button>
+          </div>
+        </section>
+
+        <!-- Camera Box -->
+        <div id="readerWrap">
+          <div id="reader"></div>
+          <button class="btn-mini" style="margin-top:8px;width:100%;" onclick="stopCamera()">Close Camera</button>
         </div>
+
+        <!-- Live Scanned Operator & TC Display -->
+        <section class="card">
+          <div class="info-block-title">Operator Information</div>
+          <div class="info-grid">
+            <div class="info-cell"><span class="info-label">ID No.</span><span class="info-val" id="dOpId">-</span></div>
+            <div class="info-cell"><span class="info-label">Name</span><span class="info-val" id="dOpName">-</span></div>
+            <div class="info-cell"><span class="info-label">Floor</span><span class="info-val" id="dOpFloor">-</span></div>
+            <div class="info-cell"><span class="info-label">Dep</span><span class="info-val" id="dOpDep">-</span></div>
+            <div class="info-cell"><span class="info-label">Job Type</span><span class="info-val" id="dOpJob">-</span></div>
+            <div class="info-cell"><span class="info-label">Line</span><span class="info-val" id="dOpLine">-</span></div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="info-block-title">TC Information</div>
+          <div class="info-grid">
+            <div class="info-cell"><span class="info-label">TC</span><span class="info-val" id="dTcNo">-</span></div>
+            <div class="info-cell"><span class="info-label">Lot No.</span><span class="info-val" id="dTcLot">-</span></div>
+            <div class="info-cell"><span class="info-label">Buyer</span><span class="info-val" id="dTcBuyer">-</span></div>
+            <div class="info-cell"><span class="info-label">Style</span><span class="info-val" id="dTcStyle">-</span></div>
+            <div class="info-cell"><span class="info-label">Color</span><span class="info-val" id="dTcColor">-</span></div>
+            <div class="info-cell"><span class="info-label">Size</span><span class="info-val" id="dTcSize">-</span></div>
+            <div class="info-cell"><span class="info-label">Bundle Qty</span><span class="info-val" id="dTcQty">-</span></div>
+            <div class="info-cell"><span class="info-label">Process / SMV</span><span class="info-val" id="dProcSmv">-</span></div>
+          </div>
+        </section>
+
+        <!-- Process Selection (Unlocked after TC Scan) -->
+        <section class="card step-locked" id="processCard">
+          <div class="step-head">
+            <div class="step-title">Select Process</div>
+            <span class="badge badge-locked" id="processBadge">LOCKED</span>
+          </div>
+          <select id="processSelect" class="select-field" disabled onchange="onProcessChange()">
+            <option value="">-- Select Process --</option>
+          </select>
+
+          <!-- ADMIN ONLY: ADD, EDIT & DELETE PROCESS + SMV -->
+          <div class="admin-box" id="adminManageBox" style="display:none;">
+            <div class="info-block-title" id="adminFormTitle">Admin: Add New Process & SMV</div>
+            <div class="input-row">
+              <input type="text" id="procNameInput" class="input-field" placeholder="Process name (e.g. Linking)" />
+              <input type="number" step="0.01" id="procSmvInput" class="input-field" placeholder="SMV (e.g. 0.45)" style="max-width:125px;" />
+            </div>
+            <button class="btn-add" id="btnSaveProcess" onclick="saveProcessSmv()">+ Save Process & SMV</button>
+            <button class="btn-cancel-edit" id="btnCancelEdit" style="display:none;" onclick="cancelEditProcess()">Cancel Edit</button>
+
+            <div class="divider"></div>
+            <div class="info-block-title">Configured Process & SMV List (Edit / Delete)</div>
+            <div class="process-list" id="adminProcessList"></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- VIEW DASHBOARD (LINE-WISE LIVE + DATE & STYLE SEARCH WITH PROCESS & SIZE WISE) -->
+      <div id="viewDashboard" style="display:none; flex-direction:column; gap:14px;">
+        <section class="card">
+          <div class="view-section-title">
+            <span>Search Production (Date & Style)</span>
+            <button class="btn-mini" onclick="loadProductionRecords(true)">Refresh Live</button>
+          </div>
+
+          <div class="input-row">
+            <input type="date" id="searchDate" class="input-field" />
+            <input type="text" id="searchStyle" class="input-field" placeholder="Style No. (e.g. ST-802)" />
+          </div>
+          <div class="input-row" style="margin-bottom:0;">
+            <button class="btn-primary" onclick="runSearch()">Search</button>
+            <button class="btn-mini" onclick="clearSearch()">Clear</button>
+          </div>
+        </section>
+
+        <!-- Search Result: Process-wise with Size-wise Breakdown -->
+        <section class="card" id="searchResultCard">
+          <div class="view-section-title">
+            <span>Process & Size-wise Production</span>
+            <span class="badge badge-done" id="searchCountBadge">0 Records</span>
+          </div>
+          <div id="searchResultContainer">
+            <div class="muted-note">Date এবং Style দিয়ে Search চাপলে Process-wise ও Size-wise প্রোডাকশন আপডেট এখানে দেখাবে।</div>
+          </div>
+        </section>
+
+        <!-- Line-wise Live Production Update -->
+        <section class="card">
+          <div class="view-section-title">
+            <span>Line-wise Live Production Update</span>
+            <span class="badge badge-ready" id="liveSyncStatus">LIVE</span>
+          </div>
+          <div id="lineWiseLiveContainer">
+            <div class="muted-note">লাইভ ডাটা লোড হচ্ছে...</div>
+          </div>
+        </section>
       </div>
     </main>
 
@@ -555,12 +731,19 @@
 
   <script>
     const DEFAULT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwu8AwaJOoAzzI5DQmZ90sOVk8Hx_n421aYK8HejeIbImCpXHdnXfrQhKL241j4t7qACg/exec";
-    const ADMIN_PIN = "1234";
+    const ROLE_PINS = {
+      ADMIN: "1234",
+      OPERATOR: "1111",
+      VIEW: "0000"
+    };
 
-    let currentRole = "OPERATOR";
-    let step1Done = false;
-    let step2Done = false;
+    let currentRole = null;
+    let opScanned = false;
+    let tcScanned = false;
+    let editingIndex = null;
     let qrScanner = null;
+    let liveRefreshTimer = null;
+    let allProductionRecords = [];
 
     let operatorData = { id: "", name: "", floor: "", dep: "", jobType: "", line: "" };
     let tcData = { tc: "", lotNo: "", buyer: "", style: "", color: "", size: "", bundleQty: "" };
@@ -586,149 +769,149 @@
       }, 4000);
     }
 
-    function renderProcessDropdown() {
-      const sel = document.getElementById("processSelect");
-      const currentVal = sel.value;
-      sel.innerHTML = '<option value="">-- Select Process --</option>';
-      processList.forEach(item => {
-        const opt = document.createElement("option");
-        opt.value = item.name;
-        opt.dataset.smv = item.smv;
-        opt.textContent = `${item.name} (SMV: ${item.smv})`;
-        sel.appendChild(opt);
-      });
-      if (currentVal) sel.value = currentVal;
+    function onLoginRoleChange() {
+      const r = document.getElementById("loginRole").value;
+      const hint = document.getElementById("pinHint");
+      if (r === "ADMIN") hint.textContent = "Default Admin PIN: 1234";
+      else if (r === "OPERATOR") hint.textContent = "Default Operator PIN: 1111";
+      else hint.textContent = "Default View Dashboard PIN: 0000";
     }
 
-    function addProcessSmv() {
-      if (currentRole !== "ADMIN") {
-        showToast("শুধু Admin নতুন Process ও SMV যুক্ত করতে পারবেন।", "err");
+    function handleLogin() {
+      const role = document.getElementById("loginRole").value;
+      const pin = document.getElementById("loginPin").value.trim();
+
+      if (pin !== ROLE_PINS[role]) {
+        showToast("ভুল PIN দিয়েছেন! সঠিক PIN দিন।", "err");
         return;
-      }
-      const pName = document.getElementById("newProcessName").value.trim();
-      const smvVal = parseFloat(document.getElementById("newProcessSmv").value);
-
-      if (!pName || isNaN(smvVal) || smvVal <= 0) {
-        showToast("সঠিক Process নাম এবং SMV মান দিন।", "err");
-        return;
-      }
-
-      const existingIdx = processList.findIndex(x => x.name.toLowerCase() === pName.toLowerCase());
-      if (existingIdx >= 0) {
-        processList[existingIdx].smv = smvVal;
-      } else {
-        processList.push({ name: pName, smv: smvVal });
-      }
-
-      localStorage.setItem("SCANNER_PROCESS_LIST", JSON.stringify(processList));
-      renderProcessDropdown();
-      document.getElementById("processSelect").value = pName;
-      document.getElementById("newProcessName").value = "";
-      document.getElementById("newProcessSmv").value = "";
-      onProcessChange();
-      showToast(`Process "${pName}" (SMV: ${smvVal}) যুক্ত হয়েছে।`, "ok");
-    }
-
-    function switchRole(role) {
-      if (role === "ADMIN" && currentRole !== "ADMIN") {
-        const pin = prompt("Admin PIN দিন (Default: 1234):");
-        if (pin !== ADMIN_PIN) {
-          showToast("ভুল Admin PIN!", "err");
-          return;
-        }
       }
 
       currentRole = role;
-      document.getElementById("tabAdmin").classList.toggle("active", role === "ADMIN");
-      document.getElementById("tabOperator").classList.toggle("active", role === "OPERATOR");
-      document.getElementById("tabViewer").classList.toggle("active", role === "VIEWER");
-      document.getElementById("rolePill").textContent = role === "VIEWER" ? "VIEW ONLY" : role;
+      document.getElementById("loginPin").value = "";
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("headerSessionBox").style.display = "flex";
+      document.getElementById("activeRoleBadge").textContent = role + " DASHBOARD";
 
-      const isViewer = role === "VIEWER";
-      const isAdmin = role === "ADMIN";
-
-      document.getElementById("viewOnlyBanner").style.display = isViewer ? "block" : "none";
-      document.getElementById("opControls").style.display = isViewer ? "none" : "block";
-      document.getElementById("tcControls").style.display = isViewer ? "none" : "block";
-      document.getElementById("bottomSaveBar").style.display = isViewer ? "none" : "block";
-      document.getElementById("bottomSettingsArea").style.display = isViewer ? "none" : "block";
-      document.getElementById("adminProcessBox").style.display = isAdmin ? "block" : "none";
-
-      if (isViewer) {
-        stopCamera();
-        document.getElementById("processSelect").disabled = true;
+      if (role === "VIEW") {
+        document.getElementById("scannerWorkspace").style.display = "none";
+        document.getElementById("bottomSaveBar").style.display = "none";
+        document.getElementById("viewDashboard").style.display = "flex";
+        loadProductionRecords(false);
+        liveRefreshTimer = setInterval(() => loadProductionRecords(false), 15000);
       } else {
-        syncLocks();
+        document.getElementById("viewDashboard").style.display = "none";
+        document.getElementById("scannerWorkspace").style.display = "flex";
+        document.getElementById("bottomSaveBar").style.display = "block";
+        document.getElementById("adminManageBox").style.display = role === "ADMIN" ? "block" : "none";
+        resetScanFlow();
+        renderProcessDropdown();
+        renderAdminProcessList();
+      }
+      showToast(`${role} Dashboard-এ স্বাগতম!`, "ok");
+    }
+
+    function logout() {
+      stopCamera();
+      clearInterval(liveRefreshTimer);
+      currentRole = null;
+      document.getElementById("headerSessionBox").style.display = "none";
+      document.getElementById("scannerWorkspace").style.display = "none";
+      document.getElementById("viewDashboard").style.display = "none";
+      document.getElementById("bottomSaveBar").style.display = "none";
+      document.getElementById("loginScreen").style.display = "block";
+    }
+
+    function syncScanButtonUI() {
+      const btn = document.getElementById("btnDynamicScan");
+      const badge = document.getElementById("scanPhaseBadge");
+      const input = document.getElementById("dynamicManualInput");
+      const procCard = document.getElementById("processCard");
+      const procBadge = document.getElementById("processBadge");
+      const procSelect = document.getElementById("processSelect");
+
+      if (!opScanned) {
+        btn.textContent = "Operator ID Scan";
+        btn.className = "btn-single-scan";
+        btn.disabled = false;
+        badge.textContent = "STEP 1: OPERATOR";
+        badge.className = "badge badge-ready";
+        input.disabled = false;
+        input.placeholder = "Operator ID Scan: ID|Name|Floor|Dep|Job Type|Line";
+        procCard.classList.add("step-locked");
+        procBadge.textContent = "LOCKED";
+        procBadge.className = "badge badge-locked";
+        procSelect.disabled = true;
+      } else if (!tcScanned) {
+        btn.textContent = "Scan TC Card";
+        btn.className = "btn-single-scan tc-mode";
+        btn.disabled = false;
+        badge.textContent = "STEP 2: TC CARD";
+        badge.className = "badge badge-ready";
+        input.disabled = false;
+        input.placeholder = "Scan TC Card: TC|Lot No.|Buyer|Style|Color|Size|Bundle Qty";
+        procCard.classList.add("step-locked");
+        procBadge.textContent = "LOCKED";
+        procBadge.className = "badge badge-locked";
+        procSelect.disabled = true;
+      } else {
+        btn.textContent = "Operator & TC Scanned";
+        btn.className = "btn-single-scan completed-mode";
+        btn.disabled = true;
+        badge.textContent = "SCANNED";
+        badge.className = "badge badge-done";
+        input.disabled = true;
+        input.value = "";
+        input.placeholder = "উভয় স্ক্যান সম্পন্ন — নিচ থেকে Process সিলেক্ট করুন";
+        procCard.classList.remove("step-locked");
+        procBadge.textContent = procSelect.value ? "SELECTED" : "SELECT PROCESS";
+        procBadge.className = "badge " + (procSelect.value ? "badge-done" : "badge-ready");
+        procSelect.disabled = false;
+      }
+
+      updateSaveButton();
+    }
+
+    function triggerDynamicScan() {
+      if (!opScanned) {
+        startCamera("OP");
+      } else if (!tcScanned) {
+        startCamera("TC");
       }
     }
 
-    function handleLockedStepClick(targetStep) {
-      if (currentRole === "VIEWER") return;
-      if (targetStep === 2 && !step1Done) {
-        showToast("আগে 1. Operator Barcode স্ক্যান করুন, তারপর TC আনলক হবে।", "err");
-      } else if (targetStep === 3 && !step2Done) {
-        showToast("আগে 1. Operator এবং 2. TC Barcode স্ক্যান সম্পন্ন করুন।", "err");
+    function applyDynamicManual() {
+      const val = document.getElementById("dynamicManualInput").value;
+      if (!opScanned) {
+        handleScannedValue("OP", val);
+      } else if (!tcScanned) {
+        handleScannedValue("TC", val);
       }
     }
 
-    function syncLocks() {
-      const step2Card = document.getElementById("step2Card");
-      const badge2 = document.getElementById("badge2");
-      const step3Card = document.getElementById("step3Card");
-      const badge3 = document.getElementById("badge3");
-
-      const canScanTc = step1Done && currentRole !== "VIEWER";
-      document.getElementById("btnScanTc").disabled = !canScanTc;
-      document.getElementById("tcManualInput").disabled = !canScanTc;
-      document.getElementById("btnApplyTc").disabled = !canScanTc;
-      document.getElementById("btnDemoTc").disabled = !canScanTc;
-
-      if (canScanTc) {
-        step2Card.classList.remove("step-locked");
-        badge2.textContent = step2Done ? "DONE" : "READY";
-        badge2.className = "badge " + (step2Done ? "badge-done" : "badge-ready");
-      } else {
-        step2Card.classList.add("step-locked");
-        badge2.textContent = "LOCKED";
-        badge2.className = "badge badge-locked";
+    function fillCurrentStepDemo() {
+      if (!opScanned) {
+        handleScannedValue("OP", "OP-104|Rahim Mia|Floor-2|Sewing|Operator|Line-03");
+      } else if (!tcScanned) {
+        handleScannedValue("TC", "TC-90412|LOT-01|ABC Corp|ST-802|Navy Blue|L|60");
       }
-
-      const canSelectProcess = step1Done && step2Done && currentRole !== "VIEWER";
-      document.getElementById("processSelect").disabled = !canSelectProcess;
-
-      if (canSelectProcess) {
-        step3Card.classList.remove("step-locked");
-        badge3.textContent = document.getElementById("processSelect").value ? "DONE" : "READY";
-        badge3.className = "badge " + (document.getElementById("processSelect").value ? "badge-done" : "badge-ready");
-      } else {
-        step3Card.classList.add("step-locked");
-        badge3.textContent = "LOCKED";
-        badge3.className = "badge badge-locked";
-      }
-
-      updateSaveState();
     }
 
     function parseParts(raw) {
-      const clean = raw.trim();
+      const clean = (raw || "").trim();
+      if (!clean) return [];
       if (clean.includes("|")) return clean.split("|").map(s => s.trim());
       if (clean.includes("\t")) return clean.split("\t").map(s => s.trim());
       return clean.split(",").map(s => s.trim());
     }
 
-    function handleTextInput(type, rawText) {
-      if (currentRole === "VIEWER") return;
-      if (type === "TC" && !step1Done) {
-        showToast("আগে Operator Barcode স্ক্যান করুন!", "err");
+    function handleScannedValue(type, rawText) {
+      const parts = parseParts(rawText);
+      if (!parts.length || !parts[0]) {
+        showToast("সঠিক বারকোড তথ্য দিন।", "err");
         return;
       }
 
-      const parts = parseParts(rawText);
-      if (type === "OP") {
-        if (!parts[0]) {
-          showToast("Operator Barcode তথ্য খালি রাখা যাবে না।", "err");
-          return;
-        }
+      if (type === "OP" && !opScanned) {
         operatorData = {
           id: parts[0] || "",
           name: parts[1] || "",
@@ -744,16 +927,11 @@
         document.getElementById("dOpJob").textContent = operatorData.jobType || "-";
         document.getElementById("dOpLine").textContent = operatorData.line || "-";
 
-        step1Done = true;
-        document.getElementById("badge1").textContent = "DONE";
-        document.getElementById("badge1").className = "badge badge-done";
-        syncLocks();
-        showToast("Operator তথ্য যুক্ত হয়েছে। এখন TC Barcode স্ক্যান করুন।", "ok");
-      } else if (type === "TC") {
-        if (!parts[0]) {
-          showToast("TC Barcode তথ্য খালি রাখা যাবে না।", "err");
-          return;
-        }
+        opScanned = true;
+        document.getElementById("dynamicManualInput").value = "";
+        syncScanButtonUI();
+        showToast("Operator ID স্ক্যান সম্পন্ন! এখন বাটনে চাপ দিয়ে Scan TC Card করুন।", "ok");
+      } else if (type === "TC" && opScanned && !tcScanned) {
         tcData = {
           tc: parts[0] || "",
           lotNo: parts[1] || "",
@@ -771,43 +949,131 @@
         document.getElementById("dTcSize").textContent = tcData.size || "-";
         document.getElementById("dTcQty").textContent = tcData.bundleQty || "-";
 
-        step2Done = true;
-        syncLocks();
-        showToast("TC তথ্য যুক্ত হয়েছে। এখন Process সিলেক্ট করুন।", "ok");
+        tcScanned = true;
+        syncScanButtonUI();
+        showToast("TC Card স্ক্যান সম্পন্ন! এখন Process সিলেক্ট করুন।", "ok");
       }
+    }
+
+    function renderProcessDropdown() {
+      const sel = document.getElementById("processSelect");
+      const prev = sel.value;
+      sel.innerHTML = '<option value="">-- Select Process --</option>';
+      processList.forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = item.name;
+        opt.textContent = `${item.name} (SMV: ${item.smv})`;
+        sel.appendChild(opt);
+      });
+      if (processList.some(p => p.name === prev)) {
+        sel.value = prev;
+      } else {
+        sel.value = "";
+      }
+      onProcessChange();
+    }
+
+    function renderAdminProcessList() {
+      const box = document.getElementById("adminProcessList");
+      if (!box) return;
+      if (!processList.length) {
+        box.innerHTML = '<div class="muted-note">কোনো Process যুক্ত করা নেই।</div>';
+        return;
+      }
+      box.innerHTML = processList.map((item, idx) => `
+        <div class="process-item">
+          <div>
+            <div class="process-meta">${escapeHtml(item.name)}</div>
+            <div class="process-smv">SMV: ${item.smv}</div>
+          </div>
+          <div class="item-btns">
+            <button class="btn-edit" onclick="startEditProcess(${idx})">Edit</button>
+            <button class="btn-del" onclick="deleteProcess(${idx})">Delete</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function saveProcessSmv() {
+      if (currentRole !== "ADMIN") return;
+      const name = document.getElementById("procNameInput").value.trim();
+      const smv = parseFloat(document.getElementById("procSmvInput").value);
+
+      if (!name || isNaN(smv) || smv <= 0) {
+        showToast("সঠিক Process নাম এবং SMV মান দিন।", "err");
+        return;
+      }
+
+      if (editingIndex !== null) {
+        processList[editingIndex] = { name, smv };
+        editingIndex = null;
+        document.getElementById("adminFormTitle").textContent = "Admin: Add New Process & SMV";
+        document.getElementById("btnSaveProcess").textContent = "+ Save Process & SMV";
+        document.getElementById("btnCancelEdit").style.display = "none";
+        showToast("Process ও SMV আপডেট হয়েছে।", "ok");
+      } else {
+        const dupIdx = processList.findIndex(p => p.name.toLowerCase() === name.toLowerCase());
+        if (dupIdx >= 0) {
+          processList[dupIdx].smv = smv;
+          showToast("বিদ্যমান Process-এর SMV আপডেট হয়েছে।", "ok");
+        } else {
+          processList.push({ name, smv });
+          showToast("নতুন Process ও SMV যুক্ত হয়েছে।", "ok");
+        }
+      }
+
+      localStorage.setItem("SCANNER_PROCESS_LIST", JSON.stringify(processList));
+      document.getElementById("procNameInput").value = "";
+      document.getElementById("procSmvInput").value = "";
+      renderProcessDropdown();
+      renderAdminProcessList();
+      if (tcScanned) {
+        document.getElementById("processSelect").value = name;
+        onProcessChange();
+      }
+    }
+
+    function startEditProcess(idx) {
+      if (currentRole !== "ADMIN") return;
+      const item = processList[idx];
+      editingIndex = idx;
+      document.getElementById("procNameInput").value = item.name;
+      document.getElementById("procSmvInput").value = item.smv;
+      document.getElementById("adminFormTitle").textContent = "Admin: Edit Process & SMV";
+      document.getElementById("btnSaveProcess").textContent = "Update Process & SMV";
+      document.getElementById("btnCancelEdit").style.display = "block";
+    }
+
+    function cancelEditProcess() {
+      editingIndex = null;
+      document.getElementById("procNameInput").value = "";
+      document.getElementById("procSmvInput").value = "";
+      document.getElementById("adminFormTitle").textContent = "Admin: Add New Process & SMV";
+      document.getElementById("btnSaveProcess").textContent = "+ Save Process & SMV";
+      document.getElementById("btnCancelEdit").style.display = "none";
+    }
+
+    function deleteProcess(idx) {
+      if (currentRole !== "ADMIN") return;
+      if (!confirm(`"${processList[idx].name}" মুছে ফেলতে চান?`)) return;
+      processList.splice(idx, 1);
+      localStorage.setItem("SCANNER_PROCESS_LIST", JSON.stringify(processList));
+      if (editingIndex === idx) cancelEditProcess();
+      renderProcessDropdown();
+      renderAdminProcessList();
+      showToast("Process ডিলিট করা হয়েছে।", "ok");
     }
 
     function onProcessChange() {
-      const sel = document.getElementById("processSelect");
-      const chosen = processList.find(p => p.name === sel.value);
-      document.getElementById("dProcSmv").textContent = chosen ? `${chosen.name} (${chosen.smv})` : "-";
-      syncLocks();
+      const selName = document.getElementById("processSelect").value;
+      const found = processList.find(p => p.name === selName);
+      document.getElementById("dProcSmv").textContent = found ? `${found.name} (${found.smv})` : "-";
+      syncScanButtonUI();
     }
 
-    function updateSaveState() {
+    function updateSaveButton() {
       const procVal = document.getElementById("processSelect").value;
-      document.getElementById("btnSave").disabled = !(step1Done && step2Done && procVal && currentRole !== "VIEWER");
-    }
-
-    function fillDemo(type) {
-      if (type === "OP") {
-        const sample = "OP-104|Rahim Mia|Floor-2|Sewing|Operator|Line-03";
-        document.getElementById("opManualInput").value = sample;
-        handleTextInput("OP", sample);
-      } else {
-        const sample = "TC-90412|LOT-01|ABC Corp|ST-802|Navy Blue|L|60";
-        document.getElementById("tcManualInput").value = sample;
-        handleTextInput("TC", sample);
-      }
-    }
-
-    function guardedScan(type) {
-      if (currentRole === "VIEWER") return;
-      if (type === "TC" && !step1Done) {
-        showToast("আগে Operator Barcode স্ক্যান করুন!", "err");
-        return;
-      }
-      startCamera(type);
+      document.getElementById("btnSave").disabled = !(opScanned && tcScanned && procVal);
     }
 
     function startCamera(type) {
@@ -820,13 +1086,11 @@
         { fps: 10, qrbox: { width: 240, height: 180 } },
         decodedText => {
           stopCamera();
-          if (type === "OP") document.getElementById("opManualInput").value = decodedText;
-          if (type === "TC") document.getElementById("tcManualInput").value = decodedText;
-          handleTextInput(type, decodedText);
+          handleScannedValue(type, decodedText);
         },
         () => {}
       ).catch(() => {
-        showToast("ক্যামেরা চালু করা যাচ্ছে না। Manual ইনপুট ব্যবহার করুন।", "err");
+        showToast("ক্যামেরা চালু করা যাচ্ছে না। নিচের বক্সে লিখে Apply করুন।", "err");
         document.getElementById("readerWrap").style.display = "none";
       });
     }
@@ -851,11 +1115,10 @@
       }
       localStorage.setItem("GAS_WEB_APP_URL", url);
       document.getElementById("settingsPanel").classList.remove("open");
-      showToast("Google Sheet Script URL সেভ হয়েছে।", "ok");
+      showToast("Script URL সেভ হয়েছে।", "ok");
     }
 
     function saveToGoogleSheet() {
-      if (currentRole === "VIEWER") return;
       const procName = document.getElementById("processSelect").value;
       const procObj = processList.find(p => p.name === procName);
       const smvVal = procObj ? Number(procObj.smv) : 0;
@@ -893,39 +1156,160 @@
         body: JSON.stringify(payload)
       })
         .then(() => {
-          showToast("ডাটা Google Sheet-এ পাঠানো হয়েছে!", "ok");
-          resetAll();
+          showToast("ডাটা Google Sheet-এ সেভ হয়েছে!", "ok");
+          resetScanFlow();
         })
         .catch(() => {
-          showToast("ডাটা পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।", "err");
+          showToast("ডাটা পাঠাতে সমস্যা হয়েছে।", "err");
           btn.disabled = false;
           btn.textContent = "SAVE TO GOOGLE SHEET";
         });
     }
 
-    function resetAll() {
-      step1Done = false;
-      step2Done = false;
+    function resetScanFlow() {
+      stopCamera();
+      opScanned = false;
+      tcScanned = false;
       operatorData = { id: "", name: "", floor: "", dep: "", jobType: "", line: "" };
       tcData = { tc: "", lotNo: "", buyer: "", style: "", color: "", size: "", bundleQty: "" };
 
       ["dOpId", "dOpName", "dOpFloor", "dOpDep", "dOpJob", "dOpLine", "dTcNo", "dTcLot", "dTcBuyer", "dTcStyle", "dTcColor", "dTcSize", "dTcQty", "dProcSmv"]
         .forEach(id => { document.getElementById(id).textContent = "-"; });
 
-      document.getElementById("opManualInput").value = "";
-      document.getElementById("tcManualInput").value = "";
+      document.getElementById("dynamicManualInput").value = "";
       document.getElementById("processSelect").value = "";
-
-      document.getElementById("badge1").textContent = "READY";
-      document.getElementById("badge1").className = "badge badge-ready";
-
-      const btn = document.getElementById("btnSave");
-      btn.textContent = "SAVE TO GOOGLE SHEET";
-      syncLocks();
+      document.getElementById("btnSave").textContent = "SAVE TO GOOGLE SHEET";
+      syncScanButtonUI();
     }
 
-    renderProcessDropdown();
-    syncLocks();
+    /* VIEW DASHBOARD FUNCTIONS */
+    function loadProductionRecords(showMsg = false) {
+      const badge = document.getElementById("liveSyncStatus");
+      if (badge) badge.textContent = "SYNCING...";
+      fetch(getScriptUrl())
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.status === "SUCCESS" && Array.isArray(data.records)) {
+            allProductionRecords = data.records;
+            renderLineWiseLive(allProductionRecords);
+            runSearch();
+            if (badge) badge.textContent = "LIVE";
+            if (showMsg) showToast("লাইভ ডাটা আপডেট হয়েছে।", "ok");
+          } else {
+            if (badge) badge.textContent = "OFFLINE";
+          }
+        })
+        .catch(() => {
+          if (badge) badge.textContent = "CHECK URL";
+        });
+    }
+
+    function renderLineWiseLive(records) {
+      const container = document.getElementById("lineWiseLiveContainer");
+      if (!records.length) {
+        container.innerHTML = '<div class="muted-note">এখনও কোনো প্রোডাকশন ডাটা পাওয়া যায়নি।</div>';
+        return;
+      }
+
+      const byLine = {};
+      records.forEach(r => {
+        const lineKey = r.line || "Unassigned Line";
+        const procKey = r.process || "Unknown Process";
+        if (!byLine[lineKey]) byLine[lineKey] = { totalQty: 0, totalSah: 0, procs: {} };
+        byLine[lineKey].totalQty += Number(r.bundleQty || 0);
+        byLine[lineKey].totalSah += Number(r.earnedSah || 0);
+        if (!byLine[lineKey].procs[procKey]) byLine[lineKey].procs[procKey] = { qty: 0, sah: 0 };
+        byLine[lineKey].procs[procKey].qty += Number(r.bundleQty || 0);
+        byLine[lineKey].procs[procKey].sah += Number(r.earnedSah || 0);
+      });
+
+      container.innerHTML = Object.keys(byLine).map(line => {
+        const lObj = byLine[line];
+        const procHtml = Object.keys(lObj.procs).map(p => `
+          <div class="proc-row">
+            <span>${escapeHtml(p)}</span>
+            <span>${lObj.procs[p].qty} pcs (${lObj.procs[p].sah.toFixed(2)} SAH)</span>
+          </div>
+        `).join("");
+
+        return `
+          <div class="line-box">
+            <div class="line-header">
+              <span>${escapeHtml(line)}</span>
+              <span>Total: ${lObj.totalQty} pcs | ${lObj.totalSah.toFixed(2)} SAH</span>
+            </div>
+            ${procHtml}
+          </div>
+        `;
+      }).join("");
+    }
+
+    function runSearch() {
+      const dateVal = document.getElementById("searchDate").value.trim();
+      const styleVal = document.getElementById("searchStyle").value.trim().toLowerCase();
+      const container = document.getElementById("searchResultContainer");
+      const countBadge = document.getElementById("searchCountBadge");
+
+      if (!dateVal && !styleVal) {
+        countBadge.textContent = "0 Filtered";
+        container.innerHTML = '<div class="muted-note">Date এবং Style সিলেক্ট করে Search চাপুন।</div>';
+        return;
+      }
+
+      const matched = allProductionRecords.filter(r => {
+        const dateOk = !dateVal || r.date === dateVal;
+        const styleOk = !styleVal || String(r.style || "").toLowerCase().includes(styleVal);
+        return dateOk && styleOk;
+      });
+
+      countBadge.textContent = `${matched.length} Entries`;
+
+      if (!matched.length) {
+        container.innerHTML = '<div class="muted-note">এই Date ও Style-এর কোনো প্রোডাকশন পাওয়া যায়নি।</div>';
+        return;
+      }
+
+      const byProcess = {};
+      matched.forEach(r => {
+        const proc = r.process || "Unknown Process";
+        const sz = r.size || "N/A";
+        const qty = Number(r.bundleQty || 0);
+        if (!byProcess[proc]) byProcess[proc] = { totalQty: 0, sizes: {} };
+        byProcess[proc].totalQty += qty;
+        byProcess[proc].sizes[sz] = (byProcess[proc].sizes[sz] || 0) + qty;
+      });
+
+      container.innerHTML = Object.keys(byProcess).map(proc => {
+        const pData = byProcess[proc];
+        const sizeChips = Object.keys(pData.sizes).map(sz => `
+          <span class="size-chip">${escapeHtml(sz)}: ${pData.sizes[sz]} pcs</span>
+        `).join("");
+
+        return `
+          <div class="line-box">
+            <div class="line-header">
+              <span>Process: ${escapeHtml(proc)}</span>
+              <span>Total: ${pData.totalQty} pcs</span>
+            </div>
+            <div class="size-chips">${sizeChips}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function clearSearch() {
+      document.getElementById("searchDate").value = "";
+      document.getElementById("searchStyle").value = "";
+      runSearch();
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
   </script>
 </body>
 </html>
