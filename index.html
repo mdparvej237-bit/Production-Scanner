@@ -33,42 +33,45 @@
       align-items: center; gap: 8px; flex-wrap: wrap;
       box-shadow: 0 4px 14px rgba(12, 35, 64, 0.18);
     }
-    .topbar h1 { margin: 0; font-size: 19px; font-weight: 800; line-height: 1.15; }
-    .topbar-right { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .topbar h1 { margin: 0; font-size: 19px; font-weight: 800; line-height: 1.15; text-align: center; }
+    .topbar-right { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: center; }
 
-    .pill { border: none; border-radius: 999px; padding: 8px 14px; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .pill { border: none; border-radius: 999px; padding: 8px 14px; font-size: 14px; font-weight: 700; cursor: pointer; text-align: center; }
     .pill-tab { background: rgba(255, 255, 255, 0.15); color: #fff; }
     .pill-tab.active { background: rgba(143, 184, 159, 0.32); color: #d1fae5; border: 1px solid rgba(143, 184, 159, 0.55); }
     .pill-logout { background: #dc2626; color: #fff; }
 
-    .container { max-width: 980px; margin: 15px auto; padding: 0 12px 40px; }
+    .container { max-width: 1020px; margin: 15px auto; padding: 0 12px 40px; }
     .card {
       background: var(--card); border: 1px solid var(--border); border-radius: 16px;
       padding: 16px; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(17, 24, 39, 0.05);
     }
-    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; flex-wrap: wrap; }
-    .card-title { margin: 0; font-size: 20px; font-weight: 800; }
-    .hint { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.5; }
+    .card-head {
+      display: flex; justify-content: center; align-items: center;
+      flex-direction: column; margin-bottom: 12px; gap: 8px; text-align: center;
+    }
+    .card-title { margin: 0; font-size: 20px; font-weight: 800; text-align: center; }
+    .hint { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.5; text-align: center; }
 
     .admin-menubar {
-      display: flex; gap: 8px; flex-wrap: wrap;
+      display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
       background: #f1efe9; border: 1px solid var(--border);
       padding: 8px; border-radius: 14px; margin-bottom: 14px;
     }
     .admin-menu-btn {
       flex: 1; min-width: 140px; border: 1px solid transparent;
       background: transparent; color: var(--text); border-radius: 10px;
-      padding: 10px 12px; font-size: 15px; font-weight: 800; cursor: pointer;
+      padding: 10px 12px; font-size: 15px; font-weight: 800; cursor: pointer; text-align: center;
     }
     .admin-menu-btn.active {
       background: linear-gradient(180deg, #3b82f6, var(--cobalt-dark));
       color: #fff; box-shadow: 0 3px 10px rgba(37, 99, 235, 0.22);
     }
 
-    label { display: block; font-size: 15px; font-weight: 700; color: #374151; margin: 10px 0 5px; }
+    label { display: block; font-size: 15px; font-weight: 700; color: #374151; margin: 10px 0 5px; text-align: center; }
     input, select {
       width: 100%; padding: 11px 13px; border: 1px solid #d5d0c5;
-      border-radius: 11px; font-size: 16px; background: #fff; color: var(--text);
+      border-radius: 11px; font-size: 16px; background: #fff; color: var(--text); text-align: center;
     }
     input:focus, select:focus { outline: none; border-color: var(--cobalt); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
 
@@ -76,30 +79,30 @@
     .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
     .info-cell {
       background: #f8f7f3; border: 1px solid var(--border);
-      border-radius: 10px; padding: 9px 11px; font-size: 15px;
+      border-radius: 10px; padding: 9px 11px; font-size: 15px; text-align: center;
     }
-    .info-lbl { font-size: 13.5px; color: var(--muted); font-weight: 700; }
-    .info-val { font-size: 16px; color: var(--text); font-weight: 800; margin-top: 2px; }
+    .info-lbl { font-size: 13.5px; color: var(--muted); font-weight: 700; text-align: center; }
+    .info-val { font-size: 16px; color: var(--text); font-weight: 800; margin-top: 2px; text-align: center; }
 
     .btn-row { display: grid; grid-template-columns: 2.2fr 1fr; gap: 10px; margin-top: 14px; }
     .btn-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
 
     .btn-primary {
       background: linear-gradient(180deg, #3b82f6, var(--cobalt-dark));
-      color: #fff; border: none; border-radius: 11px; padding: 12px 16px; font-size: 16px; font-weight: 700; cursor: pointer;
+      color: #fff; border: none; border-radius: 11px; padding: 12px 16px; font-size: 16px; font-weight: 700; cursor: pointer; text-align: center;
     }
     .btn-next {
       background: linear-gradient(180deg, #059669, #047857);
       color: #fff; border: none; border-radius: 12px; padding: 13px 16px; font-size: 18px; font-weight: 800; cursor: pointer;
-      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.28);
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.28); text-align: center;
     }
     .btn-sage {
       background: var(--sage); color: #102a1d; border: none;
-      border-radius: 11px; padding: 11px 14px; font-size: 16px; font-weight: 700; cursor: pointer;
+      border-radius: 11px; padding: 11px 14px; font-size: 16px; font-weight: 700; cursor: pointer; text-align: center;
     }
     .btn-refresh {
       background: var(--sage-soft); color: var(--sage-text); border: 1px solid #c6e0d0;
-      border-radius: 10px; padding: 8px 12px; font-weight: 700; font-size: 14.5px; cursor: pointer;
+      border-radius: 10px; padding: 8px 12px; font-weight: 700; font-size: 14.5px; cursor: pointer; text-align: center;
     }
     .btn-camera-green {
       background: linear-gradient(180deg, #22c55e, #15803d);
@@ -111,26 +114,27 @@
       font-weight: 800;
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(21, 128, 61, 0.28);
+      text-align: center;
     }
     .btn-edit {
       background: var(--sage-soft); color: var(--sage-text); border: 1px solid #b8d8c5;
-      border-radius: 8px; padding: 6px 10px; font-size: 14px; font-weight: 700; cursor: pointer;
+      border-radius: 8px; padding: 6px 10px; font-size: 14px; font-weight: 700; cursor: pointer; text-align: center;
     }
     .btn-remove {
       background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;
-      border-radius: 8px; padding: 6px 10px; font-size: 14px; font-weight: 700; cursor: pointer;
+      border-radius: 8px; padding: 6px 10px; font-size: 14px; font-weight: 700; cursor: pointer; text-align: center;
     }
 
-    .badge-entries { background: #0f766e; color: #ecfdf5; padding: 5px 11px; border-radius: 999px; font-size: 14px; font-weight: 800; }
-    .badge-live { background: var(--amber-soft); color: var(--amber-text); padding: 5px 11px; border-radius: 999px; font-size: 14px; font-weight: 800; }
-    .badge-upto { background: #dbeafe; color: #1e3a8a; border: 1px solid #93c5fd; padding: 5px 12px; border-radius: 999px; font-size: 14.5px; font-weight: 800; }
-    .badge-lock { background: var(--red-soft); color: var(--red-text); padding: 5px 11px; border-radius: 999px; font-size: 14px; font-weight: 800; }
-    .badge-count { background: #e0e7ff; color: #1e3a8a; padding: 4px 10px; border-radius: 999px; font-size: 13.5px; font-weight: 800; }
+    .badge-entries { background: #0f766e; color: #ecfdf5; padding: 5px 11px; border-radius: 999px; font-size: 14px; font-weight: 800; text-align: center; }
+    .badge-live { background: var(--amber-soft); color: var(--amber-text); padding: 5px 11px; border-radius: 999px; font-size: 14px; font-weight: 800; text-align: center; }
+    .badge-upto { background: #dbeafe; color: #1e3a8a; border: 1px solid #93c5fd; padding: 5px 14px; border-radius: 999px; font-size: 15px; font-weight: 800; text-align: center; }
+    .badge-lock { background: var(--red-soft); color: var(--red-text); padding: 5px 11px; border-radius: 999px; font-size: 14px; font-weight: 800; text-align: center; }
+    .badge-count { background: #e0e7ff; color: #1e3a8a; padding: 4px 10px; border-radius: 999px; font-size: 13.5px; font-weight: 800; text-align: center; }
 
     .scanner-wrap { background: #090d16; color: #fff; border-radius: 14px; padding: 14px; text-align: center; }
     .step-banner {
       background: #172554; color: #dbeafe; border: 1px solid #3b82f6;
-      border-radius: 10px; padding: 10px 12px; font-size: 17px; font-weight: 800; margin-bottom: 8px;
+      border-radius: 10px; padding: 10px 12px; font-size: 17px; font-weight: 800; margin-bottom: 8px; text-align: center;
     }
     .step-banner.hold-step { background: #1e3a8a; color: #fef08a; border-color: #facc15; }
     .step-banner.tc-step { background: #064e3b; color: #d1fae5; border-color: #10b981; }
@@ -140,7 +144,7 @@
 
     .notify-box {
       margin-top: 10px; border-radius: 11px; padding: 10px 12px;
-      font-size: 15.5px; font-weight: 800; display: none;
+      font-size: 15.5px; font-weight: 800; display: none; text-align: center;
     }
     .notify-dup { display: block; background: var(--red-soft); border: 1px solid #f87171; color: var(--red-text); }
     .notify-ok { display: block; background: var(--sage-soft); border: 1px solid #8fb89f; color: var(--sage-text); }
@@ -161,23 +165,28 @@
     .style-group-header {
       width: 100%; border: none; background: #f2efe8;
       padding: 12px 14px; display: flex; justify-content: space-between;
-      align-items: center; gap: 10px; cursor: pointer; text-align: left;
+      align-items: center; gap: 10px; cursor: pointer; text-align: center;
       font-size: 17px; font-weight: 800; color: var(--text);
     }
     .style-group-header:hover { background: #e9e5dc; }
     .style-group-body { padding: 4px 12px 12px; background: #fff; }
 
     .table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14.5px; min-width: 680px; }
-    th, td { padding: 9px 8px; border-bottom: 1px solid #ece9e2; text-align: left; font-size: 14.5px; white-space: nowrap; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14.5px; min-width: 720px; }
+    th, td {
+      padding: 9px 8px; border-bottom: 1px solid #ece9e2;
+      text-align: center !important; vertical-align: middle;
+      font-size: 14.5px; white-space: nowrap;
+    }
     th { background: #f5f3ed; font-weight: 800; color: #1f2937; }
-    tfoot td { background: #f1efe9; font-weight: 800; border-top: 2px solid #cbd5e1; }
+    tr.floor-sub-row td { background: #e8f0fe; font-weight: 800; color: #0c2340; border-top: 2px solid #93c5fd; border-bottom: 2px solid #93c5fd; }
+    tr.grand-total-row td { background: #0c2340; font-weight: 800; color: #ffffff; border-top: 2px solid #0c2340; }
 
     .dev-pos { background: #dcfce7 !important; color: #166534 !important; font-weight: 800; }
     .dev-neg { background: #fee2e2 !important; color: #991b1b !important; font-weight: 800; }
-    .fc-input { padding: 7px 9px; font-size: 15px; border-radius: 8px; min-width: 90px; }
+    .fc-input { padding: 7px 9px; font-size: 15px; border-radius: 8px; min-width: 90px; text-align: center; }
 
-    .msg { margin-top: 8px; font-size: 15px; font-weight: 700; }
+    .msg { margin-top: 8px; font-size: 15px; font-weight: 700; text-align: center; }
     .hidden { display: none !important; }
   </style>
 </head>
@@ -212,11 +221,9 @@
     <div id="view-dashboard" class="hidden">
       <div class="card">
         <div class="card-head">
-          <div>
-            <h2 class="card-title">Live Line-wise Output & Efficiency</h2>
-            <p class="hint" style="margin-top:2px;">In-time 8:00 AM | Lunch 1:00 PM–2:00 PM বাদে লাইভ আপডেট</p>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <h2 class="card-title">Live Line-wise Output & Efficiency</h2>
+          <p class="hint" style="margin-top:2px;">In-time 8:00 AM | Lunch 1:00 PM–2:00 PM বাদে লাইভ আপডেট (Max Forecast Hour সীমাবদ্ধ)</p>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;">
             <span id="upToTimeBadge" class="badge-upto">Up to 8:00 AM</span>
             <span id="liveBadge" class="badge-live">LIVE</span>
             <button class="btn-refresh" onclick="loadDashboard()">Refresh Live</button>
@@ -224,12 +231,12 @@
           </div>
         </div>
 
-        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:8px;">
-          <div style="min-width:175px;">
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;margin-bottom:8px;">
+          <div style="min-width:190px;">
             <label for="dashDatePicker" style="margin-top:2px;">Dashboard Date</label>
             <input id="dashDatePicker" type="date" onchange="onDashboardDateChange()" />
           </div>
-          <div id="dashSummaryInfo" class="hint" style="padding-bottom:8px;"></div>
+          <div id="dashSummaryInfo" class="hint" style="padding-top:16px;"></div>
         </div>
 
         <div id="dashErr" class="msg" style="color:#b91c1c;"></div>
@@ -276,7 +283,7 @@
 
         <div class="scanner-wrap">
           <div id="scanStepBanner" class="step-banner">Operator ID Scan</div>
-          <div id="scanInstructionText" style="font-size:15px;color:#cbd5e1;">প্রথমে Operator ID স্ক্যান করুন। স্ক্যান হলে Next বাটন আসবে।</div>
+          <div id="scanInstructionText" style="font-size:15px;color:#cbd5e1;text-align:center;">প্রথমে Operator ID স্ক্যান করুন। স্ক্যান হলে Next বাটন আসবে।</div>
           <div id="reader"></div>
         </div>
 
@@ -397,17 +404,11 @@
           <h2 class="card-title">Forecast Hour & Target Pcs</h2>
           <button type="button" class="btn-primary" onclick="saveForecastForDate()">Save Forecast</button>
         </div>
-        <p class="hint">তারিখ সিলেক্ট করে প্রতিটি লাইনের জন্য <b>Forecast Hour</b> এবং <b>Forecast Pcs</b> বসান। ড্যাশবোর্ডে প্রতি ঘণ্টার টার্গেট অটোমেটিক হিসাব হবে (১:০০ PM–২:০০ PM লাঞ্চ টাইম বাদে)।</p>
+        <p class="hint">যেকোনো মাস বা দিনের তারিখ সিলেক্ট করে প্রতিটি লাইনের জন্য <b>Forecast Hour</b> এবং <b>Forecast Pcs</b> বসান। ড্যাশবোর্ডে প্রতি ঘণ্টার টার্গেট অটোমেটিক হিসাব হবে (১:০০ PM–২:০০ PM লাঞ্চ টাইম বাদে)।</p>
 
-        <div class="grid-2" style="margin-bottom:10px;">
-          <div>
-            <label for="forecastDateSelect">Select Date (12/1/2026 – 12/31/2026 / Custom)</label>
-            <select id="forecastDateSelect" onchange="onForecastDropdownChange()"></select>
-          </div>
-          <div>
-            <label for="forecastCustomDate">Or Pick Any Date</label>
-            <input id="forecastCustomDate" type="date" value="2026-12-01" onchange="onForecastCustomDateChange()" />
-          </div>
+        <div style="max-width:320px;margin:0 auto 12px;">
+          <label for="forecastCustomDate">Pick Any Date (Previous / Current / Next Month)</label>
+          <input id="forecastCustomDate" type="date" onchange="onForecastCustomDateChange()" />
         </div>
 
         <div id="forecastMsg" class="msg" style="color:#15803d;"></div>
@@ -417,7 +418,7 @@
             <thead>
               <tr>
                 <th>Line</th>
-                <th id="fcDateColHeader">Date: 12/1/2026</th>
+                <th id="fcDateColHeader">Date</th>
                 <th>Forecast Hour</th>
                 <th>Forecast Pcs</th>
                 <th>Per Hour Target</th>
@@ -483,16 +484,9 @@
     }
 
     function initForecastDates() {
-      const sel = document.getElementById('forecastDateSelect');
-      if (!sel) return;
-      sel.innerHTML = '';
-      for (let day = 1; day <= 31; day++) {
-        const dd = String(day).padStart(2, '0');
-        const iso = `2026-12-${dd}`;
-        const opt = document.createElement('option');
-        opt.value = iso;
-        opt.textContent = `12/${day}/2026`;
-        sel.appendChild(opt);
+      const fcPicker = document.getElementById('forecastCustomDate');
+      if (fcPicker && !fcPicker.value) {
+        fcPicker.value = getTodayIso();
       }
       const dashPicker = document.getElementById('dashDatePicker');
       if (dashPicker && !dashPicker.value) {
@@ -500,24 +494,14 @@
       }
     }
 
-    function onForecastDropdownChange() {
-      const iso = document.getElementById('forecastDateSelect').value;
-      document.getElementById('forecastCustomDate').value = iso;
-      renderForecastTable(iso);
-    }
-
     function onForecastCustomDateChange() {
       const iso = document.getElementById('forecastCustomDate').value;
       if (!iso) return;
-      const sel = document.getElementById('forecastDateSelect');
-      if ([...sel.options].some(o => o.value === iso)) {
-        sel.value = iso;
-      }
       renderForecastTable(iso);
     }
 
     function renderForecastTable(isoDate) {
-      const dateStr = isoDate || document.getElementById('forecastCustomDate').value || '2026-12-01';
+      const dateStr = isoDate || document.getElementById('forecastCustomDate').value || getTodayIso();
       document.getElementById('fcDateColHeader').textContent = `Date: ${formatDisplayDate(dateStr)}`;
       const dayData = forecastMaster[dateStr] || {};
       const tbody = document.getElementById('forecastLinesBody');
@@ -548,7 +532,7 @@
     }
 
     async function saveForecastForDate() {
-      const isoDate = document.getElementById('forecastCustomDate').value || '2026-12-01';
+      const isoDate = document.getElementById('forecastCustomDate').value || getTodayIso();
       const rows = Array.from(document.querySelectorAll('#forecastLinesBody tr'));
       const dayRecord = {};
       const itemsForServer = [];
@@ -581,33 +565,63 @@
       } catch (_) {}
     }
 
+    function getMaxForecastHourForDate(isoDate) {
+      const dayData = forecastMaster[isoDate] || {};
+      let maxHr = 0;
+      Object.keys(dayData).forEach(ln => {
+        const h = Number(dayData[ln] && dayData[ln].hour);
+        if (!isNaN(h) && h > maxHr) {
+          maxHr = h;
+        }
+      });
+      return maxHr;
+    }
+
+    function addWorkingHoursTo8Am(hoursFrom8Am) {
+      let endDec = 8 + Math.max(0, hoursFrom8Am);
+      if (endDec > 13) {
+        endDec += 1;
+      }
+      const totalMinutes = Math.round(endDec * 60);
+      const hr24 = Math.floor(totalMinutes / 60) % 24;
+      const min = totalMinutes % 60;
+      const ampm = hr24 >= 12 ? 'PM' : 'AM';
+      const hr12 = hr24 % 12 === 0 ? 12 : hr24 % 12;
+      const minStr = min > 0 ? `:${String(min).padStart(2, '0')}` : ':00';
+      return `${hr12}${minStr} ${ampm}`;
+    }
+
     function getElapsedWorkInfo(selectedIsoDate) {
       const now = new Date();
       const todayIso = getTodayIso();
       let currentDecimalHour = now.getHours() + (now.getMinutes() / 60);
 
-      let displayHour24 = now.getHours();
       if (selectedIsoDate && selectedIsoDate < todayIso) {
         currentDecimalHour = 23;
-        displayHour24 = 22;
       }
 
-      const ampm = displayHour24 >= 12 ? 'PM' : 'AM';
-      const hr12 = displayHour24 % 12 === 0 ? 12 : displayHour24 % 12;
-      const upToLabel = `Up to ${hr12}:00 ${ampm}`;
-
-      if (currentDecimalHour <= 8) {
-        return { elapsedHours: 0, upToLabel };
+      let rawHours = 0;
+      if (currentDecimalHour > 8) {
+        rawHours = currentDecimalHour - 8;
+        if (currentDecimalHour >= 14) {
+          rawHours -= 1;
+        } else if (currentDecimalHour > 13) {
+          rawHours -= (currentDecimalHour - 13);
+        }
+        rawHours = Math.max(0, rawHours);
       }
 
-      let rawHours = currentDecimalHour - 8;
-      if (currentDecimalHour >= 14) {
-        rawHours -= 1;
-      } else if (currentDecimalHour > 13) {
-        rawHours -= (currentDecimalHour - 13);
-      }
+      const maxForecastHr = getMaxForecastHourForDate(selectedIsoDate);
+      const cappedElapsedHours = maxForecastHr > 0 ? Math.min(rawHours, maxForecastHr) : rawHours;
+      const upToTimeStr = addWorkingHoursTo8Am(cappedElapsedHours);
+      const upToLabel = `Up to ${upToTimeStr}`;
 
-      return { elapsedHours: Math.max(0, rawHours), upToLabel };
+      return {
+        elapsedHours: cappedElapsedHours,
+        rawElapsedHours: rawHours,
+        maxForecastHr,
+        upToLabel
+      };
     }
 
     function toggleSearchSection() {
@@ -838,9 +852,11 @@
           <tr>
             <td>${esc(it.process)}</td>
             <td><b>${it.smv}</b></td>
-            <td style="display:flex;gap:6px;">
-              <button type="button" class="btn-edit" onclick="editSavedSmv('${esc(it.style)}','${esc(it.process)}',${it.smv})">Edit</button>
-              <button type="button" class="btn-remove" onclick="deleteSavedSmv('${esc(it.style)}','${esc(it.process)}')">Delete</button>
+            <td>
+              <div style="display:flex;gap:6px;justify-content:center;">
+                <button type="button" class="btn-edit" onclick="editSavedSmv('${esc(it.style)}','${esc(it.process)}',${it.smv})">Edit</button>
+                <button type="button" class="btn-remove" onclick="deleteSavedSmv('${esc(it.style)}','${esc(it.process)}')">Delete</button>
+              </div>
             </td>
           </tr>
         `).join('');
@@ -1259,8 +1275,6 @@
 
       const dashPicker = document.getElementById('dashDatePicker');
       const activeIsoDate = (dashPicker && dashPicker.value) ? dashPicker.value : getTodayIso();
-      const workInfo = getElapsedWorkInfo(activeIsoDate);
-      document.getElementById('upToTimeBadge').textContent = workInfo.upToLabel;
 
       const dateSelect = document.getElementById('dateSelect');
       const selectedDate = dateSelect.value || activeIsoDate;
@@ -1297,6 +1311,9 @@
           localStorage.setItem(FORECAST_STORAGE_KEY, JSON.stringify(forecastMaster));
         }
 
+        const workInfo = getElapsedWorkInfo(activeIsoDate);
+        document.getElementById('upToTimeBadge').textContent = workInfo.upToLabel;
+
         renderLiveEfficiencyTable(data, activeIsoDate, workInfo);
         renderStyleBreakdown(data.styleDetails, style);
         document.getElementById('liveBadge').textContent = 'LIVE';
@@ -1313,6 +1330,55 @@
         return `Linking Line-${String(m[1]).padStart(2, '0')}`;
       }
       return s;
+    }
+
+    function getLineNumber(lineStr) {
+      const m = String(lineStr || '').match(/(\d+)/);
+      return m ? parseInt(m[1], 10) : 0;
+    }
+
+    function buildLineRowHtml(ln, fcHour, fcPcs, upToTarget, outputQty, deviation, manpower, totalWH, earnedSah, efficiency) {
+      let devClass = '';
+      if (upToTarget > 0 || outputQty > 0) {
+        devClass = deviation >= 0 ? 'dev-pos' : 'dev-neg';
+      }
+      const devText = deviation > 0 ? `+${deviation}` : `${deviation}`;
+
+      return `
+        <tr>
+          <td><b>${esc(ln)}</b></td>
+          <td>${fcHour || '-'}</td>
+          <td>${fcPcs || '-'}</td>
+          <td><b>${upToTarget}</b></td>
+          <td><b>${outputQty}</b></td>
+          <td class="${devClass}">${devText}</td>
+          <td><b>${manpower}</b></td>
+          <td>${totalWH.toFixed(1)}</td>
+          <td>${earnedSah.toFixed(2)}</td>
+          <td><b>${efficiency}</b></td>
+        </tr>
+      `;
+    }
+
+    function buildFloorSubtotalHtml(label, s) {
+      const dev = s.output - s.target;
+      const devClass = dev >= 0 ? 'dev-pos' : 'dev-neg';
+      const effPct = s.effCount > 0 ? (s.effSum / s.effCount).toFixed(1) + '%' : '0.0%';
+
+      return `
+        <tr class="floor-sub-row">
+          <td>${esc(label)}</td>
+          <td>${s.forecastHr}</td>
+          <td>${s.forecastPcs}</td>
+          <td>${s.target}</td>
+          <td>${s.output}</td>
+          <td class="${devClass}">${dev > 0 ? '+' + dev : dev}</td>
+          <td>${s.manpower}</td>
+          <td>${s.wh.toFixed(1)}</td>
+          <td>${s.sah.toFixed(2)}</td>
+          <td>${effPct}</td>
+        </tr>
+      `;
     }
 
     function renderLiveEfficiencyTable(data, isoDate, workInfo) {
@@ -1363,15 +1429,14 @@
         });
       }
 
-      let grandForecastHr = 0;
-      let grandForecastPcs = 0;
-      let grandTarget = 0;
-      let grandOutput = 0;
-      let grandManpower = 0;
-      let grandWH = 0;
-      let grandSah = 0;
+      const floor3Sum = { forecastHr: 0, forecastPcs: 0, target: 0, output: 0, manpower: 0, wh: 0, sah: 0, effSum: 0, effCount: 0 };
+      const floor2Sum = { forecastHr: 0, forecastPcs: 0, target: 0, output: 0, manpower: 0, wh: 0, sah: 0, effSum: 0, effCount: 0 };
 
-      const rowsHtml = ALL_LINKING_LINES.map(ln => {
+      let floor3RowsHtml = '';
+      let floor2RowsHtml = '';
+
+      ALL_LINKING_LINES.forEach(ln => {
+        const lineNum = getLineNumber(ln);
         const fc = dayForecast[ln] || { hour: 0, pcs: 0 };
         const fcHour = Number(fc.hour) || 0;
         const fcPcs = Number(fc.pcs) || 0;
@@ -1387,44 +1452,64 @@
 
         const totalWH = Number((manpower * cappedHours).toFixed(2));
         const earnedSah = Number(st.earnedSah.toFixed(2));
-        const efficiency = totalWH > 0 ? ((earnedSah / totalWH) * 100).toFixed(1) + '%' : '0.0%';
+        const effNum = totalWH > 0 ? (earnedSah / totalWH) * 100 : 0;
+        const efficiency = effNum.toFixed(1) + '%';
 
-        grandForecastHr += fcHour;
-        grandForecastPcs += fcPcs;
-        grandTarget += upToTarget;
-        grandOutput += outputQty;
-        grandManpower += manpower;
-        grandWH += totalWH;
-        grandSah += earnedSah;
+        const rowHtml = buildLineRowHtml(ln, fcHour, fcPcs, upToTarget, outputQty, deviation, manpower, totalWH, earnedSah, efficiency);
 
-        let devClass = '';
-        if (upToTarget > 0 || outputQty > 0) {
-          devClass = deviation >= 0 ? 'dev-pos' : 'dev-neg';
+        if (lineNum >= 1 && lineNum <= 16) {
+          floor3RowsHtml += rowHtml;
+          floor3Sum.forecastHr += fcHour;
+          floor3Sum.forecastPcs += fcPcs;
+          floor3Sum.target += upToTarget;
+          floor3Sum.output += outputQty;
+          floor3Sum.manpower += manpower;
+          floor3Sum.wh += totalWH;
+          floor3Sum.sah += earnedSah;
+          if (totalWH > 0) {
+            floor3Sum.effSum += effNum;
+            floor3Sum.effCount += 1;
+          }
+        } else if (lineNum >= 17 && lineNum <= 33) {
+          floor2RowsHtml += rowHtml;
+          floor2Sum.forecastHr += fcHour;
+          floor2Sum.forecastPcs += fcPcs;
+          floor2Sum.target += upToTarget;
+          floor2Sum.output += outputQty;
+          floor2Sum.manpower += manpower;
+          floor2Sum.wh += totalWH;
+          floor2Sum.sah += earnedSah;
+          if (totalWH > 0) {
+            floor2Sum.effSum += effNum;
+            floor2Sum.effCount += 1;
+          }
         }
-        const devText = deviation > 0 ? `+${deviation}` : `${deviation}`;
+      });
 
-        return `
-          <tr>
-            <td><b>${esc(ln)}</b></td>
-            <td>${fcHour || '-'}</td>
-            <td>${fcPcs || '-'}</td>
-            <td><b>${upToTarget}</b></td>
-            <td><b>${outputQty}</b></td>
-            <td class="${devClass}">${devText}</td>
-            <td><b>${manpower}</b></td>
-            <td>${totalWH.toFixed(1)}</td>
-            <td>${earnedSah.toFixed(2)}</td>
-            <td><b>${efficiency}</b></td>
-          </tr>
-        `;
-      }).join('');
+      const floor3SubtotalRow = buildFloorSubtotalHtml('LINKING 3RD FLOOR (L-01 to L-16)', floor3Sum);
+      const floor2SubtotalRow = buildFloorSubtotalHtml('LINKING 2ND FLOOR (L-17 to L-33)', floor2Sum);
 
+      const grandForecastHr = floor3Sum.forecastHr + floor2Sum.forecastHr;
+      const grandForecastPcs = floor3Sum.forecastPcs + floor2Sum.forecastPcs;
+      const grandTarget = floor3Sum.target + floor2Sum.target;
+      const grandOutput = floor3Sum.output + floor2Sum.output;
       const grandDev = grandOutput - grandTarget;
-      const grandDevClass = grandDev >= 0 ? 'dev-pos' : 'dev-neg';
-      const grandEff = grandWH > 0 ? ((grandSah / grandWH) * 100).toFixed(1) + '%' : '0.0%';
+      const grandManpower = floor3Sum.manpower + floor2Sum.manpower;
+      const grandWH = floor3Sum.wh + floor2Sum.wh;
+      const grandSah = floor3Sum.sah + floor2Sum.sah;
 
+      const avgEff3 = floor3Sum.effCount > 0 ? floor3Sum.effSum / floor3Sum.effCount : 0;
+      const avgEff2 = floor2Sum.effCount > 0 ? floor2Sum.effSum / floor2Sum.effCount : 0;
+      const floorAvgParts = [];
+      if (floor3Sum.effCount > 0) floorAvgParts.push(avgEff3);
+      if (floor2Sum.effCount > 0) floorAvgParts.push(avgEff2);
+      const grandAvgEff = floorAvgParts.length > 0
+        ? (floorAvgParts.reduce((a, b) => a + b, 0) / floorAvgParts.length).toFixed(1) + '%'
+        : '0.0%';
+
+      const maxCapText = workInfo.maxForecastHr > 0 ? ` | Max Forecast Cap: ${workInfo.maxForecastHr} hr` : '';
       document.getElementById('dashSummaryInfo').textContent =
-        `Date: ${formatDisplayDate(isoDate)} | Effective Work Hours (8:00 AM start, Lunch 1–2 PM excluded): ${workInfo.elapsedHours.toFixed(1)} hr`;
+        `Date: ${formatDisplayDate(isoDate)} | Effective Hours: ${workInfo.elapsedHours.toFixed(1)} hr${maxCapText}`;
 
       box.innerHTML = `
         <table>
@@ -1442,19 +1527,24 @@
               <th>Efficiency</th>
             </tr>
           </thead>
-          <tbody>${rowsHtml}</tbody>
+          <tbody>
+            ${floor3RowsHtml}
+            ${floor3SubtotalRow}
+            ${floor2RowsHtml}
+            ${floor2SubtotalRow}
+          </tbody>
           <tfoot>
-            <tr>
-              <td>TOTAL</td>
+            <tr class="grand-total-row">
+              <td>GRAND TOTAL (AVG EFF)</td>
               <td>${grandForecastHr}</td>
               <td>${grandForecastPcs}</td>
               <td>${grandTarget}</td>
               <td>${grandOutput}</td>
-              <td class="${grandDevClass}">${grandDev > 0 ? '+' + grandDev : grandDev}</td>
+              <td>${grandDev > 0 ? '+' + grandDev : grandDev}</td>
               <td>${grandManpower}</td>
               <td>${grandWH.toFixed(1)}</td>
               <td>${grandSah.toFixed(2)}</td>
-              <td>${grandEff}</td>
+              <td>${grandAvgEff}</td>
             </tr>
           </tfoot>
         </table>
