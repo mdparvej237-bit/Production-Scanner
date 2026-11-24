@@ -39,6 +39,22 @@
     .card-title { margin: 0; font-size: 18px; font-weight: 800; }
     .hint { margin: 0; color: var(--muted); font-size: 13.5px; line-height: 1.5; }
 
+    /* Admin Sub-Menu Bar */
+    .admin-menubar {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      background: #f1efe9; border: 1px solid var(--border);
+      padding: 8px; border-radius: 14px; margin-bottom: 14px;
+    }
+    .admin-menu-btn {
+      flex: 1; min-width: 150px; border: 1px solid transparent;
+      background: transparent; color: var(--text); border-radius: 10px;
+      padding: 10px 12px; font-size: 13.5px; font-weight: 800; cursor: pointer;
+    }
+    .admin-menu-btn.active {
+      background: linear-gradient(180deg, #3b82f6, var(--cobalt-dark));
+      color: #fff; box-shadow: 0 3px 10px rgba(37, 99, 235, 0.22);
+    }
+
     label { display: block; font-size: 13px; font-weight: 700; color: #374151; margin: 10px 0 5px; }
     input, select {
       width: 100%; padding: 11px 12px; border: 1px solid #d5d0c5;
@@ -193,7 +209,7 @@
       </div>
     </div>
 
-    <!-- OPERATOR BARCODE SCAN VIEW -->
+    <!-- OPERATOR BARCODE SCAN VIEW (UNCHANGED AS REQUESTED) -->
     <div id="view-operator" class="hidden">
       <div class="card">
         <div class="card-head">
@@ -272,23 +288,49 @@
       </div>
     </div>
 
-    <!-- ADMIN VIEW -->
+    <!-- ADMIN VIEW WITH MENU BAR -->
     <div id="view-admin" class="hidden">
-      <div class="card">
+      <div class="admin-menubar">
+        <button id="admMenuSmvForm" type="button" class="admin-menu-btn active" onclick="switchAdminSection('form')">
+          Style, Process & SMV
+        </button>
+        <button id="admMenuSmvList" type="button" class="admin-menu-btn" onclick="switchAdminSection('list')">
+          SMV List & Edit
+        </button>
+      </div>
+
+      <!-- SECTION 1: ADD / EDIT STYLE, PROCESS & SMV -->
+      <div id="admin-sec-form" class="card">
         <div class="card-head">
-          <h2 class="card-title">Style-wise Process & SMV (Dynamic Add + Edit)</h2>
-          <button class="btn-refresh" onclick="addProcessSmvRow()">+ Add Process & SMV</button>
+          <h2 id="adminFormTitle" class="card-title">Style, Process & SMV</h2>
+          <button type="button" class="btn-refresh" onclick="addProcessSmvRow()">+ Add Process & SMV</button>
         </div>
+        <p class="hint">Style No. লিখে নিচে যত খুশি তত Process ও SMV যুক্ত করুন অথবা পুরনো কোনো এন্ট্রি Edit করে বদলান।</p>
+
         <label for="adminStyleInput">Style No.</label>
         <input id="adminStyleInput" type="text" placeholder="Style No. লিখুন (যেমন: 1896)" oninput="refreshProcessDropdown()" />
+
         <div id="dynamicSmvRows"></div>
+
         <div class="btn-row">
-          <button class="btn-primary" onclick="saveAllStyleSmv()">Save Style Process & SMV</button>
-          <button class="btn-sage" onclick="clearDynamicSmvForm()">Clear</button>
+          <button id="saveSmvBtn" type="button" class="btn-primary" onclick="saveAllStyleSmv()">Save Style Process & SMV</button>
+          <button type="button" class="btn-sage" onclick="clearDynamicSmvForm()">Clear</button>
         </div>
         <div id="adminSmvMsg" class="msg" style="color:#15803d;"></div>
+      </div>
+
+      <!-- SECTION 2: LIST + CHANGE / EDIT / DELETE SMV -->
+      <div id="admin-sec-list" class="card hidden">
+        <div class="card-head">
+          <h2 class="card-title">Saved Style Process & SMV</h2>
+          <button type="button" class="btn-refresh" onclick="switchAdminSection('form')">+ New Add</button>
+        </div>
+        <p class="hint">কোনো Style-এর Process বা SMV পরিবর্তন করতে চাইলে <b>Edit</b> চাপুন, অথবা বাদ দিতে <b>Delete</b> চাপুন।</p>
+
         <table>
-          <thead><tr><th>Style</th><th>Process</th><th>SMV</th><th>Edit</th></tr></thead>
+          <thead>
+            <tr><th>Style</th><th>Process</th><th>SMV</th><th>Action</th></tr>
+          </thead>
           <tbody id="savedSmvBody"></tbody>
         </table>
       </div>
@@ -316,6 +358,124 @@
     let scannedEntries = JSON.parse(localStorage.getItem('scanned_entries_v4') || '[]');
     const scannedTcProcessSet = new Set(scannedEntries.map(e => `${e.tcNo}__${e.process.toLowerCase()}`));
 
+    function switchAdminSection(sec) {
+      const isForm = sec === 'form';
+      document.getElementById('admin-sec-form').classList.toggle('hidden', !isForm);
+      document.getElementById('admin-sec-list').classList.toggle('hidden', isForm);
+      document.getElementById('admMenuSmvForm').classList.toggle('active', isForm);
+      document.getElementById('admMenuSmvList').classList.toggle('active', !isForm);
+      if (isForm) ensureAtLeastOneRow();
+      else renderSavedSmvTable();
+    }
+
+    function ensureAtLeastOneRow() {
+      const wrap = document.getElementById('dynamicSmvRows');
+      if (!wrap.children.length) addProcessSmvRow();
+    }
+
+    function addProcessSmvRow(processVal = '', smvVal = '') {
+      const wrap = document.getElementById('dynamicSmvRows');
+      const row = document.createElement('div');
+      row.className = 'dynamic-row';
+      row.innerHTML = `
+        <input type="text" class="dyn-proc" placeholder="Process (e.g. Linking)" value="${esc(processVal)}" />
+        <input type="number" step="0.01" class="dyn-smv" placeholder="SMV (e.g. 12.0)" value="${esc(smvVal)}" />
+        <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
+      `;
+      wrap.appendChild(row);
+    }
+
+    function clearDynamicSmvForm() {
+      document.getElementById('adminStyleInput').value = '';
+      document.getElementById('dynamicSmvRows').innerHTML = '';
+      document.getElementById('adminFormTitle').textContent = 'Style, Process & SMV';
+      document.getElementById('saveSmvBtn').textContent = 'Save Style Process & SMV';
+      addProcessSmvRow();
+      document.getElementById('adminSmvMsg').textContent = '';
+    }
+
+    async function saveAllStyleSmv() {
+      const style = document.getElementById('adminStyleInput').value.trim();
+      const msg = document.getElementById('adminSmvMsg');
+      const rows = Array.from(document.querySelectorAll('#dynamicSmvRows .dynamic-row'));
+      if (!style) { msg.style.color = '#b91c1c'; msg.textContent = 'আগে Style No. লিখুন।'; return; }
+
+      const newItems = [];
+      rows.forEach(r => {
+        const pr = r.querySelector('.dyn-proc').value.trim();
+        const smv = parseFloat(r.querySelector('.dyn-smv').value);
+        if (pr && !isNaN(smv) && smv > 0) newItems.push({ style, process: pr, smv });
+      });
+      if (!newItems.length) { msg.style.color = '#b91c1c'; msg.textContent = 'কমপক্ষে একটি Process ও SMV দিন।'; return; }
+
+      newItems.forEach(item => {
+        const idx = styleSmvMaster.findIndex(
+          x => x.style.toLowerCase() === item.style.toLowerCase() &&
+               x.process.toLowerCase() === item.process.toLowerCase()
+        );
+        if (idx >= 0) styleSmvMaster[idx] = item;
+        else styleSmvMaster.push(item);
+      });
+
+      localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
+      renderSavedSmvTable();
+      refreshProcessDropdown(style);
+      document.getElementById('adminFormTitle').textContent = 'Style, Process & SMV';
+      document.getElementById('saveSmvBtn').textContent = 'Save Style Process & SMV';
+      msg.style.color = '#15803d';
+      msg.textContent = `${newItems.length}টি Process & SMV সেভ/আপডেট হয়েছে।`;
+
+      try {
+        await fetch(API_URL, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'STYLE_SMV_BATCH', items: newItems })
+        });
+      } catch (_) {}
+    }
+
+    function editSavedSmv(style, process, smv) {
+      switchAdminSection('form');
+      document.getElementById('adminStyleInput').value = style;
+      document.getElementById('dynamicSmvRows').innerHTML = '';
+      addProcessSmvRow(process, smv);
+      document.getElementById('adminFormTitle').textContent = 'Edit Style, Process & SMV';
+      document.getElementById('saveSmvBtn').textContent = 'Update SMV';
+      document.getElementById('adminSmvMsg').style.color = '#1d4ed8';
+      document.getElementById('adminSmvMsg').textContent = `${style} (${process}) এডিট করে Update SMV চাপুন।`;
+    }
+
+    async function deleteSavedSmv(style, process) {
+      styleSmvMaster = styleSmvMaster.filter(
+        x => !(x.style.toLowerCase() === style.toLowerCase() && x.process.toLowerCase() === process.toLowerCase())
+      );
+      localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
+      renderSavedSmvTable();
+
+      try {
+        await fetch(API_URL, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'DELETE_STYLE_SMV', style, process })
+        });
+      } catch (_) {}
+    }
+
+    function renderSavedSmvTable() {
+      document.getElementById('savedSmvBody').innerHTML = styleSmvMaster.map(item => `
+        <tr>
+          <td><b>${esc(item.style)}</b></td>
+          <td>${esc(item.process)}</td>
+          <td><b>${item.smv}</b></td>
+          <td style="display:flex;gap:6px;">
+            <button type="button" class="btn-edit" onclick="editSavedSmv('${esc(item.style)}','${esc(item.process)}',${item.smv})">Edit</button>
+            <button type="button" class="btn-remove" onclick="deleteSavedSmv('${esc(item.style)}','${esc(item.process)}')">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // --- OPERATOR ENTRY (UNTOUCHED) ---
     function playBeep(type = 'ok') {
       try {
         if (!audioCtx) {
@@ -464,7 +624,6 @@
       clearNotification();
 
       if (flowMode === 'SCAN_OP') {
-        // ফরম্যাট: OPID|NAME|FLOOR|DEPT|JOBTYPE|LINE
         const parts = code.split('|').map(s => s.trim());
         currentOperator = {
           operatorId: parts[0] || code,
@@ -711,84 +870,7 @@
       });
       if (view === 'dashboard') { stopCamera(); loadDashboard(); }
       if (view === 'operator') { updateFlowUI(); }
-      if (view === 'admin') { stopCamera(); renderSavedSmvTable(); ensureAtLeastOneRow(); }
-    }
-
-    function ensureAtLeastOneRow() {
-      const wrap = document.getElementById('dynamicSmvRows');
-      if (!wrap.children.length) addProcessSmvRow();
-    }
-
-    function addProcessSmvRow(processVal = '', smvVal = '') {
-      const wrap = document.getElementById('dynamicSmvRows');
-      const row = document.createElement('div');
-      row.className = 'dynamic-row';
-      row.innerHTML = `
-        <input type="text" class="dyn-proc" placeholder="Process (e.g. Linking)" value="${esc(processVal)}" />
-        <input type="number" step="0.01" class="dyn-smv" placeholder="SMV (e.g. 12.0)" value="${esc(smvVal)}" />
-        <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
-      `;
-      wrap.appendChild(row);
-    }
-
-    function clearDynamicSmvForm() {
-      document.getElementById('adminStyleInput').value = '';
-      document.getElementById('dynamicSmvRows').innerHTML = '';
-      addProcessSmvRow();
-      document.getElementById('adminSmvMsg').textContent = '';
-    }
-
-    async function saveAllStyleSmv() {
-      const style = document.getElementById('adminStyleInput').value.trim();
-      const msg = document.getElementById('adminSmvMsg');
-      const rows = Array.from(document.querySelectorAll('#dynamicSmvRows .dynamic-row'));
-      if (!style) { msg.style.color = '#b91c1c'; msg.textContent = 'আগে Style No. লিখুন।'; return; }
-
-      const newItems = [];
-      rows.forEach(r => {
-        const pr = r.querySelector('.dyn-proc').value.trim();
-        const smv = parseFloat(r.querySelector('.dyn-smv').value);
-        if (pr && !isNaN(smv) && smv > 0) newItems.push({ style, process: pr, smv });
-      });
-      if (!newItems.length) { msg.style.color = '#b91c1c'; msg.textContent = 'কমপক্ষে একটি Process ও SMV দিন।'; return; }
-
-      newItems.forEach(item => {
-        const idx = styleSmvMaster.findIndex(x => x.style.toLowerCase() === item.style.toLowerCase() && x.process.toLowerCase() === item.process.toLowerCase());
-        if (idx >= 0) styleSmvMaster[idx] = item;
-        else styleSmvMaster.push(item);
-      });
-
-      localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
-      renderSavedSmvTable();
-      refreshProcessDropdown(style);
-      msg.style.color = '#15803d';
-      msg.textContent = `${newItems.length}টি Process & SMV সেভ হয়েছে।`;
-
-      try {
-        await fetch(API_URL, {
-          method: 'POST', mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'STYLE_SMV_BATCH', items: newItems })
-        });
-      } catch (_) {}
-    }
-
-    function editSavedSmv(style, process, smv) {
-      document.getElementById('adminStyleInput').value = style;
-      document.getElementById('dynamicSmvRows').innerHTML = '';
-      addProcessSmvRow(process, smv);
-      document.getElementById('adminSmvMsg').textContent = 'ম্যানুয়ালি এডিট করে Save বাটনে চাপুন।';
-    }
-
-    function renderSavedSmvTable() {
-      document.getElementById('savedSmvBody').innerHTML = styleSmvMaster.map(item => `
-        <tr>
-          <td><b>${esc(item.style)}</b></td>
-          <td>${esc(item.process)}</td>
-          <td><b>${item.smv}</b></td>
-          <td><button class="btn-edit" onclick="editSavedSmv('${esc(item.style)}','${esc(item.process)}',${item.smv})">Edit</button></td>
-        </tr>
-      `).join('');
+      if (view === 'admin') { stopCamera(); switchAdminSection('form'); renderSavedSmvTable(); }
     }
 
     async function loadDashboard() {
