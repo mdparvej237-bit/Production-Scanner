@@ -317,6 +317,85 @@
     let scannedEntries = JSON.parse(localStorage.getItem('scanned_entries_v3') || '[]');
     const scannedTcProcessSet = new Set(scannedEntries.map(e => `${e.tcNo}__${e.process.toLowerCase()}`));
 
+    function isOperatorBarcode(code) {
+      const upper = String(code || '').trim().toUpperCase();
+      if (/^OP[-_ ]?\d+/i.test(upper)) return true;
+      const parts = upper.split('|').map(s => s.trim());
+      if (parts.length >= 3 && /^OP[-_ ]?\d+/i.test(parts[0])) return true;
+      return false;
+    }
+
+    function isTcBarcode(code) {
+      const upper = String(code || '').trim().toUpperCase();
+      if (isOperatorBarcode(upper)) return false;
+      if (/^TC[-_ ]?[A-Z0-9]+/i.test(upper)) return true;
+      if (/^\d{8,}$/.test(upper)) return true;
+      const parts = upper.split('|').map(s => s.trim());
+      if (parts.length >= 2 && !isOperatorBarcode(parts[0])) return true;
+      return false;
+    }
+
+    function applyOperatorScan(code) {
+      const parts = code.split('|').map(s => s.trim());
+      currentOperator = {
+        operatorId: parts[0] || code,
+        operatorName: parts[1] || 'Md. Parvej Miah',
+        line: parts[2] || 'Linking Line-02',
+        floor: parts[3] || '2nd Floor',
+        dept: parts[4] || 'Linking'
+      };
+      if (scanFlowState === 'WAIT_OP') {
+        scanFlowState = 'WAIT_TC';
+      }
+      updateFlowUI();
+      showNotification(`Operator "${currentOperator.operatorId}" সেট হয়েছে। এখন TC Card স্ক্যান করুন।`, 'ok');
+    }
+
+    function applyTcScan(code) {
+      const parts = code.split('|').map(s => s.trim());
+      currentTcData = {
+        tcNo: parts[0] || code,
+        style: parts[1] || '1896',
+        color: parts[2] || 'Blue',
+        size: parts[3] || 'M',
+        qty: Number(parts[4] || 12)
+      };
+      scanFlowState = 'WAIT_PROCESS';
+      updateFlowUI();
+      showNotification(`TC "${currentTcData.tcNo}" স্ক্যান হয়েছে। এখন Process Dropdown সিলেক্ট করুন।`, 'ok');
+    }
+
+    function handleBarcodeInput(rawCode) {
+      const code = String(rawCode || '').trim();
+      if (!code) return;
+
+      playBeep('ok');
+      clearNotification();
+
+      // ১. Operator বারকোড হলে সর্বদা Operator Information-এই বসবে (কখনো TC-এর ঘরে যাবে না)
+      if (isOperatorBarcode(code)) {
+        applyOperatorScan(code);
+        return;
+      }
+
+      // ২. Operator ID স্ক্যান না হলে TC Scan লক থাকবে
+      if (!currentOperator || scanFlowState === 'WAIT_OP') {
+        playBeep('dup');
+        showNotification('আগে Operator ID স্ক্যান করুন! Operator ID স্ক্যান না করা পর্যন্ত TC Scan লক।', 'dup');
+        return;
+      }
+
+      // ৩. TC বারকোড না হলে TC-এর ঘরে বসবে না
+      if (!isTcBarcode(code)) {
+        playBeep('dup');
+        showNotification(`"${code}" একটি বৈধ TC বারকোড নয়। সঠিক TC Card স্ক্যান করুন।`, 'dup');
+        return;
+      }
+
+      // ৪. বৈধ TC স্ক্যান হলে TC Information-এ বসবে এবং Process Dropdown আনলক হবে
+      applyTcScan(code);
+    }
+
     function handleLogin() {
       const el = document.getElementById('pinField');
       const rawPin = (el ? el.value : '').replace(/\s+/g, '').trim();
@@ -433,7 +512,7 @@
       renderOperatorCard();
       renderTcCard();
 
-      if (scanFlowState === 'WAIT_OP') {
+      if (!currentOperator || scanFlowState === 'WAIT_OP') {
         banner.className = 'step-banner';
         banner.textContent = 'Operator ID Scan';
         instr.textContent = 'প্রথমে Operator ID স্ক্যান করুন। Operator ID স্ক্যান না করলে TC Scan লক থাকবে।';
@@ -472,43 +551,6 @@
 
         procCard.classList.remove('hidden');
         refreshProcessDropdown(currentTcData ? currentTcData.style : '');
-      }
-    }
-
-    function handleBarcodeInput(rawCode) {
-      const code = String(rawCode || '').trim();
-      if (!code) return;
-
-      playBeep('ok');
-      clearNotification();
-
-      if (scanFlowState === 'WAIT_OP') {
-        const parts = code.split('|').map(s => s.trim());
-        currentOperator = {
-          operatorId: parts[0] || code,
-          operatorName: parts[1] || 'Sample OP',
-          line: parts[2] || 'Linking Line-02',
-          floor: parts[3] || '2nd Floor',
-          dept: parts[4] || 'Linking'
-        };
-        scanFlowState = 'WAIT_TC';
-        updateFlowUI();
-        showNotification(`Operator ID "${currentOperator.operatorId}" স্ক্যান হয়েছে। এখন TC Card স্ক্যান করুন।`, 'ok');
-        return;
-      }
-
-      if (scanFlowState === 'WAIT_TC') {
-        const parts = code.split('|').map(s => s.trim());
-        currentTcData = {
-          tcNo: parts[0] || code,
-          style: parts[1] || '1896',
-          color: parts[2] || 'Blue',
-          size: parts[3] || 'M',
-          qty: Number(parts[4] || 12)
-        };
-        scanFlowState = 'WAIT_PROCESS';
-        updateFlowUI();
-        showNotification(`TC "${currentTcData.tcNo}" স্ক্যান হয়েছে। এখন Process Dropdown সিলেক্ট করুন।`, 'ok');
       }
     }
 
@@ -623,7 +665,7 @@
     let testTcSeq = 500;
     function testScanStep() {
       if (scanFlowState === 'WAIT_OP') {
-        handleBarcodeInput('900001|Sample OP|Linking Line-02|2nd Floor|Linking');
+        handleBarcodeInput('OP-9001|Md. Parvej Miah|Linking Line-02|2nd Floor|Linking');
       } else if (scanFlowState === 'WAIT_TC') {
         testTcSeq += 1;
         handleBarcodeInput(`TC-${testTcSeq}|1896|Blue|M|12`);
