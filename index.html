@@ -373,6 +373,20 @@
     let scannedEntries = JSON.parse(localStorage.getItem('scanned_entries_v4') || '[]');
     const scannedTcProcessSet = new Set(scannedEntries.map(e => `${e.tcNo}__${e.process.toLowerCase()}`));
 
+    async function syncSmvMasterFromServer() {
+      try {
+        const res = await fetch(`${API_URL}?t=${Date.now()}`);
+        const data = await res.json();
+        if (data && data.status === 'SUCCESS' && Array.isArray(data.smvList) && data.smvList.length) {
+          insertGroupedByStyle(data.smvList);
+          localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
+          if (currentTcData && currentTcData.style && flowMode === 'HOLD_AFTER_TC') {
+            populateProcessDropdownForStyle(currentTcData.style);
+          }
+        }
+      } catch (_) {}
+    }
+
     function getProcessesForStyle(styleName) {
       const target = String(styleName || '').trim().toLowerCase();
       if (!target) return [];
@@ -971,8 +985,8 @@
         if (btn) btn.classList.toggle('active', v === view);
       });
       if (view === 'dashboard') { stopCamera(); loadDashboard(); }
-      if (view === 'operator') { updateFlowUI(); }
-      if (view === 'admin') { stopCamera(); switchAdminSection('form'); renderSavedSmvTable(); }
+      if (view === 'operator') { updateFlowUI(); syncSmvMasterFromServer(); }
+      if (view === 'admin') { stopCamera(); switchAdminSection('form'); renderSavedSmvTable(); syncSmvMasterFromServer(); }
     }
 
     async function loadDashboard() {
