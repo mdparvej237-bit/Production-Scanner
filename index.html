@@ -1,1507 +1,274 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Garment Production Scanner & Live Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Production System</title>
   <style>
-    :root {
-      --bg: #eef2ff;
-      --card: #ffffff;
-      --ink: #0f172a;
-      --muted: #475569;
-      --indigo: #312e81;
-      --blue: #1d4ed8;
-      --cyan: #0284c7;
-      --teal: #0d9488;
-      --green: #059669;
-      --green-dark: #047857;
-      --amber: #d97706;
-      --red: #dc2626;
-      --border: #cbd5e1;
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body { margin: 0; background: #f3f6fb; color: #111827; }
+    .topbar {
+      background: #1d4ed8; color: #fff; padding: 14px 16px;
+      display: flex; justify-content: space-between; align-items: center;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    .topbar h1 { margin: 0; font-size: 18px; line-height: 1.2; }
+    .topbar-actions { display: flex; gap: 8px; }
+    .btn-pill {
+      border: none; border-radius: 999px; padding: 8px 14px;
+      font-weight: 600; font-size: 12px; cursor: pointer;
     }
-
-    body {
-      background: linear-gradient(180deg, #e0e7ff 0%, #f1f5f9 100%);
-      color: var(--ink);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      font-size: 16px;
-    }
-
-    .app-shell {
-      width: 100%;
-      max-width: 480px;
-      min-height: 100vh;
-      background: #f8fafc;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.14);
-      position: relative;
-    }
-
-    .top-header {
-      background: linear-gradient(135deg, var(--indigo), var(--blue));
-      color: #ffffff;
-      padding: 16px;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .brand-title {
-      font-size: 1.15rem;
-      font-weight: 800;
-      letter-spacing: 0.3px;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .role-badge {
-      background: rgba(255, 255, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      color: #ffffff;
-      font-size: 0.82rem;
-      font-weight: 800;
-      padding: 5px 11px;
-      border-radius: 999px;
-      white-space: nowrap;
-    }
-
-    .btn-logout {
-      background: #ef4444;
-      color: #ffffff;
-      border: none;
-      border-radius: 9px;
-      padding: 7px 12px;
-      font-size: 0.88rem;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .content {
-      flex: 1;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      padding-bottom: 104px;
-    }
-
+    .btn-dash { background: #3b82f6; color: #fff; }
+    .btn-logout { background: #ef4444; color: #fff; }
+    .container { max-width: 720px; margin: 16px auto; padding: 0 12px 32px; }
     .card {
-      background: var(--card);
-      border-radius: 16px;
-      padding: 16px;
-      border: 1.5px solid #e2e8f0;
-      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+      background: #fff; border-radius: 14px; padding: 16px;
+      margin-bottom: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
-
-    .login-card {
-      margin-top: 12px;
-      border-top: 6px solid var(--blue);
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .card-title { font-size: 18px; font-weight: 700; margin: 0; }
+    .btn-refresh {
+      background: #e0e7ff; color: #1d4ed8; border: none;
+      border-radius: 10px; padding: 8px 12px; font-weight: 700; cursor: pointer;
     }
-
-    .login-title {
-      font-size: 1.32rem;
-      font-weight: 800;
-      color: var(--indigo);
-      margin-bottom: 6px;
+    label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 6px; color: #374151; }
+    select, input {
+      width: 100%; padding: 11px 12px; border: 1px solid #d1d5db;
+      border-radius: 10px; font-size: 15px; background: #fff;
     }
-
-    .login-sub {
-      font-size: 0.98rem;
-      color: var(--muted);
-      margin-bottom: 16px;
-      line-height: 1.45;
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .actions { display: grid; grid-template-columns: 2.4fr 1fr; gap: 10px; margin-top: 14px; }
+    .btn-search {
+      background: linear-gradient(90deg, #1e3a8a, #2563eb); color: #fff;
+      border: none; border-radius: 10px; padding: 12px; font-size: 16px; font-weight: 700; cursor: pointer;
     }
-
-    .field-group {
-      margin-bottom: 14px;
+    .btn-clear {
+      background: #eef2ff; color: #1e3a8a; border: none;
+      border-radius: 10px; padding: 12px; font-size: 15px; font-weight: 700; cursor: pointer;
     }
-
-    .field-label {
-      display: block;
-      font-size: 0.96rem;
-      font-weight: 800;
-      color: #1e293b;
-      margin-bottom: 6px;
+    .badge-green {
+      background: #dcfce7; color: #15803d; padding: 5px 10px;
+      border-radius: 999px; font-size: 12px; font-weight: 800;
     }
-
-    .input-field, .select-field {
-      width: 100%;
-      padding: 13px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      font-size: 1.02rem;
-      background: #ffffff;
-      color: var(--ink);
-      font-weight: 700;
-    }
-
-    .btn-primary {
-      width: 100%;
-      border: none;
-      border-radius: 12px;
-      padding: 14px 16px;
-      font-size: 1.08rem;
-      font-weight: 800;
-      color: #ffffff;
-      background: linear-gradient(135deg, var(--indigo), var(--blue));
-      cursor: pointer;
-    }
-
-    .btn-single-scan {
-      width: 100%;
-      border: none;
-      border-radius: 14px;
-      padding: 18px 16px;
-      font-size: 1.22rem;
-      font-weight: 800;
-      color: #ffffff;
-      background: linear-gradient(135deg, var(--cyan), var(--teal));
-      box-shadow: 0 7px 18px rgba(2, 132, 199, 0.28);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .btn-single-scan.tc-mode {
-      background: linear-gradient(135deg, #2563eb, #4f46e5);
-    }
-
-    .btn-single-scan.completed-mode {
-      background: linear-gradient(135deg, var(--green), var(--green-dark));
-    }
-
-    .input-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .btn-mini {
-      border: none;
-      border-radius: 10px;
-      padding: 11px 14px;
-      font-size: 0.94rem;
-      font-weight: 800;
-      cursor: pointer;
-      background: #e0e7ff;
-      color: var(--indigo);
-      white-space: nowrap;
-    }
-
-    .demo-strip {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .info-block-title {
-      font-size: 0.96rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      color: var(--blue);
-      margin-bottom: 10px;
-      letter-spacing: 0.4px;
-    }
-
-    .info-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .info-cell {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 9px 11px;
-    }
-
-    .info-label {
-      display: block;
-      font-size: 0.82rem;
-      color: var(--muted);
-      font-weight: 700;
-    }
-
-    .info-val {
-      display: block;
-      font-size: 1.02rem;
-      font-weight: 800;
-      color: var(--ink);
-      margin-top: 3px;
-      word-break: break-word;
-    }
-
-    .divider {
-      height: 1px;
-      background: #e2e8f0;
-      margin: 12px 0;
-    }
-
-    .step-locked {
-      opacity: 0.6;
-      background: #f1f5f9;
-    }
-
-    .badge {
-      font-size: 0.82rem;
-      font-weight: 800;
-      padding: 5px 11px;
-      border-radius: 999px;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
     .badge-ready {
-      background: #fef3c7;
-      color: #92400e;
-      border: 1px solid #f59e0b;
+      background: #fef3c7; color: #b45309; padding: 5px 10px;
+      border-radius: 999px; font-size: 12px; font-weight: 800;
     }
-
-    .badge-done {
-      background: #d1fae5;
-      color: #065f46;
-      border: 1px solid #10b981;
-    }
-
-    .badge-locked {
-      background: #e2e8f0;
-      color: #475569;
-    }
-
-    .step-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-      gap: 8px;
-    }
-
-    .step-title {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: var(--ink);
-    }
-
-    .admin-box {
-      margin-top: 14px;
-      padding: 14px;
-      border-radius: 12px;
-      background: #eff6ff;
-      border: 1.5px solid #93c5fd;
-    }
-
-    .process-list {
-      margin-top: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .process-item {
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
-      border-radius: 10px;
-      padding: 11px 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .process-meta {
-      font-size: 1rem;
-      font-weight: 800;
-      color: var(--ink);
-    }
-
-    .process-smv {
-      font-size: 0.9rem;
-      color: var(--blue);
-      font-weight: 800;
-      margin-top: 2px;
-    }
-
-    .item-btns {
-      display: flex;
-      gap: 6px;
-    }
-
-    .btn-edit {
-      background: #fef3c7;
-      color: #92400e;
-      border: 1px solid #f59e0b;
-      border-radius: 8px;
-      padding: 7px 11px;
-      font-size: 0.88rem;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .btn-del {
-      background: #fee2e2;
-      color: #991b1b;
-      border: 1px solid #fca5a5;
-      border-radius: 8px;
-      padding: 7px 11px;
-      font-size: 0.88rem;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .btn-cancel-edit {
-      background: #e2e8f0;
-      color: #334155;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 0.94rem;
-      font-weight: 800;
-      cursor: pointer;
-      margin-top: 8px;
-      width: 100%;
-    }
-
-    .btn-add {
-      background: var(--blue);
-      color: #ffffff;
-      border: none;
-      border-radius: 10px;
-      padding: 12px 14px;
-      font-size: 0.98rem;
-      font-weight: 800;
-      cursor: pointer;
-      width: 100%;
-    }
-
-    .view-section-title {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: var(--indigo);
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .line-box {
-      border: 1.5px solid #cbd5e1;
-      background: #f8fafc;
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 12px;
-    }
-
-    .line-header {
-      font-size: 1.02rem;
-      font-weight: 800;
-      color: var(--blue);
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .proc-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 9px;
-      padding: 9px 12px;
-      margin-bottom: 7px;
-      font-size: 0.96rem;
-      font-weight: 800;
-    }
-
-    .tc-tag-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 8px;
-    }
-
-    .tc-pill {
-      background: #ede9fe;
-      border: 1px solid #c4b5fd;
-      color: #4c1d95;
-      border-radius: 999px;
-      padding: 5px 11px;
-      font-size: 0.86rem;
-      font-weight: 800;
-    }
-
-    .size-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-      margin-top: 8px;
-    }
-
-    .size-chip {
-      background: #e0f2fe;
-      border: 1px solid #7dd3fc;
-      color: #0369a1;
-      border-radius: 999px;
-      padding: 6px 12px;
-      font-size: 0.92rem;
-      font-weight: 800;
-    }
-
-    #readerWrap {
-      display: none;
-      background: #0f172a;
-      color: #ffffff;
-      border-radius: 12px;
-      padding: 10px;
-    }
-
-    .toast {
-      padding: 13px 14px;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 800;
-      display: none;
-      line-height: 1.4;
-    }
-
-    .toast.show {
-      display: block;
-    }
-
-    .toast.ok {
-      background: #dcfce7;
-      color: #166534;
-      border: 1.5px solid #22c55e;
-    }
-
-    .toast.err {
-      background: #fee2e2;
-      color: #991b1b;
-      border: 1.5px solid #ef4444;
-    }
-
-    .bottom-bar {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      max-width: 480px;
-      background: #ffffff;
-      border-top: 1px solid #e2e8f0;
-      padding: 12px 16px;
-      z-index: 60;
-      box-shadow: 0 -4px 14px rgba(15, 23, 42, 0.08);
-      display: none;
-    }
-
-    .btn-save {
-      width: 100%;
-      border: none;
-      border-radius: 12px;
-      padding: 16px;
-      font-size: 1.14rem;
-      font-weight: 800;
-      color: #ffffff;
-      background: linear-gradient(135deg, var(--green), var(--green-dark));
-      cursor: pointer;
-    }
-
-    .btn-save:disabled {
-      background: #94a3b8;
-      cursor: not-allowed;
-    }
-
-    .settings-toggle {
-      margin-top: 8px;
-      width: 100%;
-      background: transparent;
-      border: 1px dashed #94a3b8;
-      color: #334155;
-      padding: 10px;
-      border-radius: 10px;
-      font-size: 0.92rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .settings-panel {
-      display: none;
-      margin-top: 8px;
-      padding: 12px;
-      background: #f1f5f9;
-      border-radius: 10px;
-    }
-
-    .settings-panel.open {
-      display: block;
-    }
-
-    .muted-note {
-      font-size: 0.92rem;
-      color: var(--muted);
-      margin-top: 6px;
-      line-height: 1.45;
-    }
+    .hint { color: #4b5563; font-size: 14px; line-height: 1.5; margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+    th, td { border-bottom: 1px solid #e5e7eb; padding: 8px 6px; text-align: left; }
+    th { background: #f8fafc; font-weight: 700; }
+    .error { color: #dc2626; font-size: 14px; font-weight: 600; margin-top: 8px; }
   </style>
 </head>
 <body>
-  <div class="app-shell">
-    <header class="top-header">
-      <div class="brand-title">PRODUCTION SYSTEM</div>
-      <div class="header-actions" id="headerSessionBox" style="display:none;">
-        <span class="role-badge" id="activeRoleBadge">-</span>
-        <button class="btn-logout" onclick="logout()">Logout</button>
-      </div>
-    </header>
+  <div class="topbar">
+    <h1>PRODUCTION<br/>SYSTEM</h1>
+    <div class="topbar-actions">
+      <button class="btn-pill btn-dash" onclick="loadProduction()">VIEW DASHBOARD</button>
+      <button class="btn-pill btn-logout" onclick="clearFilters()">Logout</button>
+    </div>
+  </div>
 
-    <main class="content">
-      <div id="toastBox" class="toast"></div>
-
-      <!-- SEPARATE LOGIN SCREEN -->
-      <section class="card login-card" id="loginScreen">
-        <div class="login-title">Dashboard Login</div>
-        <div class="login-sub">আপনার রোল নির্বাচন করে PIN দিয়ে নিজ নিজ ড্যাশবোর্ডে প্রবেশ করুন।</div>
-
-        <div class="field-group">
-          <label class="field-label" for="loginRole">Select Role</label>
-          <select id="loginRole" class="select-field" onchange="onLoginRoleChange()">
-            <option value="OPERATOR">Operator Dashboard</option>
-            <option value="ADMIN">Admin Dashboard</option>
-            <option value="VIEW">View Dashboard (Live & Search)</option>
-          </select>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label" for="loginPin">Access PIN</label>
-          <input type="password" id="loginPin" class="input-field" placeholder="Enter PIN" onkeydown="if(event.key==='Enter') handleLogin()" />
-          <div class="muted-note" id="pinHint">Default Operator PIN: 1111</div>
-        </div>
-
-        <button class="btn-primary" onclick="handleLogin()">Login to Dashboard</button>
-
-        <div id="loginSettingsArea" style="margin-top:14px;">
-          <button class="settings-toggle" onclick="toggleSettings()">Google Sheet Script URL Settings</button>
-          <div class="settings-panel" id="settingsPanel">
-            <input type="url" id="scriptUrlInput" class="input-field" placeholder="https://script.google.com/macros/s/.../exec" style="margin-bottom:8px;" />
-            <button class="btn-add" onclick="saveScriptUrl()">Save Script URL</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- OPERATOR & ADMIN SCANNER WORKSPACE -->
-      <div id="scannerWorkspace" style="display:none; flex-direction:column; gap:16px;">
-        <section class="card">
-          <div class="step-head">
-            <div class="step-title">Barcode Scan Action</div>
-            <span class="badge badge-ready" id="scanPhaseBadge">STEP 1: OPERATOR</span>
-          </div>
-
-          <button id="btnDynamicScan" class="btn-single-scan" onclick="triggerDynamicScan()">
-            Operator ID Scan
-          </button>
-
-          <div class="input-row">
-            <input
-              type="text"
-              id="dynamicManualInput"
-              class="input-field"
-              placeholder="Operator ID Scan: ID|Name|Floor|Dep|Job Type|Line"
-              onkeydown="if(event.key==='Enter') applyDynamicManual()"
-            />
-            <button class="btn-mini" onclick="applyDynamicManual()">Apply</button>
-          </div>
-
-          <div class="demo-strip">
-            <button class="btn-mini" id="btnDemoStep" onclick="fillCurrentStepDemo()">Demo Scan</button>
-            <button class="btn-mini" onclick="resetScanFlow()">Reset Flow</button>
-          </div>
-        </section>
-
-        <div id="readerWrap">
-          <div id="reader"></div>
-          <button class="btn-mini" style="margin-top:8px;width:100%;" onclick="stopCamera()">Close Camera</button>
-        </div>
-
-        <section class="card">
-          <div class="info-block-title">Operator Information</div>
-          <div class="info-grid">
-            <div class="info-cell"><span class="info-label">ID No.</span><span class="info-val" id="dOpId">-</span></div>
-            <div class="info-cell"><span class="info-label">Name</span><span class="info-val" id="dOpName">-</span></div>
-            <div class="info-cell"><span class="info-label">Floor</span><span class="info-val" id="dOpFloor">-</span></div>
-            <div class="info-cell"><span class="info-label">Dep</span><span class="info-val" id="dOpDep">-</span></div>
-            <div class="info-cell"><span class="info-label">Job Type</span><span class="info-val" id="dOpJob">-</span></div>
-            <div class="info-cell"><span class="info-label">Line</span><span class="info-val" id="dOpLine">-</span></div>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="info-block-title">TC Information</div>
-          <div class="info-grid">
-            <div class="info-cell"><span class="info-label">TC</span><span class="info-val" id="dTcNo">-</span></div>
-            <div class="info-cell"><span class="info-label">Lot No.</span><span class="info-val" id="dTcLot">-</span></div>
-            <div class="info-cell"><span class="info-label">Buyer</span><span class="info-val" id="dTcBuyer">-</span></div>
-            <div class="info-cell"><span class="info-label">Style</span><span class="info-val" id="dTcStyle">-</span></div>
-            <div class="info-cell"><span class="info-label">Color</span><span class="info-val" id="dTcColor">-</span></div>
-            <div class="info-cell"><span class="info-label">Size</span><span class="info-val" id="dTcSize">-</span></div>
-            <div class="info-cell"><span class="info-label">Bundle Qty</span><span class="info-val" id="dTcQty">-</span></div>
-            <div class="info-cell"><span class="info-label">Process / SMV</span><span class="info-val" id="dProcSmv">-</span></div>
-          </div>
-        </section>
-
-        <section class="card step-locked" id="processCard">
-          <div class="step-head">
-            <div class="step-title">Select Process</div>
-            <span class="badge badge-locked" id="processBadge">LOCKED</span>
-          </div>
-          <select id="processSelect" class="select-field" disabled onchange="onProcessChange()">
-            <option value="">-- Select Process --</option>
-          </select>
-
-          <div class="admin-box" id="adminManageBox" style="display:none;">
-            <div class="info-block-title" id="adminFormTitle">Admin: Add New Process & SMV</div>
-            <div class="input-row">
-              <input type="text" id="procNameInput" class="input-field" placeholder="Process name (e.g. Linking)" />
-              <input type="number" step="0.01" id="procSmvInput" class="input-field" placeholder="SMV (e.g. 0.45)" style="max-width:130px;" />
-            </div>
-            <button class="btn-add" id="btnSaveProcess" onclick="saveProcessSmv()">+ Save Process & SMV</button>
-            <button class="btn-cancel-edit" id="btnCancelEdit" style="display:none;" onclick="cancelEditProcess()">Cancel Edit</button>
-
-            <div class="divider"></div>
-            <div class="info-block-title">Configured Process & SMV List (Edit / Delete)</div>
-            <div class="process-list" id="adminProcessList"></div>
-          </div>
-        </section>
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Search Production</h2>
+        <button class="btn-refresh" onclick="loadProduction()">Refresh Live</button>
       </div>
 
-      <!-- VIEW DASHBOARD -->
-      <div id="viewDashboard" style="display:none; flex-direction:column; gap:16px;">
-        <section class="card">
-          <div class="view-section-title">
-            <span>Search Production</span>
-            <button class="btn-mini" onclick="loadProductionRecords(true)">Refresh Live</button>
-          </div>
+      <label for="dateSelect">Date</label>
+      <select id="dateSelect" onchange="loadProduction()"></select>
 
-          <div class="field-group">
-            <label class="field-label" for="searchDate">Date</label>
-            <input type="date" id="searchDate" class="input-field" onchange="runSearch()" />
-          </div>
-
-          <div class="input-row">
-            <div style="flex:1;">
-              <label class="field-label" for="searchLine">Line (Optional)</label>
-              <input type="text" id="searchLine" class="input-field" placeholder="e.g. Line-03" oninput="runSearch()" />
-            </div>
-            <div style="flex:1;">
-              <label class="field-label" for="searchStyle">Style No.</label>
-              <input type="text" id="searchStyle" class="input-field" placeholder="e.g. ST-802" oninput="runSearch()" />
-            </div>
-          </div>
-
-          <div class="input-row" style="margin-bottom:0;">
-            <button class="btn-primary" onclick="runSearch()">Search</button>
-            <button class="btn-mini" onclick="clearSearch()">Clear</button>
-          </div>
-        </section>
-
-        <section class="card" id="searchResultCard">
-          <div class="view-section-title">
-            <span>Style Search Details</span>
-            <span class="badge badge-done" id="searchCountBadge">0 Entries</span>
-          </div>
-          <div id="searchResultContainer">
-            <div class="muted-note">শুধু Style দিলে Size-wise breakdown দেখানো হবে; আর Line + Style দিলে কোন কোন TC এন্ট্রি হয়েছে এবং কোন Process-এ কত প্রোডাকশন হয়েছে তার বিস্তারিত দেখাবে।</div>
-          </div>
-        </section>
-
-        <section class="card">
-          <div class="view-section-title">
-            <span>Live Line-wise Output Production</span>
-            <span class="badge badge-ready" id="liveSyncStatus">FAST SYNC</span>
-          </div>
-          <div id="lineWiseLiveContainer">
-            <div class="muted-note">ক্যাশড ও লাইভ ডাটা প্রস্তুত হচ্ছে...</div>
-          </div>
-        </section>
+      <div class="row-2">
+        <div>
+          <label for="lineInput">Line (Optional)</label>
+          <input id="lineInput" type="text" placeholder="e.g. Linking Line-02" />
+        </div>
+        <div>
+          <label for="styleInput">Style No.</label>
+          <input id="styleInput" type="text" placeholder="e.g. 1896" />
+        </div>
       </div>
-    </main>
 
-    <div class="bottom-bar" id="bottomSaveBar">
-      <button class="btn-save" id="btnSave" disabled onclick="saveToGoogleSheet()">SAVE TO GOOGLE SHEET</button>
+      <div class="actions">
+        <button class="btn-search" onclick="loadProduction()">Search</button>
+        <button class="btn-clear" onclick="clearFilters()">Clear</button>
+      </div>
+      <div id="statusMsg" class="error"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Style Search Details</h2>
+        <span id="entriesBadge" class="badge-green">0 ENTRIES</span>
+      </div>
+      <div id="styleDetailsBox">
+        <p class="hint">
+          শুধু Style দিলে Size-wise breakdown দেখানো হবে; আর Line + Style দিলে কোন কোন TC এন্ট্রি হয়েছে এবং কোন Process-এ কত প্রোডাকশন হয়েছে তার বিস্তারিত দেখাবে।
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Live Line-wise Output Production</h2>
+        <span id="liveBadge" class="badge-ready">READY</span>
+      </div>
+      <div id="liveOutputBox">
+        <p class="hint">এখনও কোনো প্রোডাকশন ডাটা পাওয়া যায়নি।</p>
+      </div>
     </div>
   </div>
 
   <script>
-    const DEFAULT_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwu8AwaJOoAzzI5DQmZ90sOVk8Hx_n421aYK8HejeIbImCpXHdnXfrQhKL241j4t7qACg/exec";
-    const CACHE_KEY = "CACHED_PRODUCTION_RECORDS_V1";
-    const ROLE_PINS = {
-      ADMIN: "1234",
-      OPERATOR: "1111",
-      VIEW: "0000"
-    };
+    // আপনার Deploy করা Google Apps Script Web App URL এখানে দিন:
+    const API_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL';
 
-    let currentRole = null;
-    let opScanned = false;
-    let tcScanned = false;
-    let editingIndex = null;
-    let qrScanner = null;
-    let liveRefreshTimer = null;
+    async function loadProduction() {
+      const statusEl = document.getElementById('statusMsg');
+      statusEl.textContent = '';
 
-    function loadCachedRecords() {
-      try {
-        const raw = localStorage.getItem(CACHE_KEY);
-        const arr = raw ? JSON.parse(raw) : [];
-        return Array.isArray(arr) ? arr.map(r => ({ ...r, cleanDate: normalizeRecordDate(r) })) : [];
-      } catch (e) {
-        return [];
-      }
-    }
-
-    function saveCachedRecords(arr) {
-      try {
-        localStorage.setItem(CACHE_KEY, JSON.stringify(arr));
-      } catch (e) {}
-    }
-
-    let allProductionRecords = loadCachedRecords();
-
-    let operatorData = { id: "", name: "", floor: "", dep: "", jobType: "", line: "" };
-    let tcData = { tc: "", lotNo: "", buyer: "", style: "", color: "", size: "", bundleQty: "" };
-
-    let processList = JSON.parse(localStorage.getItem("SCANNER_PROCESS_LIST") || "null") || [
-      { name: "Knitting", smv: 0.42 },
-      { name: "Linking", smv: 0.58 },
-      { name: "Mending", smv: 0.35 },
-      { name: "Ironing", smv: 0.28 }
-    ];
-
-    function getEnteredPairs() {
-      return JSON.parse(localStorage.getItem("ALREADY_ENTERED_TC_PROCESS") || "[]");
-    }
-
-    function saveEnteredPair(tc, processName) {
-      const key = `${String(tc).trim().toUpperCase()}|||${String(processName).trim().toUpperCase()}`;
-      const list = getEnteredPairs();
-      if (!list.includes(key)) {
-        list.push(key);
-        localStorage.setItem("ALREADY_ENTERED_TC_PROCESS", JSON.stringify(list));
-      }
-    }
-
-    function hasEnteredSameProcess(tc, processName) {
-      const key = `${String(tc).trim().toUpperCase()}|||${String(processName).trim().toUpperCase()}`;
-      const localMatch = getEnteredPairs().includes(key);
-      const sheetMatch = allProductionRecords.some(r =>
-        String(r.tcNo || "").trim().toUpperCase() === String(tc).trim().toUpperCase() &&
-        String(r.process || "").trim().toUpperCase() === String(processName).trim().toUpperCase()
-      );
-      return localMatch || sheetMatch;
-    }
-
-    function getScriptUrl() {
-      return localStorage.getItem("GAS_WEB_APP_URL") || DEFAULT_SCRIPT_URL;
-    }
-
-    function showToast(msg, type = "ok") {
-      const box = document.getElementById("toastBox");
-      box.textContent = msg;
-      box.className = "toast show " + type;
-      clearTimeout(window._toastTimer);
-      window._toastTimer = setTimeout(() => {
-        box.className = "toast";
-      }, 4500);
-    }
-
-    function onLoginRoleChange() {
-      const r = document.getElementById("loginRole").value;
-      const hint = document.getElementById("pinHint");
-      if (r === "ADMIN") hint.textContent = "Default Admin PIN: 1234";
-      else if (r === "OPERATOR") hint.textContent = "Default Operator PIN: 1111";
-      else hint.textContent = "Default View Dashboard PIN: 0000";
-    }
-
-    function handleLogin() {
-      const role = document.getElementById("loginRole").value;
-      const pin = document.getElementById("loginPin").value.trim();
-
-      if (pin !== ROLE_PINS[role]) {
-        showToast("ভুল PIN দিয়েছেন! সঠিক PIN দিন।", "err");
+      if (!API_URL || API_URL === 'YOUR_APPS_SCRIPT_WEB_APP_URL') {
+        statusEl.textContent = 'আগে কোডের API_URL-এ আপনার Apps Script Web App লিংক বসান।';
         return;
       }
 
-      currentRole = role;
-      document.getElementById("loginPin").value = "";
-      document.getElementById("loginScreen").style.display = "none";
-      document.getElementById("headerSessionBox").style.display = "flex";
-      document.getElementById("activeRoleBadge").textContent = role + " DASHBOARD";
+      const dateSelect = document.getElementById('dateSelect');
+      const currentDate = dateSelect.value;
+      const line = document.getElementById('lineInput').value.trim();
+      const style = document.getElementById('styleInput').value.trim();
 
-      if (role === "VIEW") {
-        document.getElementById("scannerWorkspace").style.display = "none";
-        document.getElementById("bottomSaveBar").style.display = "none";
-        document.getElementById("viewDashboard").style.display = "flex";
-        renderLineWiseLive(allProductionRecords);
-        runSearch();
-        loadProductionRecords(false);
-        liveRefreshTimer = setInterval(() => loadProductionRecords(false), 15000);
-      } else {
-        document.getElementById("viewDashboard").style.display = "none";
-        document.getElementById("scannerWorkspace").style.display = "flex";
-        document.getElementById("bottomSaveBar").style.display = "block";
-        document.getElementById("adminManageBox").style.display = role === "ADMIN" ? "block" : "none";
-        resetScanFlow();
-        renderProcessDropdown();
-        renderAdminProcessList();
-      }
-      showToast(`${role} Dashboard-এ স্বাগতম!`, "ok");
-    }
-
-    function logout() {
-      stopCamera();
-      clearInterval(liveRefreshTimer);
-      currentRole = null;
-      document.getElementById("headerSessionBox").style.display = "none";
-      document.getElementById("scannerWorkspace").style.display = "none";
-      document.getElementById("viewDashboard").style.display = "none";
-      document.getElementById("bottomSaveBar").style.display = "none";
-      document.getElementById("loginScreen").style.display = "block";
-    }
-
-    function syncScanButtonUI() {
-      const btn = document.getElementById("btnDynamicScan");
-      const badge = document.getElementById("scanPhaseBadge");
-      const input = document.getElementById("dynamicManualInput");
-      const procCard = document.getElementById("processCard");
-      const procBadge = document.getElementById("processBadge");
-      const procSelect = document.getElementById("processSelect");
-
-      if (!opScanned) {
-        btn.textContent = "Operator ID Scan";
-        btn.className = "btn-single-scan";
-        btn.disabled = false;
-        badge.textContent = "STEP 1: OPERATOR";
-        badge.className = "badge badge-ready";
-        input.disabled = false;
-        input.placeholder = "Operator ID Scan: ID|Name|Floor|Dep|Job Type|Line";
-        procCard.classList.add("step-locked");
-        procBadge.textContent = "LOCKED";
-        procBadge.className = "badge badge-locked";
-        procSelect.disabled = true;
-      } else if (!tcScanned) {
-        btn.textContent = "Scan TC Card";
-        btn.className = "btn-single-scan tc-mode";
-        btn.disabled = false;
-        badge.textContent = "STEP 2: TC CARD";
-        badge.className = "badge badge-ready";
-        input.disabled = false;
-        input.placeholder = "Scan TC Card: TC|Lot No.|Buyer|Style|Color|Size|Bundle Qty";
-        procCard.classList.add("step-locked");
-        procBadge.textContent = "LOCKED";
-        procBadge.className = "badge badge-locked";
-        procSelect.disabled = true;
-      } else {
-        btn.textContent = "Operator & TC Scanned";
-        btn.className = "btn-single-scan completed-mode";
-        btn.disabled = true;
-        badge.textContent = "SCANNED";
-        badge.className = "badge badge-done";
-        input.disabled = true;
-        input.value = "";
-        input.placeholder = "উভয় স্ক্যান সম্পন্ন — নিচ থেকে Process সিলেক্ট করুন";
-        procCard.classList.remove("step-locked");
-        procBadge.textContent = procSelect.value ? "SELECTED" : "SELECT PROCESS";
-        procBadge.className = "badge " + (procSelect.value ? "badge-done" : "badge-ready");
-        procSelect.disabled = false;
-      }
-
-      updateSaveButton();
-    }
-
-    function triggerDynamicScan() {
-      if (!opScanned) startCamera("OP");
-      else if (!tcScanned) startCamera("TC");
-    }
-
-    function applyDynamicManual() {
-      const val = document.getElementById("dynamicManualInput").value;
-      if (!opScanned) handleScannedValue("OP", val);
-      else if (!tcScanned) handleScannedValue("TC", val);
-    }
-
-    function fillCurrentStepDemo() {
-      if (!opScanned) {
-        handleScannedValue("OP", "OP-104|Rahim Mia|Floor-2|Sewing|Operator|Line-03");
-      } else if (!tcScanned) {
-        handleScannedValue("TC", "TC-90412|LOT-01|ABC Corp|ST-802|Navy Blue|L|60");
-      }
-    }
-
-    function parseParts(raw) {
-      const clean = (raw || "").trim();
-      if (!clean) return [];
-      if (clean.includes("|")) return clean.split("|").map(s => s.trim());
-      if (clean.includes("\t")) return clean.split("\t").map(s => s.trim());
-      return clean.split(",").map(s => s.trim());
-    }
-
-    function handleScannedValue(type, rawText) {
-      const parts = parseParts(rawText);
-      if (!parts.length || !parts[0]) {
-        showToast("সঠিক বারকোড তথ্য দিন।", "err");
-        return;
-      }
-
-      if (type === "OP" && !opScanned) {
-        operatorData = {
-          id: parts[0] || "",
-          name: parts[1] || "",
-          floor: parts[2] || "",
-          dep: parts[3] || "",
-          jobType: parts[4] || "",
-          line: parts[5] || ""
-        };
-        document.getElementById("dOpId").textContent = operatorData.id || "-";
-        document.getElementById("dOpName").textContent = operatorData.name || "-";
-        document.getElementById("dOpFloor").textContent = operatorData.floor || "-";
-        document.getElementById("dOpDep").textContent = operatorData.dep || "-";
-        document.getElementById("dOpJob").textContent = operatorData.jobType || "-";
-        document.getElementById("dOpLine").textContent = operatorData.line || "-";
-
-        opScanned = true;
-        document.getElementById("dynamicManualInput").value = "";
-        syncScanButtonUI();
-        showToast("Operator ID স্ক্যান সম্পন্ন! এখন Scan TC Card করুন।", "ok");
-      } else if (type === "TC" && opScanned && !tcScanned) {
-        tcData = {
-          tc: parts[0] || "",
-          lotNo: parts[1] || "",
-          buyer: parts[2] || "",
-          style: parts[3] || "",
-          color: parts[4] || "",
-          size: parts[5] || "",
-          bundleQty: parts[6] || ""
-        };
-        document.getElementById("dTcNo").textContent = tcData.tc || "-";
-        document.getElementById("dTcLot").textContent = tcData.lotNo || "-";
-        document.getElementById("dTcBuyer").textContent = tcData.buyer || "-";
-        document.getElementById("dTcStyle").textContent = tcData.style || "-";
-        document.getElementById("dTcColor").textContent = tcData.color || "-";
-        document.getElementById("dTcSize").textContent = tcData.size || "-";
-        document.getElementById("dTcQty").textContent = tcData.bundleQty || "-";
-
-        tcScanned = true;
-        syncScanButtonUI();
-        showToast("TC Card স্ক্যান সম্পন্ন! এখন Process সিলেক্ট করুন।", "ok");
-      }
-    }
-
-    function renderProcessDropdown() {
-      const sel = document.getElementById("processSelect");
-      const prev = sel.value;
-      sel.innerHTML = '<option value="">-- Select Process --</option>';
-      processList.forEach(item => {
-        const opt = document.createElement("option");
-        opt.value = item.name;
-        opt.textContent = `${item.name} (SMV: ${item.smv})`;
-        sel.appendChild(opt);
+      const qs = new URLSearchParams({
+        date: currentDate,
+        line: line,
+        style: style
       });
-      sel.value = processList.some(p => p.name === prev) ? prev : "";
-      onProcessChange();
-    }
 
-    function renderAdminProcessList() {
-      const box = document.getElementById("adminProcessList");
-      if (!box) return;
-      if (!processList.length) {
-        box.innerHTML = '<div class="muted-note">কোনো Process যুক্ত করা নেই।</div>';
-        return;
-      }
-      box.innerHTML = processList.map((item, idx) => `
-        <div class="process-item">
-          <div>
-            <div class="process-meta">${escapeHtml(item.name)}</div>
-            <div class="process-smv">SMV: ${item.smv}</div>
-          </div>
-          <div class="item-btns">
-            <button class="btn-edit" onclick="startEditProcess(${idx})">Edit</button>
-            <button class="btn-del" onclick="deleteProcess(${idx})">Delete</button>
-          </div>
-        </div>
-      `).join("");
-    }
+      document.getElementById('liveBadge').textContent = 'LOADING';
 
-    function saveProcessSmv() {
-      if (currentRole !== "ADMIN") return;
-      const name = document.getElementById("procNameInput").value.trim();
-      const smv = parseFloat(document.getElementById("procSmvInput").value);
+      try {
+        const res = await fetch(`${API_URL}?${qs.toString()}`);
+        const data = await res.json();
 
-      if (!name || isNaN(smv) || smv <= 0) {
-        showToast("সঠিক Process নাম এবং SMV মান দিন।", "err");
-        return;
-      }
-
-      if (editingIndex !== null) {
-        processList[editingIndex] = { name, smv };
-        editingIndex = null;
-        document.getElementById("adminFormTitle").textContent = "Admin: Add New Process & SMV";
-        document.getElementById("btnSaveProcess").textContent = "+ Save Process & SMV";
-        document.getElementById("btnCancelEdit").style.display = "none";
-        showToast("Process ও SMV আপডেট হয়েছে।", "ok");
-      } else {
-        const dupIdx = processList.findIndex(p => p.name.toLowerCase() === name.toLowerCase());
-        if (dupIdx >= 0) {
-          processList[dupIdx].smv = smv;
-          showToast("বিদ্যমান Process-এর SMV আপডেট হয়েছে।", "ok");
-        } else {
-          processList.push({ name, smv });
-          showToast("নতুন Process ও SMV যুক্ত হয়েছে।", "ok");
+        if (!data.success) {
+          statusEl.textContent = data.message || 'ডাটা আনা যায়নি।';
+          document.getElementById('liveBadge').textContent = 'ERROR';
+          return;
         }
-      }
 
-      localStorage.setItem("SCANNER_PROCESS_LIST", JSON.stringify(processList));
-      document.getElementById("procNameInput").value = "";
-      document.getElementById("procSmvInput").value = "";
-      renderProcessDropdown();
-      renderAdminProcessList();
-      if (tcScanned) {
-        document.getElementById("processSelect").value = name;
-        onProcessChange();
-      }
-    }
-
-    function startEditProcess(idx) {
-      if (currentRole !== "ADMIN") return;
-      const item = processList[idx];
-      editingIndex = idx;
-      document.getElementById("procNameInput").value = item.name;
-      document.getElementById("procSmvInput").value = item.smv;
-      document.getElementById("adminFormTitle").textContent = "Admin: Edit Process & SMV";
-      document.getElementById("btnSaveProcess").textContent = "Update Process & SMV";
-      document.getElementById("btnCancelEdit").style.display = "block";
-    }
-
-    function cancelEditProcess() {
-      editingIndex = null;
-      document.getElementById("procNameInput").value = "";
-      document.getElementById("procSmvInput").value = "";
-      document.getElementById("adminFormTitle").textContent = "Admin: Add New Process & SMV";
-      document.getElementById("btnSaveProcess").textContent = "+ Save Process & SMV";
-      document.getElementById("btnCancelEdit").style.display = "none";
-    }
-
-    function deleteProcess(idx) {
-      if (currentRole !== "ADMIN") return;
-      if (!confirm(`"${processList[idx].name}" মুছে ফেলতে চান?`)) return;
-      processList.splice(idx, 1);
-      localStorage.setItem("SCANNER_PROCESS_LIST", JSON.stringify(processList));
-      if (editingIndex === idx) cancelEditProcess();
-      renderProcessDropdown();
-      renderAdminProcessList();
-      showToast("Process ডিলিট করা হয়েছে।", "ok");
-    }
-
-    function onProcessChange() {
-      const selName = document.getElementById("processSelect").value;
-      const found = processList.find(p => p.name === selName);
-      document.getElementById("dProcSmv").textContent = found ? `${found.name} (${found.smv})` : "-";
-      syncScanButtonUI();
-    }
-
-    function updateSaveButton() {
-      const procVal = document.getElementById("processSelect").value;
-      document.getElementById("btnSave").disabled = !(opScanned && tcScanned && procVal);
-    }
-
-    function startCamera(type) {
-      document.getElementById("readerWrap").style.display = "block";
-      if (!qrScanner) {
-        qrScanner = new Html5Qrcode("reader");
-      }
-      qrScanner.start(
-        { facingMode: "environment" },
-        { fps: 12, qrbox: { width: 240, height: 180 } },
-        decodedText => {
-          stopCamera();
-          handleScannedValue(type, decodedText);
-        },
-        () => {}
-      ).catch(() => {
-        showToast("ক্যামেরা চালু করা যাচ্ছে না। নিচের বক্সে লিখে Apply করুন।", "err");
-        document.getElementById("readerWrap").style.display = "none";
-      });
-    }
-
-    function stopCamera() {
-      if (qrScanner && qrScanner.isScanning) {
-        qrScanner.stop().catch(() => {});
-      }
-      document.getElementById("readerWrap").style.display = "none";
-    }
-
-    function toggleSettings() {
-      document.getElementById("settingsPanel").classList.toggle("open");
-      document.getElementById("scriptUrlInput").value = getScriptUrl();
-    }
-
-    function saveScriptUrl() {
-      const url = document.getElementById("scriptUrlInput").value.trim();
-      if (!url) {
-        showToast("সঠিক Web App URL দিন।", "err");
-        return;
-      }
-      localStorage.setItem("GAS_WEB_APP_URL", url);
-      document.getElementById("settingsPanel").classList.remove("open");
-      showToast("Script URL সেভ হয়েছে।", "ok");
-      loadProductionRecords(true);
-    }
-
-    function saveToGoogleSheet() {
-      const procName = document.getElementById("processSelect").value;
-      const tcVal = String(tcData.tc || "").trim();
-
-      if (!tcVal || !procName) {
-        showToast("TC এবং Process অবশ্যই থাকতে হবে।", "err");
-        return;
-      }
-
-      if (hasEnteredSameProcess(tcVal, procName)) {
-        showToast("already entered this process", "err");
-        return;
-      }
-
-      const procObj = processList.find(p => p.name === procName);
-      const smvVal = procObj ? Number(procObj.smv) : 0;
-      const qtyVal = Number(tcData.bundleQty) || 0;
-      const earnedSah = Number(((qtyVal * smvVal) / 60).toFixed(4));
-      const nowIso = new Date().toISOString();
-
-      const payload = {
-        timestamp: nowIso,
-        operatorId: operatorData.id,
-        operatorName: operatorData.name,
-        floor: operatorData.floor,
-        dept: operatorData.dep,
-        jobType: operatorData.jobType,
-        line: operatorData.line,
-        tcNo: tcVal,
-        lotNo: tcData.lotNo,
-        buyer: tcData.buyer,
-        style: tcData.style,
-        color: tcData.color,
-        size: tcData.size,
-        bundleQty: qtyVal,
-        process: procName,
-        smv: smvVal,
-        earnedSah: earnedSah
-      };
-
-      const btn = document.getElementById("btnSave");
-      btn.disabled = true;
-      btn.textContent = "SAVING...";
-
-      fetch(getScriptUrl(), {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-      })
-        .then(() => {
-          saveEnteredPair(tcVal, procName);
-          allProductionRecords.push({
-            ...payload,
-            cleanDate: normalizeRecordDate(payload)
+        // Populate Date dropdown
+        const prevVal = dateSelect.value || data.selectedDate || '';
+        dateSelect.innerHTML = '';
+        if (data.dates && data.dates.length > 0) {
+          data.dates.forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d;
+            opt.textContent = d;
+            if (d === prevVal) opt.selected = true;
+            dateSelect.appendChild(opt);
           });
-          saveCachedRecords(allProductionRecords);
-          showToast(`ডাটা Google Sheet-এ পাঠানো হয়েছে! (TC: ${tcVal} | Process: ${procName})`, "ok");
-          resetScanFlow();
-        })
-        .catch(() => {
-          showToast("ডাটা পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।", "err");
-          btn.disabled = false;
-          btn.textContent = "SAVE TO GOOGLE SHEET";
-        });
-    }
-
-    function resetScanFlow() {
-      stopCamera();
-      opScanned = false;
-      tcScanned = false;
-      operatorData = { id: "", name: "", floor: "", dep: "", jobType: "", line: "" };
-      tcData = { tc: "", lotNo: "", buyer: "", style: "", color: "", size: "", bundleQty: "" };
-
-      ["dOpId", "dOpName", "dOpFloor", "dOpDep", "dOpJob", "dOpLine", "dTcNo", "dTcLot", "dTcBuyer", "dTcStyle", "dTcColor", "dTcSize", "dTcQty", "dProcSmv"]
-        .forEach(id => { document.getElementById(id).textContent = "-"; });
-
-      document.getElementById("dynamicManualInput").value = "";
-      document.getElementById("processSelect").value = "";
-      document.getElementById("btnSave").textContent = "SAVE TO GOOGLE SHEET";
-      syncScanButtonUI();
-    }
-
-    function normalizeRecordDate(rec) {
-      if (rec && rec.timestamp) {
-        const d = new Date(rec.timestamp);
-        if (!isNaN(d.getTime())) {
-          const y = d.getFullYear();
-          const m = String(d.getMonth() + 1).padStart(2, "0");
-          const day = String(d.getDate()).padStart(2, "0");
-          return `${y}-${m}-${day}`;
-        }
-      }
-      if (rec && rec.date) {
-        return String(rec.date).slice(0, 10);
-      }
-      return "";
-    }
-
-    function fetchWithTimeout(url, ms = 6000) {
-      return Promise.race([
-        fetch(url),
-        new Promise((_, reject) => setTimeout(() => reject(new Error("TIMEOUT")), ms))
-      ]);
-    }
-
-    function loadProductionRecords(showMsg = false) {
-      const badge = document.getElementById("liveSyncStatus");
-      if (badge) badge.textContent = "SYNCING";
-
-      fetchWithTimeout(getScriptUrl(), 6000)
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.status === "SUCCESS" && Array.isArray(data.records)) {
-            allProductionRecords = data.records.map(r => {
-              const norm = {
-                ...r,
-                cleanDate: normalizeRecordDate(r)
-              };
-              if (norm.tcNo && norm.process) {
-                saveEnteredPair(norm.tcNo, norm.process);
-              }
-              return norm;
-            });
-            saveCachedRecords(allProductionRecords);
-            if (currentRole === "VIEW") {
-              renderLineWiseLive(allProductionRecords);
-              runSearch();
-            }
-            if (badge) badge.textContent = "LIVE";
-            if (showMsg) showToast("লাইভ ডাটা আপডেট হয়েছে!", "ok");
-          } else {
-            if (badge) badge.textContent = allProductionRecords.length ? "CACHED" : "READY";
+          if (!dateSelect.value && data.selectedDate) {
+            dateSelect.value = data.selectedDate;
           }
-        })
-        .catch(() => {
-          if (currentRole === "VIEW") {
-            renderLineWiseLive(allProductionRecords);
-            runSearch();
-          }
-          if (badge) badge.textContent = allProductionRecords.length ? "CACHED" : "READY";
-          if (showMsg) showToast("ক্যাশড ডাটা দেখানো হচ্ছে (নেটওয়ার্ক ধীর)।", "err");
-        });
-    }
-
-    function renderLineWiseLive(records) {
-      const container = document.getElementById("lineWiseLiveContainer");
-      if (!records || !records.length) {
-        container.innerHTML = '<div class="muted-note">এখনও কোনো প্রোডাকশন ডাটা পাওয়া যায়নি।</div>';
-        return;
-      }
-
-      const byLine = {};
-      records.forEach(r => {
-        const lineKey = String(r.line || "Unassigned Line").trim() || "Unassigned Line";
-        const procKey = String(r.process || "Unknown Process").trim() || "Unknown Process";
-        const qty = Number(r.bundleQty || 0);
-        const sah = Number(r.earnedSah || 0);
-
-        if (!byLine[lineKey]) {
-          byLine[lineKey] = { totalQty: 0, totalSah: 0, procs: {} };
+        } else {
+          const opt = document.createElement('option');
+          opt.value = '';
+          opt.textContent = 'কোনো তারিখ পাওয়া যায়নি';
+          dateSelect.appendChild(opt);
         }
-        byLine[lineKey].totalQty += qty;
-        byLine[lineKey].totalSah += sah;
 
-        if (!byLine[lineKey].procs[procKey]) {
-          byLine[lineKey].procs[procKey] = { qty: 0, sah: 0 };
+        renderLiveOutput(data.liveOutput || []);
+        renderStyleDetails(data.styleDetails, style);
+        document.getElementById('liveBadge').textContent = 'LIVE';
+
+      } catch (err) {
+        statusEl.textContent = 'নেটওয়ার্ক বা Web App পারমিশন সমস্যা: ' + err.message;
+        document.getElementById('liveBadge').textContent = 'ERROR';
+      }
+    }
+
+    function renderLiveOutput(list) {
+      const box = document.getElementById('liveOutputBox');
+      if (!list.length) {
+        box.innerHTML = '<p class="hint">এখনও কোনো প্রোডাকশন ডাটা পাওয়া যায়নি।</p>';
+        return;
+      }
+      let html = '<table><thead><tr><th>Line</th><th>Style</th><th>TC</th><th>Output (Qty)</th><th>SAH</th></tr></thead><tbody>';
+      list.forEach(r => {
+        html += `<tr>
+          <td>${escapeHtml(r.line)}</td>
+          <td>${escapeHtml(r.styles || '-')}</td>
+          <td>${r.tcCount}</td>
+          <td><b>${r.totalQty}</b></td>
+          <td>${r.totalSah}</td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      box.innerHTML = html;
+    }
+
+    function renderStyleDetails(details, styleQuery) {
+      const badge = document.getElementById('entriesBadge');
+      const box = document.getElementById('styleDetailsBox');
+
+      if (!styleQuery || !details || details.mode === 'none') {
+        badge.textContent = '0 ENTRIES';
+        box.innerHTML = '<p class="hint">শুধু Style দিলে Size-wise breakdown দেখানো হবে; আর Line + Style দিলে কোন কোন TC এন্ট্রি হয়েছে এবং কোন Process-এ কত প্রোডাকশন হয়েছে তার বিস্তারিত দেখাবে।</p>';
+        return;
+      }
+
+      badge.textContent = `${details.entries} ENTRIES`;
+
+      if (details.mode === 'line_style') {
+        if (!details.tcProcessBreakdown.length) {
+          box.innerHTML = '<p class="hint">এই Line এবং Style-এর কোনো এন্ট্রি পাওয়া যায়নি।</p>';
+          return;
         }
-        byLine[lineKey].procs[procKey].qty += qty;
-        byLine[lineKey].procs[procKey].sah += sah;
-      });
-
-      container.innerHTML = Object.keys(byLine).map(line => {
-        const lObj = byLine[line];
-        const procRows = Object.keys(lObj.procs).map(p => `
-          <div class="proc-row">
-            <span>${escapeHtml(p)}</span>
-            <span>${lObj.procs[p].qty} pcs (${lObj.procs[p].sah.toFixed(2)} SAH)</span>
-          </div>
-        `).join("");
-
-        return `
-          <div class="line-box">
-            <div class="line-header">
-              <span>${escapeHtml(line)}</span>
-              <span>Output: ${lObj.totalQty} pcs | ${lObj.totalSah.toFixed(2)} SAH</span>
-            </div>
-            ${procRows}
-          </div>
-        `;
-      }).join("");
-    }
-
-    function runSearch() {
-      const dateVal = document.getElementById("searchDate").value.trim();
-      const lineVal = document.getElementById("searchLine").value.trim().toLowerCase();
-      const styleVal = document.getElementById("searchStyle").value.trim().toLowerCase();
-      const container = document.getElementById("searchResultContainer");
-      const countBadge = document.getElementById("searchCountBadge");
-
-      if (!dateVal && !lineVal && !styleVal) {
-        countBadge.textContent = "0 Entries";
-        container.innerHTML = '<div class="muted-note">শুধু Style দিলে Size-wise breakdown দেখানো হবে; আর Line + Style দিলে কোন কোন TC এন্ট্রি হয়েছে এবং কোন Process-এ কত প্রোডাকশন হয়েছে তার বিস্তারিত দেখাবে।</div>';
-        return;
-      }
-
-      const matched = allProductionRecords.filter(r => {
-        const recDate = r.cleanDate || normalizeRecordDate(r);
-        const dateOk = !dateVal || recDate === dateVal;
-        const lineOk = !lineVal || String(r.line || "").toLowerCase().includes(lineVal);
-        const styleOk = !styleVal || String(r.style || "").toLowerCase().includes(styleVal);
-        return dateOk && lineOk && styleOk;
-      });
-
-      countBadge.textContent = `${matched.length} Entries`;
-
-      if (!matched.length) {
-        container.innerHTML = '<div class="muted-note">এই ফিল্টারে কোনো প্রোডাকশন পাওয়া যায়নি।</div>';
-        return;
-      }
-
-      if (lineVal && styleVal) {
-        const tcSet = [...new Set(matched.map(r => String(r.tcNo || "").trim()).filter(Boolean))];
-        const byProcess = {};
-        let totalPcs = 0;
-
-        matched.forEach(r => {
-          const proc = String(r.process || "Unknown Process").trim();
-          const sz = String(r.size || "N/A").trim();
-          const qty = Number(r.bundleQty || 0);
-          totalPcs += qty;
-          if (!byProcess[proc]) byProcess[proc] = { qty: 0, sizes: {} };
-          byProcess[proc].qty += qty;
-          byProcess[proc].sizes[sz] = (byProcess[proc].sizes[sz] || 0) + qty;
+        let html = '<table><thead><tr><th>TC No.</th><th>Process</th><th>Size</th><th>Qty</th></tr></thead><tbody>';
+        details.tcProcessBreakdown.forEach(item => {
+          html += `<tr>
+            <td>${escapeHtml(item.tcNo)}</td>
+            <td>${escapeHtml(item.process)}</td>
+            <td>${escapeHtml(item.size)}</td>
+            <td><b>${item.qty}</b></td>
+          </tr>`;
         });
-
-        const procHtml = Object.keys(byProcess).map(proc => {
-          const pObj = byProcess[proc];
-          const sizesText = Object.keys(pObj.sizes).map(s => `${s}: ${pObj.sizes[s]}`).join(", ");
-          return `
-            <div class="proc-row">
-              <span>${escapeHtml(proc)} <small style="color:#475569;">(${escapeHtml(sizesText)})</small></span>
-              <span>${pObj.qty} pcs</span>
-            </div>
-          `;
-        }).join("");
-
-        const tcHtml = tcSet.length
-          ? tcSet.map(tc => `<span class="tc-pill">${escapeHtml(tc)}</span>`).join("")
-          : '<span class="muted-note">কোনো TC নম্বর পাওয়া যায়নি।</span>';
-
-        container.innerHTML = `
-          <div class="line-box">
-            <div class="line-header">
-              <span>Style: ${escapeHtml(styleVal.toUpperCase())} | Line: ${escapeHtml(lineVal.toUpperCase())}</span>
-              <span>Total: ${totalPcs} pcs</span>
-            </div>
-            <div class="info-label" style="margin-top:6px;">Entered TC Numbers (${tcSet.length}):</div>
-            <div class="tc-tag-list" style="margin-bottom:10px;">${tcHtml}</div>
-            <div class="info-label" style="margin-bottom:6px;">Process-wise Production:</div>
-            ${procHtml}
-          </div>
-        `;
-        return;
+        html += '</tbody></table>';
+        box.innerHTML = html;
+      } else {
+        if (!details.sizeBreakdown.length) {
+          box.innerHTML = '<p class="hint">এই Style-এর কোনো Size breakdown পাওয়া যায়নি।</p>';
+          return;
+        }
+        let html = '<table><thead><tr><th>Style</th><th>Size</th><th>Color</th><th>Qty</th></tr></thead><tbody>';
+        details.sizeBreakdown.forEach(item => {
+          html += `<tr>
+            <td>${escapeHtml(item.style)}</td>
+            <td>${escapeHtml(item.size)}</td>
+            <td>${escapeHtml(item.color)}</td>
+            <td><b>${item.qty}</b></td>
+          </tr>`;
+        });
+        html += '</tbody></table>';
+        box.innerHTML = html;
       }
-
-      const bySize = {};
-      const byProcess = {};
-      let grandTotal = 0;
-
-      matched.forEach(r => {
-        const sz = String(r.size || "N/A").trim() || "N/A";
-        const proc = String(r.process || "Unknown Process").trim() || "Unknown Process";
-        const qty = Number(r.bundleQty || 0);
-        grandTotal += qty;
-        bySize[sz] = (bySize[sz] || 0) + qty;
-        byProcess[proc] = (byProcess[proc] || 0) + qty;
-      });
-
-      const sizeChips = Object.keys(bySize).map(sz => `
-        <span class="size-chip">${escapeHtml(sz)}: ${bySize[sz]} pcs</span>
-      `).join("");
-
-      const procRows = Object.keys(byProcess).map(proc => `
-        <div class="proc-row">
-          <span>${escapeHtml(proc)}</span>
-          <span>${byProcess[proc]} pcs</span>
-        </div>
-      `).join("");
-
-      container.innerHTML = `
-        <div class="line-box">
-          <div class="line-header">
-            <span>Style Details (${styleVal ? escapeHtml(styleVal.toUpperCase()) : "All Styles"})</span>
-            <span>Total: ${grandTotal} pcs</span>
-          </div>
-          <div class="info-label" style="margin-top:4px;">Size-wise Production Breakdown:</div>
-          <div class="size-chips" style="margin-bottom:12px;">${sizeChips}</div>
-          <div class="info-label" style="margin-bottom:6px;">Process-wise Production:</div>
-          ${procRows}
-        </div>
-      `;
     }
 
-    function clearSearch() {
-      document.getElementById("searchDate").value = "";
-      document.getElementById("searchLine").value = "";
-      document.getElementById("searchStyle").value = "";
-      runSearch();
+    function clearFilters() {
+      document.getElementById('lineInput').value = '';
+      document.getElementById('styleInput').value = '';
+      loadProduction();
     }
 
     function escapeHtml(str) {
       return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
     }
 
-    // Pre-fetch in background as soon as page opens for instant View Dashboard load
-    loadProductionRecords(false);
+    window.addEventListener('DOMContentLoaded', loadProduction);
   </script>
 </body>
 </html>
