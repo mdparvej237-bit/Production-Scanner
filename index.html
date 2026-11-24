@@ -121,17 +121,11 @@
   </div>
 
   <script>
-    // আপনার Deploy করা Google Apps Script Web App URL এখানে দিন:
-    const API_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbw7j-f4pOE1kZvQKBhjYFov5ntrasH6KTsbNgyxXTaFHELOJdblVbfnSRifM9lhdUDA/exec';
 
     async function loadProduction() {
       const statusEl = document.getElementById('statusMsg');
       statusEl.textContent = '';
-
-      if (!API_URL || API_URL === 'YOUR_APPS_SCRIPT_WEB_APP_URL') {
-        statusEl.textContent = 'আগে কোডের API_URL-এ আপনার Apps Script Web App লিংক বসান।';
-        return;
-      }
 
       const dateSelect = document.getElementById('dateSelect');
       const currentDate = dateSelect.value;
@@ -150,13 +144,13 @@
         const res = await fetch(`${API_URL}?${qs.toString()}`);
         const data = await res.json();
 
-        if (!data.success) {
+        const isOk = data.status === 'SUCCESS' || data.success === true;
+        if (!isOk) {
           statusEl.textContent = data.message || 'ডাটা আনা যায়নি।';
           document.getElementById('liveBadge').textContent = 'ERROR';
           return;
         }
 
-        // Populate Date dropdown
         const prevVal = dateSelect.value || data.selectedDate || '';
         dateSelect.innerHTML = '';
         if (data.dates && data.dates.length > 0) {
