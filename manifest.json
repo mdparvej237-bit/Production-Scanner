@@ -1,6 +1,6 @@
 {
-  "name": "JL Fashions' Data Entry",
-  "short_name": "Linking Data Scanner",
+  "name": "Production System",
+  "short_name": "Production",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#0c2340",
