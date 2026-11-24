@@ -219,7 +219,7 @@
         </div>
       </div>
 
-      <!-- OPERATOR INFORMATION (ONLY OPERATOR FIELDS: OP ID, NAME, FLOOR, DEPARTMENT, LINE) -->
+      <!-- OPERATOR INFORMATION -->
       <div class="card">
         <div class="card-head">
           <h2 class="card-title">Operator Information</h2>
@@ -231,10 +231,19 @@
           <div class="info-cell"><div class="info-lbl">Floor</div><div id="dOpFloor" class="info-val">-</div></div>
           <div class="info-cell"><div class="info-lbl">Department</div><div id="dOpDept" class="info-val">-</div></div>
           <div class="info-cell"><div class="info-lbl">Line</div><div id="dOpLine" class="info-val">-</div></div>
+          <div class="info-cell">
+            <div class="info-lbl">Jobtype</div>
+            <select id="dOpJobtype" onchange="onJobtypeOptionChange()" style="margin-top:4px;padding:7px 9px;font-size:13px;">
+              <option value="Regular">Regular</option>
+              <option value="OT">OT</option>
+              <option value="Sample">Sample</option>
+              <option value="Helper">Helper</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      <!-- TC INFORMATION (ONLY TC FIELDS: TC NO, LOT NO, BUYER, STYLE, COLOR, SIZE, BUNDLE QTY, PROCESS, SMV, EARNED SAH) -->
+      <!-- TC INFORMATION -->
       <div id="tcStepCard" class="card locked-box">
         <div class="card-head">
           <h2 class="card-title">TC Information</h2>
@@ -317,7 +326,6 @@
     let cameraRunning = false;
     let audioCtx = null;
 
-    // States: 'SCAN_OP' -> 'HOLD_AFTER_OP' -> 'SCAN_TC' -> 'HOLD_AFTER_TC' -> 'HOLD_AFTER_SAVE'
     let flowMode = 'SCAN_OP';
     let currentOperator = null;
     let currentTcData = null;
@@ -362,16 +370,35 @@
       box.textContent = '';
     }
 
-    // Operator ফরম্যাট: OPID|NAME|FLOOR|DEPT|LINE
+    function onJobtypeOptionChange() {
+      const jtSel = document.getElementById('dOpJobtype');
+      if (currentOperator && jtSel) {
+        currentOperator.jobType = jtSel.value || 'Regular';
+      }
+    }
+
+    // Operator ফরম্যাট: OPID|NAME|FLOOR|DEPT|LINE|JOBTYPE
     function renderOperatorCard() {
       document.getElementById('dOpId').textContent = currentOperator ? currentOperator.operatorId : '-';
       document.getElementById('dOpName').textContent = currentOperator ? currentOperator.operatorName : '-';
       document.getElementById('dOpFloor').textContent = currentOperator ? currentOperator.floor : '-';
       document.getElementById('dOpDept').textContent = currentOperator ? currentOperator.dept : '-';
       document.getElementById('dOpLine').textContent = currentOperator ? currentOperator.line : '-';
+
+      const jtSel = document.getElementById('dOpJobtype');
+      if (jtSel) {
+        const val = (currentOperator && currentOperator.jobType) ? currentOperator.jobType : 'Regular';
+        const exists = Array.from(jtSel.options).some(o => o.value.toLowerCase() === val.toLowerCase());
+        if (!exists && val) {
+          const opt = document.createElement('option');
+          opt.value = val;
+          opt.textContent = val;
+          jtSel.appendChild(opt);
+        }
+        jtSel.value = exists ? Array.from(jtSel.options).find(o => o.value.toLowerCase() === val.toLowerCase()).value : val;
+      }
     }
 
-    // TC ফরম্যাট: TCNO|LOTNO|BUYER|STYLE|COLOR|SIZE|QTY
     function renderTcCard(procVal = '-', smvVal = '-', sahVal = '-') {
       document.getElementById('dTcNo').textContent = currentTcData ? currentTcData.tcNo : '-';
       document.getElementById('dTcLot').textContent = currentTcData ? currentTcData.lotNo : '-';
@@ -479,14 +506,16 @@
       clearNotification();
 
       if (flowMode === 'SCAN_OP') {
-        // ফরম্যাট: OPID|NAME|FLOOR|DEPT|LINE
+        // ফরম্যাট: OPID|NAME|FLOOR|DEPT|LINE|JOBTYPE
         const parts = code.split('|').map(s => s.trim());
+        const jtSelVal = document.getElementById('dOpJobtype').value || 'Regular';
         currentOperator = {
           operatorId: parts[0] || code,
           operatorName: parts[1] || 'Md. Parvej Miah',
           floor: parts[2] || '2nd Floor',
           dept: parts[3] || 'Linking',
-          line: parts[4] || 'Linking Line-02'
+          line: parts[4] || 'Linking Line-02',
+          jobType: parts[5] || jtSelVal
         };
         flowMode = 'HOLD_AFTER_OP';
         updateFlowUI();
@@ -495,7 +524,6 @@
       }
 
       if (flowMode === 'SCAN_TC') {
-        // ফরম্যাট: TCNO|LOTNO|BUYER|STYLE|COLOR|SIZE|QTY
         const parts = code.split('|').map(s => s.trim());
         currentTcData = {
           tcNo: parts[0] || code,
@@ -566,6 +594,7 @@
       );
       const smv = found ? Number(found.smv) : 0;
       const sah = Number(((currentTcData.bundleQty * smv) / 60).toFixed(2));
+      const jobTypeVal = document.getElementById('dOpJobtype').value || currentOperator.jobType || 'Regular';
 
       const record = {
         timestamp: new Date().toISOString(),
@@ -573,6 +602,7 @@
         operatorName: currentOperator.operatorName,
         floor: currentOperator.floor,
         dept: currentOperator.dept,
+        jobType: jobTypeVal,
         line: currentOperator.line,
         tcNo: currentTcData.tcNo,
         lotNo: currentTcData.lotNo,
@@ -594,7 +624,7 @@
       flowMode = 'HOLD_AFTER_SAVE';
       updateFlowUI();
       renderTcCard(proc, smv, sah);
-      showNotification(`Saved: OP ${record.operatorId} | TC ${record.tcNo} | Style ${record.style} | Size ${record.size} | Process ${record.process} | SAH ${record.earnedSah}. পরের TC স্ক্যানে "Next" চাপুন।`, 'ok');
+      showNotification(`Saved: OP ${record.operatorId} | Line ${record.line} | Jobtype ${record.jobType} | TC ${record.tcNo} | Process ${record.process} | SAH ${record.earnedSah}. পরের TC স্ক্যানে "Next" চাপুন।`, 'ok');
 
       try {
         await fetch(API_URL, {
@@ -610,6 +640,7 @@
       currentOperator = null;
       currentTcData = null;
       flowMode = 'SCAN_OP';
+      document.getElementById('dOpJobtype').value = 'Regular';
       document.getElementById('processActionMsg').textContent = '';
       clearNotification();
       updateFlowUI();
@@ -618,7 +649,7 @@
     let testTcSeq = 500;
     function testSingleScan() {
       if (flowMode === 'SCAN_OP') {
-        handleBarcodeInput('OP-9001|Md. Parvej Miah|2nd Floor|Linking|Linking Line-02');
+        handleBarcodeInput('OP-9001|Md. Parvej Miah|2nd Floor|Linking|Linking Line-02|Regular');
       } else if (flowMode === 'SCAN_TC') {
         testTcSeq += 1;
         handleBarcodeInput(`TC-${testTcSeq}|LOT-101|Buyer-A|1896|Blue|M|12`);
