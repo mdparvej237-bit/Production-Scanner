@@ -10,6 +10,7 @@
       --navy: #0c2340; --navy-2: #15365f; --cobalt: #2563eb; --cobalt-dark: #1d4ed8;
       --sage: #8fb89f; --sage-soft: #e6f2eb; --sage-text: #23533b;
       --amber-soft: #fef3c7; --amber-text: #b45309;
+      --red-soft: #fee2e2; --red-text: #991b1b;
       --bg: #f4f2ec; --card: #fdfcfa; --border: #e2dfd7; --text: #111827; --muted: #5b6472;
     }
     * { box-sizing: border-box; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
@@ -73,25 +74,37 @@
 
     .badge-entries { background: #0f766e; color: #ecfdf5; padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 800; }
     .badge-live { background: var(--amber-soft); color: var(--amber-text); padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+    .badge-lock { background: var(--red-soft); color: var(--red-text); padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 800; }
 
     .scanner-wrap { background: #090d16; color: #fff; border-radius: 14px; padding: 14px; text-align: center; }
-    #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-top: 8px; }
-    .dup-banner {
-      margin-top: 10px; background: var(--amber-soft); border: 1px solid #fcd34d;
-      color: var(--amber-text); border-radius: 11px; padding: 9px 12px; font-size: 13px; font-weight: 700; display: none;
+    .step-banner {
+      background: #172554; color: #dbeafe; border: 1px solid #3b82f6;
+      border-radius: 10px; padding: 10px 12px; font-size: 15px; font-weight: 800; margin-bottom: 8px;
     }
-    .dup-banner.show { display: block; }
+    .step-banner.tc-step { background: #064e3b; color: #d1fae5; border-color: #10b981; }
+    .step-banner.proc-step { background: #451a03; color: #fef3c7; border-color: #f59e0b; }
+
+    #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-top: 8px; }
+
+    .notify-box {
+      margin-top: 10px; border-radius: 11px; padding: 10px 12px;
+      font-size: 13.5px; font-weight: 800; display: none;
+    }
+    .notify-dup {
+      display: block; background: var(--red-soft); border: 1px solid #f87171; color: var(--red-text);
+    }
+    .notify-ok {
+      display: block; background: var(--sage-soft); border: 1px solid #8fb89f; color: var(--sage-text);
+    }
+
+    .locked-box {
+      opacity: 0.55; pointer-events: none; user-select: none;
+    }
 
     .dynamic-row {
       display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px;
       align-items: center; margin-top: 8px; background: #f8f7f3;
       padding: 8px; border-radius: 10px; border: 1px solid var(--border);
-    }
-
-    .detail-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-      background: #f8f7f3; border: 1px solid var(--border); border-radius: 12px; padding: 12px;
-      font-size: 13.5px; margin-top: 8px;
     }
 
     table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
@@ -164,35 +177,67 @@
       </div>
     </div>
 
-    <!-- OPERATOR SCAN VIEW (NO MANUAL TYPING FOR SCAN DATA) -->
+    <!-- OPERATOR BARCODE SCAN VIEW -->
     <div id="view-operator" class="hidden">
       <div class="card">
         <div class="card-head">
-          <h2 class="card-title">Continuous Barcode Scanner</h2>
+          <h2 class="card-title">Barcode Scanner</h2>
           <button class="btn-refresh" onclick="toggleCamera()">Camera On/Off</button>
         </div>
+
         <div class="scanner-wrap">
-          <div style="font-size:15px;font-weight:800;">একটা স্ক্যান হলেই স্বয়ংক্রিয়ভাবে পরের স্ক্যানের জন্য প্রস্তুত হবে</div>
+          <div id="scanStepBanner" class="step-banner">Operator ID Scan</div>
+          <div id="scanInstructionText" style="font-size:13px;color:#cbd5e1;">প্রথমে Operator ID স্ক্যান করুন। Operator ID স্ক্যান না করলে TC Scan লক থাকবে।</div>
           <div id="reader"></div>
         </div>
-        <div id="dupAlert" class="dup-banner">Duplicate Scan Alert - এই TC ও Process ইতিমধ্যে স্ক্যান করা হয়েছে!</div>
+
+        <div id="scanNotifyBox" class="notify-box"></div>
 
         <div class="btn-row-3">
-          <button class="btn-primary" onclick="simulateBarcodeScan()">Test Next Barcode Scan</button>
-          <button class="btn-sage" onclick="startNextScan()">Next Scan</button>
-          <button class="btn-sage" onclick="resetScanSession()">Reset All</button>
+          <button class="btn-primary" onclick="testScanStep()">Test Scan Step</button>
+          <button class="btn-sage" onclick="nextTcScan()">Next TC Scan</button>
+          <button class="btn-sage" onclick="resetOperatorFlow()">Reset Flow</button>
         </div>
-        <div id="opScanMsg" class="msg"></div>
       </div>
 
+      <!-- STEP 1: OPERATOR ID -->
       <div class="card">
         <div class="card-head">
-          <h2 class="card-title">Process Selection & Scanned Data</h2>
-          <span class="badge-entries">AUTO SCAN</span>
+          <h2 class="card-title">Step 1: Operator ID</h2>
+          <span id="opLockBadge" class="badge-live">WAITING SCAN</span>
+        </div>
+        <div class="grid-2">
+          <div><label>Operator ID</label><input id="opIdVal" type="text" readonly placeholder="Operator ID Scan করুন" /></div>
+          <div><label>Operator Name & Line</label><input id="opInfoVal" type="text" readonly placeholder="স্ক্যান হলে আসবে" /></div>
+        </div>
+      </div>
+
+      <!-- STEP 2: TC SCAN (LOCKED UNTIL OPERATOR ID SCANNED) -->
+      <div id="tcStepCard" class="card locked-box">
+        <div class="card-head">
+          <h2 class="card-title">Step 2: TC Card Scan</h2>
+          <span id="tcLockBadge" class="badge-lock">LOCKED</span>
+        </div>
+        <div class="grid-2">
+          <div><label>TC No.</label><input id="tcNoVal" type="text" readonly placeholder="TC Scan করুন" /></div>
+          <div><label>Style / Color / Size</label><input id="tcMetaVal" type="text" readonly placeholder="স্ক্যান হলে আসবে" /></div>
+        </div>
+        <div class="grid-2">
+          <div><label>Bundle Qty</label><input id="tcQtyVal" type="text" readonly placeholder="স্ক্যান হলে আসবে" /></div>
+          <div><label>SMV & SAH</label><input id="tcSahVal" type="text" readonly placeholder="Process সিলেক্ট করলে হিসাব হবে" /></div>
+        </div>
+      </div>
+
+      <!-- STEP 3: PROCESS DROPDOWN (ONLY APPEARS AFTER TC SCAN) -->
+      <div id="processStepCard" class="card hidden">
+        <div class="card-head">
+          <h2 class="card-title">Step 3: Select Process</h2>
+          <span class="badge-entries">UNLOCKED</span>
         </div>
 
-        <label for="opProcessDropdown">Select Process (Dropdown)</label>
-        <select id="opProcessDropdown" onchange="onProcessChange()">
+        <label for="processDropdown">Process Dropdown</label>
+        <select id="processDropdown" onchange="onProcessSelected()">
+          <option value="">-- Process সিলেক্ট করুন --</option>
           <option value="Linking">Linking</option>
           <option value="Ironing">Ironing</option>
           <option value="Sewing">Sewing</option>
@@ -200,38 +245,24 @@
           <option value="Checking">Checking</option>
         </select>
 
-        <div class="grid-2">
-          <div><label>Operator ID (Scanned)</label><input id="scanOpId" type="text" readonly placeholder="স্ক্যান করলে আসবে" /></div>
-          <div><label>Operator Name (Scanned)</label><input id="scanOpName" type="text" readonly placeholder="স্ক্যান করলে আসবে" /></div>
+        <div style="margin-top:12px;">
+          <button class="btn-primary" style="width:100%;" onclick="confirmProcessEntry()">Confirm & Save Scan</button>
         </div>
-
-        <div class="grid-2">
-          <div><label>Travel Card / TC No. (Scanned)</label><input id="scanTcNo" type="text" readonly placeholder="স্ক্যান করলে আসবে" /></div>
-          <div><label>Line (Scanned)</label><input id="scanLine" type="text" readonly placeholder="স্ক্যান করলে আসবে" /></div>
-        </div>
-
-        <div class="grid-2">
-          <div><label>Style No. (Scanned)</label><input id="scanStyle" type="text" readonly placeholder="স্ক্যান করলে আসবে" /></div>
-          <div><label>Color / Size (Scanned)</label><input id="scanColorSize" type="text" readonly placeholder="স্ক্যান করলে আসবে" /></div>
-        </div>
-
-        <div class="grid-2">
-          <div><label>Bundle Qty (Scanned)</label><input id="scanQty" type="text" readonly placeholder="স্ক্যান করলে আসবে" /></div>
-          <div><label>SMV & Earned SAH</label><input id="scanSmvSah" type="text" readonly placeholder="SMV / SAH হিসাব" /></div>
-        </div>
+        <div id="processActionMsg" class="msg"></div>
       </div>
 
+      <!-- SCANNED DETAILS -->
       <div class="card">
         <div class="card-head">
-          <h2 class="card-title">Scanned Details List</h2>
-          <span id="scanCountBadge" class="badge-live">0 SCANNED</span>
+          <h2 class="card-title">Scanned Details</h2>
+          <span id="scannedTotalBadge" class="badge-entries">0 ENTRIES</span>
         </div>
-        <div id="lastScanSummary" class="hint">এখনও কোনো বারকোড স্ক্যান করা হয়নি।</div>
+        <div id="latestDetailBox" class="hint">এখনও কোনো স্ক্যান সম্পন্ন হয়নি।</div>
         <table>
           <thead>
-            <tr><th>TC No.</th><th>OP ID</th><th>Line</th><th>Style</th><th>Process</th><th>Qty</th><th>SAH</th></tr>
+            <tr><th>OP ID</th><th>TC No.</th><th>Process</th><th>Style</th><th>Qty</th><th>SAH</th></tr>
           </thead>
-          <tbody id="scannedHistoryBody"></tbody>
+          <tbody id="scanDetailsTbody"></tbody>
         </table>
       </div>
     </div>
@@ -243,23 +274,16 @@
           <h2 class="card-title">Style-wise Process & SMV (Dynamic Add + Edit)</h2>
           <button class="btn-refresh" onclick="addProcessSmvRow()">+ Add Process & SMV</button>
         </div>
-
         <label for="adminStyleInput">Style No.</label>
-        <input id="adminStyleInput" type="text" placeholder="Style No. লিখুন (যেমন: 1896)" oninput="syncProcessDropdownByStyle()" />
-
-        <div class="hint" style="margin-top:8px;">নিচে যত খুশি তত Process ও SMV যুক্ত করুন:</div>
+        <input id="adminStyleInput" type="text" placeholder="Style No. লিখুন (যেমন: 1896)" oninput="refreshProcessDropdown()" />
         <div id="dynamicSmvRows"></div>
-
         <div class="btn-row">
           <button class="btn-primary" onclick="saveAllStyleSmv()">Save Style Process & SMV</button>
           <button class="btn-sage" onclick="clearDynamicSmvForm()">Clear</button>
         </div>
         <div id="adminSmvMsg" class="msg" style="color:#15803d;"></div>
-
         <table>
-          <thead>
-            <tr><th>Style</th><th>Process</th><th>SMV</th><th>Edit</th></tr>
-          </thead>
+          <thead><tr><th>Style</th><th>Process</th><th>SMV</th><th>Edit</th></tr></thead>
           <tbody id="savedSmvBody"></tbody>
         </table>
       </div>
@@ -273,16 +297,335 @@
 
     let html5QrScanner = null;
     let cameraRunning = false;
-    let autoNextTimer = null;
+    let audioCtx = null;
+
+    // Flow State: 'WAIT_OP' -> 'WAIT_TC' -> 'WAIT_PROCESS'
+    let scanFlowState = 'WAIT_OP';
+    let currentOperator = null;
+    let currentTcData = null;
 
     let styleSmvMaster = JSON.parse(localStorage.getItem('style_smv_master') || 'null') || [
       { style: '1896', process: 'Linking', smv: 12.0 },
       { style: '1896', process: 'Ironing', smv: 8.28 }
     ];
 
-    let scannedLog = JSON.parse(localStorage.getItem('scanned_details_log') || '[]');
-    const loggedKeys = new Set(scannedLog.map(x => `${x.tcNo}__${x.process.toLowerCase()}`));
+    let scannedEntries = JSON.parse(localStorage.getItem('scanned_entries_v2') || '[]');
+    const scannedTcProcessSet = new Set(scannedEntries.map(e => `${e.tcNo}__${e.process.toLowerCase()}`));
 
+    function playBeep(type = 'ok') {
+      try {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          audioCtx = new AudioContextClass();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = type === 'dup' ? 320 : 880;
+        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.19);
+      } catch (_) {}
+    }
+
+    function showNotification(text, kind = 'ok') {
+      const box = document.getElementById('scanNotifyBox');
+      box.className = 'notify-box ' + (kind === 'dup' ? 'notify-dup' : 'notify-ok');
+      box.textContent = text;
+    }
+
+    function clearNotification() {
+      const box = document.getElementById('scanNotifyBox');
+      box.className = 'notify-box';
+      box.textContent = '';
+    }
+
+    function updateFlowUI() {
+      const banner = document.getElementById('scanStepBanner');
+      const instr = document.getElementById('scanInstructionText');
+      const opBadge = document.getElementById('opLockBadge');
+      const tcCard = document.getElementById('tcStepCard');
+      const tcBadge = document.getElementById('tcLockBadge');
+      const procCard = document.getElementById('processStepCard');
+
+      if (scanFlowState === 'WAIT_OP') {
+        banner.className = 'step-banner';
+        banner.textContent = 'Operator ID Scan';
+        instr.textContent = 'প্রথমে Operator ID স্ক্যান করুন। Operator ID স্ক্যান না করলে TC Scan লক থাকবে।';
+        opBadge.className = 'badge-live';
+        opBadge.textContent = 'WAITING SCAN';
+
+        tcCard.classList.add('locked-box');
+        tcBadge.className = 'badge-lock';
+        tcBadge.textContent = 'LOCKED';
+
+        procCard.classList.add('hidden');
+        document.getElementById('processDropdown').value = '';
+      } else if (scanFlowState === 'WAIT_TC') {
+        banner.className = 'step-banner tc-step';
+        banner.textContent = 'TC Card Scan (Unlocked)';
+        instr.textContent = 'Operator ID স্ক্যান হয়েছে। এখন TC Card স্ক্যান করুন।';
+        opBadge.className = 'badge-entries';
+        opBadge.textContent = 'SCANNED';
+
+        tcCard.classList.remove('locked-box');
+        tcBadge.className = 'badge-live';
+        tcBadge.textContent = 'READY TO SCAN';
+
+        procCard.classList.add('hidden');
+        document.getElementById('processDropdown').value = '';
+      } else if (scanFlowState === 'WAIT_PROCESS') {
+        banner.className = 'step-banner proc-step';
+        banner.textContent = 'Select Process';
+        instr.textContent = 'TC স্ক্যান সম্পন্ন হয়েছে। নিচের Process Dropdown থেকে Process সিলেক্ট করুন।';
+        opBadge.className = 'badge-entries';
+        opBadge.textContent = 'SCANNED';
+
+        tcCard.classList.remove('locked-box');
+        tcBadge.className = 'badge-entries';
+        tcBadge.textContent = 'SCANNED';
+
+        procCard.classList.remove('hidden');
+        refreshProcessDropdown(currentTcData ? currentTcData.style : '');
+      }
+    }
+
+    function handleBarcodeInput(rawCode) {
+      const code = String(rawCode || '').trim();
+      if (!code) return;
+
+      // প্রতিবার স্ক্যান হলেই Beep Sound বাজবে
+      playBeep('ok');
+      clearNotification();
+
+      if (scanFlowState === 'WAIT_OP') {
+        const parts = code.split('|').map(s => s.trim());
+        currentOperator = {
+          operatorId: parts[0] || code,
+          operatorName: parts[1] || 'Sample OP',
+          line: parts[2] || 'Linking Line-02'
+        };
+        document.getElementById('opIdVal').value = currentOperator.operatorId;
+        document.getElementById('opInfoVal').value = `${currentOperator.operatorName} (${currentOperator.line})`;
+
+        scanFlowState = 'WAIT_TC';
+        updateFlowUI();
+        showNotification(`Operator ID "${currentOperator.operatorId}" স্ক্যান হয়েছে। এখন TC Scan করুন।`, 'ok');
+        return;
+      }
+
+      if (scanFlowState === 'WAIT_TC') {
+        // ফরম্যাট: TCNO|STYLE|COLOR|SIZE|QTY অথবা শুধু TCNO
+        const parts = code.split('|').map(s => s.trim());
+        const tcNo = parts[0] || code;
+        const style = parts[1] || '1896';
+        const color = parts[2] || 'Blue';
+        const size = parts[3] || 'M';
+        const qty = Number(parts[4] || 12);
+
+        currentTcData = { tcNo, style, color, size, qty };
+        document.getElementById('tcNoVal').value = tcNo;
+        document.getElementById('tcMetaVal').value = `${style} | ${color} | ${size}`;
+        document.getElementById('tcQtyVal').value = qty;
+        document.getElementById('tcSahVal').value = 'Process সিলেক্ট করুন';
+
+        scanFlowState = 'WAIT_PROCESS';
+        updateFlowUI();
+        showNotification(`TC "${tcNo}" স্ক্যান হয়েছে। এখন Process Dropdown সিলেক্ট করুন।`, 'ok');
+      }
+    }
+
+    function onProcessSelected() {
+      const proc = document.getElementById('processDropdown').value;
+      clearNotification();
+      if (!proc || !currentTcData) return;
+
+      const dupKey = `${currentTcData.tcNo}__${proc.toLowerCase()}`;
+      if (scannedTcProcessSet.has(dupKey)) {
+        playBeep('dup');
+        showNotification(`Notification: TC "${currentTcData.tcNo}" এই "${proc}" Process-এ ইতিমধ্যে স্ক্যান করা হয়েছে! দ্বিতীয়বার স্ক্যান হবে না।`, 'dup');
+        document.getElementById('processDropdown').value = '';
+        return;
+      }
+
+      const found = styleSmvMaster.find(
+        x => x.style.toLowerCase() === currentTcData.style.toLowerCase() &&
+             x.process.toLowerCase() === proc.toLowerCase()
+      );
+      const smv = found ? Number(found.smv) : 0;
+      const sah = Number(((currentTcData.qty * smv) / 60).toFixed(2));
+      document.getElementById('tcSahVal').value = `SMV: ${smv} | SAH: ${sah}`;
+    }
+
+    async function confirmProcessEntry() {
+      const proc = document.getElementById('processDropdown').value;
+      const msgEl = document.getElementById('processActionMsg');
+      msgEl.textContent = '';
+
+      if (!currentOperator || !currentTcData) {
+        showNotification('আগে Operator ID এবং TC Scan সম্পন্ন করুন।', 'dup');
+        return;
+      }
+      if (!proc) {
+        msgEl.style.color = '#b91c1c';
+        msgEl.textContent = 'Dropdown থেকে একটি Process সিলেক্ট করুন।';
+        return;
+      }
+
+      const dupKey = `${currentTcData.tcNo}__${proc.toLowerCase()}`;
+      if (scannedTcProcessSet.has(dupKey)) {
+        playBeep('dup');
+        showNotification(`Notification: TC "${currentTcData.tcNo}" একই Process "${proc}"-এ দুবার স্ক্যান হবে না!`, 'dup');
+        return;
+      }
+
+      const found = styleSmvMaster.find(
+        x => x.style.toLowerCase() === currentTcData.style.toLowerCase() &&
+             x.process.toLowerCase() === proc.toLowerCase()
+      );
+      const smv = found ? Number(found.smv) : 0;
+      const sah = Number(((currentTcData.qty * smv) / 60).toFixed(2));
+
+      const record = {
+        timestamp: new Date().toISOString(),
+        operatorId: currentOperator.operatorId,
+        operatorName: currentOperator.operatorName,
+        line: currentOperator.line,
+        tcNo: currentTcData.tcNo,
+        style: currentTcData.style,
+        color: currentTcData.color,
+        size: currentTcData.size,
+        bundleQty: currentTcData.qty,
+        process: proc,
+        smv,
+        earnedSah: sah
+      };
+
+      scannedTcProcessSet.add(dupKey);
+      scannedEntries.unshift(record);
+      localStorage.setItem('scanned_entries_v2', JSON.stringify(scannedEntries));
+      renderScanDetails();
+
+      msgEl.style.color = '#15803d';
+      msgEl.textContent = 'ডাটা সংরক্ষিত হয়েছে। Next TC Scan-এর জন্য প্রস্তুত।';
+      showNotification(`Saved: OP ${record.operatorId} | TC ${record.tcNo} | Process ${record.process} | SAH ${record.earnedSah}`, 'ok');
+
+      try {
+        await fetch(API_URL, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(record)
+        });
+      } catch (_) {}
+
+      setTimeout(nextTcScan, 800);
+    }
+
+    function nextTcScan() {
+      currentTcData = null;
+      document.getElementById('tcNoVal').value = '';
+      document.getElementById('tcMetaVal').value = '';
+      document.getElementById('tcQtyVal').value = '';
+      document.getElementById('tcSahVal').value = '';
+      document.getElementById('processActionMsg').textContent = '';
+
+      if (currentOperator) {
+        scanFlowState = 'WAIT_TC';
+      } else {
+        scanFlowState = 'WAIT_OP';
+      }
+      updateFlowUI();
+    }
+
+    function resetOperatorFlow() {
+      currentOperator = null;
+      currentTcData = null;
+      scanFlowState = 'WAIT_OP';
+      document.getElementById('opIdVal').value = '';
+      document.getElementById('opInfoVal').value = '';
+      document.getElementById('tcNoVal').value = '';
+      document.getElementById('tcMetaVal').value = '';
+      document.getElementById('tcQtyVal').value = '';
+      document.getElementById('tcSahVal').value = '';
+      document.getElementById('processActionMsg').textContent = '';
+      clearNotification();
+      updateFlowUI();
+    }
+
+    let testTcSeq = 500;
+    function testScanStep() {
+      if (scanFlowState === 'WAIT_OP') {
+        handleBarcodeInput('900001|Sample OP|Linking Line-02');
+      } else if (scanFlowState === 'WAIT_TC') {
+        testTcSeq += 1;
+        handleBarcodeInput(`TC-${testTcSeq}|1896|Blue|M|12`);
+      } else {
+        playBeep('dup');
+        showNotification('এখন Process Dropdown থেকে Process সিলেক্ট করুন।', 'dup');
+      }
+    }
+
+    function renderScanDetails() {
+      document.getElementById('scannedTotalBadge').textContent = `${scannedEntries.length} ENTRIES`;
+      if (!scannedEntries.length) {
+        document.getElementById('latestDetailBox').textContent = 'এখনও কোনো স্ক্যান সম্পন্ন হয়নি।';
+        document.getElementById('scanDetailsTbody').innerHTML = '';
+        return;
+      }
+      const last = scannedEntries[0];
+      document.getElementById('latestDetailBox').innerHTML =
+        `<b>সর্বশেষ এন্ট্রি:</b> Operator <b>${esc(last.operatorId)}</b> (${esc(last.operatorName)}) | Line <b>${esc(last.line)}</b> | TC <b>${esc(last.tcNo)}</b> | Style <b>${esc(last.style)}</b> (${esc(last.color)}/${esc(last.size)}) | Process <b>${esc(last.process)}</b> | Qty <b>${last.bundleQty}</b> | SMV <b>${last.smv}</b> | SAH <b>${last.earnedSah}</b>`;
+
+      document.getElementById('scanDetailsTbody').innerHTML = scannedEntries.slice(0, 20).map(r => `
+        <tr>
+          <td>${esc(r.operatorId)}</td>
+          <td><b>${esc(r.tcNo)}</b></td>
+          <td>${esc(r.process)}</td>
+          <td>${esc(r.style)}</td>
+          <td><b>${r.bundleQty}</b></td>
+          <td>${r.earnedSah}</td>
+        </tr>
+      `).join('');
+    }
+
+    function refreshProcessDropdown(styleFilter = '') {
+      const dd = document.getElementById('processDropdown');
+      const defaults = ['Linking', 'Ironing', 'Sewing', 'Overlock', 'Checking'];
+      const custom = styleSmvMaster
+        .filter(x => !styleFilter || x.style.toLowerCase() === styleFilter.toLowerCase())
+        .map(x => x.process);
+      const list = Array.from(new Set([...custom, ...defaults]));
+      dd.innerHTML = '<option value="">-- Process সিলেক্ট করুন --</option>' +
+        list.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('');
+    }
+
+    // --- CAMERA ---
+    function toggleCamera() {
+      if (cameraRunning) { stopCamera(); return; }
+      if (typeof Html5Qrcode === 'undefined') { alert('ক্যামেরা লাইব্রেরি লোড হয়নি।'); return; }
+      html5QrScanner = new Html5Qrcode("reader");
+      html5QrScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 240, height: 140 } },
+        (decodedText) => handleBarcodeInput(decodedText)
+      ).then(() => { cameraRunning = true; })
+       .catch(err => alert('ক্যামেরা চালু করা যায়নি: ' + err));
+    }
+
+    function stopCamera() {
+      if (html5QrScanner && cameraRunning) {
+        html5QrScanner.stop().catch(() => {});
+        cameraRunning = false;
+      }
+    }
+
+    // --- AUTH & NAVIGATION ---
     function handleLogin() {
       const pin = document.getElementById('pinField').value.trim();
       const role = PINS[pin];
@@ -295,7 +638,6 @@
 
     function logoutSystem() {
       sessionStorage.removeItem(SESSION_KEY);
-      if (autoNextTimer) clearTimeout(autoNextTimer);
       stopCamera();
       document.getElementById('pinField').value = '';
       document.getElementById('loginCard').classList.remove('hidden');
@@ -319,11 +661,11 @@
         if (btn) btn.classList.toggle('active', v === view);
       });
       if (view === 'dashboard') { stopCamera(); loadDashboard(); }
-      if (view === 'operator') { renderScannedHistory(); }
+      if (view === 'operator') { updateFlowUI(); renderScanDetails(); }
       if (view === 'admin') { stopCamera(); renderSavedSmvTable(); ensureAtLeastOneRow(); }
     }
 
-    // --- ADMIN DYNAMIC PROCESS + SMV ---
+    // --- ADMIN SMV ---
     function ensureAtLeastOneRow() {
       const wrap = document.getElementById('dynamicSmvRows');
       if (!wrap.children.length) addProcessSmvRow();
@@ -352,7 +694,6 @@
       const style = document.getElementById('adminStyleInput').value.trim();
       const msg = document.getElementById('adminSmvMsg');
       const rows = Array.from(document.querySelectorAll('#dynamicSmvRows .dynamic-row'));
-
       if (!style) { msg.style.color = '#b91c1c'; msg.textContent = 'আগে Style No. লিখুন।'; return; }
 
       const newItems = [];
@@ -361,10 +702,7 @@
         const smv = parseFloat(r.querySelector('.dyn-smv').value);
         if (pr && !isNaN(smv) && smv > 0) newItems.push({ style, process: pr, smv });
       });
-
-      if (!newItems.length) {
-        msg.style.color = '#b91c1c'; msg.textContent = 'কমপক্ষে একটি Process ও SMV দিন।'; return;
-      }
+      if (!newItems.length) { msg.style.color = '#b91c1c'; msg.textContent = 'কমপক্ষে একটি Process ও SMV দিন।'; return; }
 
       newItems.forEach(item => {
         const idx = styleSmvMaster.findIndex(x => x.style.toLowerCase() === item.style.toLowerCase() && x.process.toLowerCase() === item.process.toLowerCase());
@@ -374,7 +712,7 @@
 
       localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
       renderSavedSmvTable();
-      syncProcessDropdownByStyle();
+      refreshProcessDropdown(style);
       msg.style.color = '#15803d';
       msg.textContent = `${newItems.length}টি Process & SMV সেভ হয়েছে।`;
 
@@ -401,173 +739,6 @@
           <td>${esc(item.process)}</td>
           <td><b>${item.smv}</b></td>
           <td><button class="btn-edit" onclick="editSavedSmv('${esc(item.style)}','${esc(item.process)}',${item.smv})">Edit</button></td>
-        </tr>
-      `).join('');
-    }
-
-    function syncProcessDropdownByStyle(targetStyle = '') {
-      const dd = document.getElementById('opProcessDropdown');
-      const baseProcesses = ['Linking', 'Ironing', 'Sewing', 'Overlock', 'Checking'];
-      const styleMatched = styleSmvMaster
-        .filter(x => !targetStyle || x.style.toLowerCase() === targetStyle.toLowerCase())
-        .map(x => x.process);
-
-      const merged = Array.from(new Set([...styleMatched, ...baseProcesses]));
-      const prevVal = dd.value;
-      dd.innerHTML = merged.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('');
-      if (merged.includes(prevVal)) dd.value = prevVal;
-    }
-
-    // --- OPERATOR SCANNER (NO MANUAL TYPING) ---
-    function toggleCamera() {
-      if (cameraRunning) { stopCamera(); return; }
-      if (typeof Html5Qrcode === 'undefined') { alert('ক্যামেরা লোড হয়নি।'); return; }
-      html5QrScanner = new Html5Qrcode("reader");
-      html5QrScanner.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 240, height: 140 } },
-        (decodedText) => processScannedPayload(decodedText.trim())
-      ).then(() => { cameraRunning = true; })
-       .catch(err => alert('ক্যামেরা চালু করা যায়নি: ' + err));
-    }
-
-    function stopCamera() {
-      if (html5QrScanner && cameraRunning) {
-        html5QrScanner.stop().catch(() => {});
-        cameraRunning = false;
-      }
-    }
-
-    // বারকোড স্ট্রিং ফরম্যাট: OPID|OPNAME|LINE|TCNO|STYLE|COLOR|SIZE|QTY
-    // সাধারণ সংখ্যা স্ক্যান করলে স্বয়ংক্রিয়ভাবে পরের TC ও Bundle তৈরি করে
-    let demoCounter = 100;
-    function simulateBarcodeScan() {
-      demoCounter += 1;
-      const sample = `900001|Sample OP|Linking Line-02|11223344${demoCounter}|1896|Blue|M|12`;
-      processScannedPayload(sample);
-    }
-
-    function onProcessChange() {
-      const tc = document.getElementById('scanTcNo').value.trim();
-      const proc = document.getElementById('opProcessDropdown').value;
-      const style = document.getElementById('scanStyle').value.trim();
-      const qty = Number(document.getElementById('scanQty').value || 0);
-
-      if (tc && loggedKeys.has(`${tc}__${proc.toLowerCase()}`)) {
-        document.getElementById('dupAlert').classList.add('show');
-      } else {
-        document.getElementById('dupAlert').classList.remove('show');
-      }
-      if (style && qty > 0) updateSmvSahDisplay(style, proc, qty);
-    }
-
-    function updateSmvSahDisplay(style, process, qty) {
-      const found = styleSmvMaster.find(x => x.style.toLowerCase() === style.toLowerCase() && x.process.toLowerCase() === process.toLowerCase());
-      const smv = found ? Number(found.smv) : 0;
-      const sah = Number(((qty * smv) / 60).toFixed(2));
-      document.getElementById('scanSmvSah').value = `SMV: ${smv} | SAH: ${sah}`;
-      return { smv, sah };
-    }
-
-    async function processScannedPayload(rawText) {
-      const msg = document.getElementById('opScanMsg');
-      const parts = rawText.split('|').map(s => s.trim());
-
-      const operatorId = parts[0] || '900001';
-      const operatorName = parts[1] || 'Sample OP';
-      const line = parts[2] || 'Linking Line-02';
-      const tcNo = parts[3] || rawText;
-      const style = parts[4] || '1896';
-      const color = parts[5] || 'Blue';
-      const size = parts[6] || 'M';
-      const bundleQty = Number(parts[7] || 12);
-
-      syncProcessDropdownByStyle(style);
-      const process = document.getElementById('opProcessDropdown').value;
-
-      document.getElementById('scanOpId').value = operatorId;
-      document.getElementById('scanOpName').value = operatorName;
-      document.getElementById('scanTcNo').value = tcNo;
-      document.getElementById('scanLine').value = line;
-      document.getElementById('scanStyle').value = style;
-      document.getElementById('scanColorSize').value = `${color} / ${size}`;
-      document.getElementById('scanQty').value = bundleQty;
-
-      const { smv, sah } = updateSmvSahDisplay(style, process, bundleQty);
-
-      const dupKey = `${tcNo}__${process.toLowerCase()}`;
-      if (loggedKeys.has(dupKey)) {
-        document.getElementById('dupAlert').classList.add('show');
-        msg.style.color = '#b45309';
-        msg.textContent = 'Duplicate Scan! পরের স্ক্যানের জন্য প্রস্তুত হচ্ছে...';
-        autoNextTimer = setTimeout(startNextScan, 1200);
-        return;
-      }
-
-      document.getElementById('dupAlert').classList.remove('show');
-      msg.style.color = '#1d4ed8';
-      msg.textContent = 'স্ক্যান ডাটা সেভ হচ্ছে...';
-
-      const entry = {
-        timestamp: new Date().toISOString(),
-        operatorId, operatorName, line, tcNo, style, color, size, bundleQty, process, smv, earnedSah: sah
-      };
-
-      try {
-        await fetch(API_URL, {
-          method: 'POST', mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(entry)
-        });
-
-        loggedKeys.add(dupKey);
-        scannedLog.unshift(entry);
-        localStorage.setItem('scanned_details_log', JSON.stringify(scannedLog));
-        renderScannedHistory();
-
-        msg.style.color = '#15803d';
-        msg.textContent = 'স্ক্যান সফল! পরের বারকোড স্ক্যানের জন্য প্রস্তুত।';
-        autoNextTimer = setTimeout(startNextScan, 900);
-      } catch (e) {
-        msg.style.color = '#b91c1c';
-        msg.textContent = 'সেভ করতে সমস্যা: ' + e.message;
-      }
-    }
-
-    function startNextScan() {
-      ['scanOpId', 'scanOpName', 'scanTcNo', 'scanLine', 'scanStyle', 'scanColorSize', 'scanQty', 'scanSmvSah']
-        .forEach(id => document.getElementById(id).value = '');
-      document.getElementById('dupAlert').classList.remove('show');
-      document.getElementById('opScanMsg').style.color = '#23533b';
-      document.getElementById('opScanMsg').textContent = 'নতুন বারকোড স্ক্যান করার জন্য প্রস্তুত...';
-    }
-
-    function resetScanSession() {
-      if (autoNextTimer) clearTimeout(autoNextTimer);
-      startNextScan();
-      document.getElementById('opScanMsg').textContent = '';
-    }
-
-    function renderScannedHistory() {
-      document.getElementById('scanCountBadge').textContent = `${scannedLog.length} SCANNED`;
-      if (!scannedLog.length) {
-        document.getElementById('lastScanSummary').textContent = 'এখনও কোনো বারকোড স্ক্যান করা হয়নি।';
-        document.getElementById('scannedHistoryBody').innerHTML = '';
-        return;
-      }
-      const latest = scannedLog[0];
-      document.getElementById('lastScanSummary').innerHTML =
-        `<b>সর্বশেষ স্ক্যান:</b> TC <b>${esc(latest.tcNo)}</b> | OP <b>${esc(latest.operatorId)}</b> (${esc(latest.operatorName)}) | Line <b>${esc(latest.line)}</b> | Style <b>${esc(latest.style)}</b> | Color/Size <b>${esc(latest.color)}/${esc(latest.size)}</b> | Process <b>${esc(latest.process)}</b> | Qty <b>${latest.bundleQty}</b> | SAH <b>${latest.earnedSah}</b>`;
-
-      document.getElementById('scannedHistoryBody').innerHTML = scannedLog.slice(0, 20).map(r => `
-        <tr>
-          <td><b>${esc(r.tcNo)}</b></td>
-          <td>${esc(r.operatorId)}</td>
-          <td>${esc(r.line)}</td>
-          <td>${esc(r.style)}</td>
-          <td>${esc(r.process)}</td>
-          <td><b>${r.bundleQty}</b></td>
-          <td>${r.earnedSah}</td>
         </tr>
       `).join('');
     }
@@ -656,7 +827,8 @@
     function esc(v) { return String(v ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
 
     window.addEventListener('DOMContentLoaded', () => {
-      syncProcessDropdownByStyle();
+      updateFlowUI();
+      renderScanDetails();
       const savedRole = sessionStorage.getItem(SESSION_KEY);
       if (savedRole) applyRoleUI(savedRole);
     });
