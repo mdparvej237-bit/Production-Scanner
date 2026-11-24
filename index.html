@@ -10,7 +10,7 @@
       --bg: #eef2ff;
       --card: #ffffff;
       --ink: #0f172a;
-      --muted: #64748b;
+      --muted: #475569;
       --indigo: #312e81;
       --blue: #1d4ed8;
       --cyan: #0284c7;
@@ -35,11 +35,12 @@
       min-height: 100vh;
       display: flex;
       justify-content: center;
+      font-size: 16px;
     }
 
     .app-shell {
       width: 100%;
-      max-width: 460px;
+      max-width: 480px;
       min-height: 100vh;
       background: #f8fafc;
       display: flex;
@@ -51,19 +52,19 @@
     .top-header {
       background: linear-gradient(135deg, var(--indigo), var(--blue));
       color: #ffffff;
-      padding: 14px 16px;
+      padding: 16px;
       position: sticky;
       top: 0;
       z-index: 50;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 10px;
     }
 
     .brand-title {
-      font-size: 0.98rem;
+      font-size: 1.15rem;
       font-weight: 800;
       letter-spacing: 0.3px;
     }
@@ -75,12 +76,12 @@
     }
 
     .role-badge {
-      background: rgba(255, 255, 255, 0.18);
-      border: 1px solid rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.4);
       color: #ffffff;
-      font-size: 0.72rem;
+      font-size: 0.82rem;
       font-weight: 800;
-      padding: 4px 10px;
+      padding: 5px 11px;
       border-radius: 999px;
       white-space: nowrap;
     }
@@ -89,77 +90,78 @@
       background: #ef4444;
       color: #ffffff;
       border: none;
-      border-radius: 8px;
-      padding: 5px 10px;
-      font-size: 0.74rem;
+      border-radius: 9px;
+      padding: 7px 12px;
+      font-size: 0.86rem;
       font-weight: 800;
       cursor: pointer;
     }
 
     .content {
       flex: 1;
-      padding: 14px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      padding-bottom: 92px;
+      gap: 16px;
+      padding-bottom: 104px;
     }
 
     .card {
       background: var(--card);
-      border-radius: 14px;
-      padding: 14px;
+      border-radius: 16px;
+      padding: 16px;
       border: 1.5px solid #e2e8f0;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
     }
 
     .login-card {
       margin-top: 12px;
-      border-top: 5px solid var(--blue);
+      border-top: 6px solid var(--blue);
     }
 
     .login-title {
-      font-size: 1.12rem;
+      font-size: 1.3rem;
       font-weight: 800;
       color: var(--indigo);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
 
     .login-sub {
-      font-size: 0.82rem;
+      font-size: 0.96rem;
       color: var(--muted);
-      margin-bottom: 14px;
+      margin-bottom: 16px;
+      line-height: 1.45;
     }
 
     .field-group {
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
 
     .field-label {
       display: block;
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: #334155;
-      margin-bottom: 5px;
+      font-size: 0.94rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 6px;
     }
 
     .input-field, .select-field {
       width: 100%;
-      padding: 11px 12px;
+      padding: 13px 14px;
       border: 1.5px solid var(--border);
-      border-radius: 10px;
-      font-size: 0.92rem;
+      border-radius: 12px;
+      font-size: 1rem;
       background: #ffffff;
       color: var(--ink);
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .btn-primary {
       width: 100%;
       border: none;
       border-radius: 12px;
-      padding: 13px 14px;
-      font-size: 0.98rem;
+      padding: 14px 16px;
+      font-size: 1.06rem;
       font-weight: 800;
       color: #ffffff;
       background: linear-gradient(135deg, var(--indigo), var(--blue));
@@ -170,8 +172,8 @@
       width: 100%;
       border: none;
       border-radius: 14px;
-      padding: 17px 14px;
-      font-size: 1.08rem;
+      padding: 18px 16px;
+      font-size: 1.2rem;
       font-weight: 800;
       color: #ffffff;
       background: linear-gradient(135deg, var(--cyan), var(--teal));
@@ -181,31 +183,29 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .btn-single-scan.tc-mode {
       background: linear-gradient(135deg, #2563eb, #4f46e5);
-      box-shadow: 0 7px 18px rgba(37, 99, 235, 0.28);
     }
 
     .btn-single-scan.completed-mode {
       background: linear-gradient(135deg, var(--green), var(--green-dark));
-      box-shadow: 0 7px 18px rgba(5, 150, 105, 0.25);
     }
 
     .input-row {
       display: flex;
       gap: 8px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .btn-mini {
       border: none;
-      border-radius: 9px;
-      padding: 9px 12px;
-      font-size: 0.78rem;
-      font-weight: 700;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 0.92rem;
+      font-weight: 800;
       cursor: pointer;
       background: #e0e7ff;
       color: var(--indigo);
@@ -219,61 +219,62 @@
     }
 
     .info-block-title {
-      font-size: 0.78rem;
+      font-size: 0.94rem;
       font-weight: 800;
       text-transform: uppercase;
       color: var(--blue);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       letter-spacing: 0.4px;
     }
 
     .info-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px 10px;
+      gap: 10px;
       margin-bottom: 10px;
     }
 
     .info-cell {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 7px 9px;
+      border-radius: 10px;
+      padding: 9px 11px;
     }
 
     .info-label {
       display: block;
-      font-size: 0.68rem;
+      font-size: 0.8rem;
       color: var(--muted);
       font-weight: 700;
     }
 
     .info-val {
       display: block;
-      font-size: 0.86rem;
-      font-weight: 700;
+      font-size: 1rem;
+      font-weight: 800;
       color: var(--ink);
-      margin-top: 2px;
+      margin-top: 3px;
       word-break: break-word;
     }
 
     .divider {
       height: 1px;
       background: #e2e8f0;
-      margin: 10px 0;
+      margin: 12px 0;
     }
 
     .step-locked {
-      opacity: 0.58;
+      opacity: 0.6;
       background: #f1f5f9;
     }
 
     .badge {
-      font-size: 0.7rem;
+      font-size: 0.8rem;
       font-weight: 800;
-      padding: 4px 9px;
+      padding: 5px 11px;
       border-radius: 999px;
       text-transform: uppercase;
+      white-space: nowrap;
     }
 
     .badge-ready {
@@ -297,19 +298,19 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       gap: 8px;
     }
 
     .step-title {
-      font-size: 0.96rem;
+      font-size: 1.08rem;
       font-weight: 800;
       color: var(--ink);
     }
 
     .admin-box {
-      margin-top: 12px;
-      padding: 12px;
+      margin-top: 14px;
+      padding: 14px;
       border-radius: 12px;
       background: #eff6ff;
       border: 1.5px solid #93c5fd;
@@ -326,7 +327,7 @@
       background: #ffffff;
       border: 1px solid #cbd5e1;
       border-radius: 10px;
-      padding: 9px 11px;
+      padding: 11px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -334,15 +335,16 @@
     }
 
     .process-meta {
-      font-size: 0.86rem;
-      font-weight: 700;
+      font-size: 0.98rem;
+      font-weight: 800;
       color: var(--ink);
     }
 
     .process-smv {
-      font-size: 0.76rem;
+      font-size: 0.88rem;
       color: var(--blue);
       font-weight: 800;
+      margin-top: 2px;
     }
 
     .item-btns {
@@ -354,9 +356,9 @@
       background: #fef3c7;
       color: #92400e;
       border: 1px solid #f59e0b;
-      border-radius: 7px;
-      padding: 5px 9px;
-      font-size: 0.74rem;
+      border-radius: 8px;
+      padding: 7px 11px;
+      font-size: 0.86rem;
       font-weight: 800;
       cursor: pointer;
     }
@@ -365,9 +367,9 @@
       background: #fee2e2;
       color: #991b1b;
       border: 1px solid #fca5a5;
-      border-radius: 7px;
-      padding: 5px 9px;
-      font-size: 0.74rem;
+      border-radius: 8px;
+      padding: 7px 11px;
+      font-size: 0.86rem;
       font-weight: 800;
       cursor: pointer;
     }
@@ -376,12 +378,12 @@
       background: #e2e8f0;
       color: #334155;
       border: none;
-      border-radius: 9px;
-      padding: 9px 12px;
-      font-size: 0.78rem;
-      font-weight: 700;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.92rem;
+      font-weight: 800;
       cursor: pointer;
-      margin-top: 6px;
+      margin-top: 8px;
       width: 100%;
     }
 
@@ -389,39 +391,42 @@
       background: var(--blue);
       color: #ffffff;
       border: none;
-      border-radius: 9px;
-      padding: 10px 14px;
-      font-size: 0.84rem;
-      font-weight: 700;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.96rem;
+      font-weight: 800;
       cursor: pointer;
       width: 100%;
     }
 
     .view-section-title {
-      font-size: 0.92rem;
+      font-size: 1.08rem;
       font-weight: 800;
       color: var(--indigo);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 8px;
     }
 
     .line-box {
-      border: 1px solid #e2e8f0;
+      border: 1.5px solid #cbd5e1;
       background: #f8fafc;
-      border-radius: 10px;
-      padding: 10px;
-      margin-bottom: 10px;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
     }
 
     .line-header {
-      font-size: 0.86rem;
+      font-size: 1rem;
       font-weight: 800;
       color: var(--blue);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
     }
 
     .proc-row {
@@ -430,18 +435,35 @@
       align-items: center;
       background: #ffffff;
       border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 7px 10px;
-      margin-bottom: 6px;
-      font-size: 0.82rem;
-      font-weight: 700;
+      border-radius: 9px;
+      padding: 9px 12px;
+      margin-bottom: 7px;
+      font-size: 0.95rem;
+      font-weight: 800;
+    }
+
+    .tc-tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .tc-pill {
+      background: #ede9fe;
+      border: 1px solid #c4b5fd;
+      color: #4c1d95;
+      border-radius: 999px;
+      padding: 5px 11px;
+      font-size: 0.84rem;
+      font-weight: 800;
     }
 
     .size-chips {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 6px;
+      gap: 7px;
+      margin-top: 8px;
     }
 
     .size-chip {
@@ -449,8 +471,8 @@
       border: 1px solid #7dd3fc;
       color: #0369a1;
       border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 0.74rem;
+      padding: 6px 12px;
+      font-size: 0.9rem;
       font-weight: 800;
     }
 
@@ -463,11 +485,12 @@
     }
 
     .toast {
-      padding: 10px 12px;
-      border-radius: 10px;
-      font-size: 0.84rem;
-      font-weight: 700;
+      padding: 13px 14px;
+      border-radius: 12px;
+      font-size: 0.98rem;
+      font-weight: 800;
       display: none;
+      line-height: 1.4;
     }
 
     .toast.show {
@@ -477,23 +500,23 @@
     .toast.ok {
       background: #dcfce7;
       color: #166534;
-      border: 1px solid #22c55e;
+      border: 1.5px solid #22c55e;
     }
 
     .toast.err {
       background: #fee2e2;
       color: #991b1b;
-      border: 1px solid #ef4444;
+      border: 1.5px solid #ef4444;
     }
 
     .bottom-bar {
       position: fixed;
       bottom: 0;
       width: 100%;
-      max-width: 460px;
+      max-width: 480px;
       background: #ffffff;
       border-top: 1px solid #e2e8f0;
-      padding: 10px 14px;
+      padding: 12px 16px;
       z-index: 60;
       box-shadow: 0 -4px 14px rgba(15, 23, 42, 0.08);
       display: none;
@@ -503,8 +526,8 @@
       width: 100%;
       border: none;
       border-radius: 12px;
-      padding: 14px;
-      font-size: 1rem;
+      padding: 16px;
+      font-size: 1.12rem;
       font-weight: 800;
       color: #ffffff;
       background: linear-gradient(135deg, var(--green), var(--green-dark));
@@ -517,14 +540,14 @@
     }
 
     .settings-toggle {
-      margin-top: 6px;
+      margin-top: 8px;
       width: 100%;
       background: transparent;
       border: 1px dashed #94a3b8;
-      color: #475569;
-      padding: 8px;
-      border-radius: 9px;
-      font-size: 0.78rem;
+      color: #334155;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 0.9rem;
       font-weight: 700;
       cursor: pointer;
     }
@@ -532,7 +555,7 @@
     .settings-panel {
       display: none;
       margin-top: 8px;
-      padding: 10px;
+      padding: 12px;
       background: #f1f5f9;
       border-radius: 10px;
     }
@@ -542,9 +565,10 @@
     }
 
     .muted-note {
-      font-size: 0.74rem;
+      font-size: 0.9rem;
       color: var(--muted);
       margin-top: 6px;
+      line-height: 1.45;
     }
   </style>
 </head>
@@ -583,7 +607,7 @@
 
         <button class="btn-primary" onclick="handleLogin()">Login to Dashboard</button>
 
-        <div id="loginSettingsArea" style="margin-top:12px;">
+        <div id="loginSettingsArea" style="margin-top:14px;">
           <button class="settings-toggle" onclick="toggleSettings()">Google Sheet Script URL Settings</button>
           <div class="settings-panel" id="settingsPanel">
             <input type="url" id="scriptUrlInput" class="input-field" placeholder="https://script.google.com/macros/s/.../exec" style="margin-bottom:8px;" />
@@ -593,12 +617,11 @@
       </section>
 
       <!-- OPERATOR & ADMIN SCANNER WORKSPACE -->
-      <div id="scannerWorkspace" style="display:none; flex-direction:column; gap:14px;">
-        <!-- Single Dynamic Scan Button Card -->
+      <div id="scannerWorkspace" style="display:none; flex-direction:column; gap:16px;">
         <section class="card">
           <div class="step-head">
             <div class="step-title">Barcode Scan Action</div>
-            <span class="badge badge-ready" id="scanPhaseBadge">STEP 1 OF 2</span>
+            <span class="badge badge-ready" id="scanPhaseBadge">STEP 1: OPERATOR</span>
           </div>
 
           <button id="btnDynamicScan" class="btn-single-scan" onclick="triggerDynamicScan()">
@@ -610,7 +633,7 @@
               type="text"
               id="dynamicManualInput"
               class="input-field"
-              placeholder="Operator ID Scan করলে এখানে ID|Name|Floor|Dep|Job|Line দিন"
+              placeholder="Operator ID Scan: ID|Name|Floor|Dep|Job Type|Line"
               onkeydown="if(event.key==='Enter') applyDynamicManual()"
             />
             <button class="btn-mini" onclick="applyDynamicManual()">Apply</button>
@@ -622,13 +645,11 @@
           </div>
         </section>
 
-        <!-- Camera Box -->
         <div id="readerWrap">
           <div id="reader"></div>
           <button class="btn-mini" style="margin-top:8px;width:100%;" onclick="stopCamera()">Close Camera</button>
         </div>
 
-        <!-- Live Scanned Operator & TC Display -->
         <section class="card">
           <div class="info-block-title">Operator Information</div>
           <div class="info-grid">
@@ -655,7 +676,6 @@
           </div>
         </section>
 
-        <!-- Process Selection (Unlocked after TC Scan) -->
         <section class="card step-locked" id="processCard">
           <div class="step-head">
             <div class="step-title">Select Process</div>
@@ -665,12 +685,11 @@
             <option value="">-- Select Process --</option>
           </select>
 
-          <!-- ADMIN ONLY: ADD, EDIT & DELETE PROCESS + SMV -->
           <div class="admin-box" id="adminManageBox" style="display:none;">
             <div class="info-block-title" id="adminFormTitle">Admin: Add New Process & SMV</div>
             <div class="input-row">
               <input type="text" id="procNameInput" class="input-field" placeholder="Process name (e.g. Linking)" />
-              <input type="number" step="0.01" id="procSmvInput" class="input-field" placeholder="SMV (e.g. 0.45)" style="max-width:125px;" />
+              <input type="number" step="0.01" id="procSmvInput" class="input-field" placeholder="SMV (e.g. 0.45)" style="max-width:130px;" />
             </div>
             <button class="btn-add" id="btnSaveProcess" onclick="saveProcessSmv()">+ Save Process & SMV</button>
             <button class="btn-cancel-edit" id="btnCancelEdit" style="display:none;" onclick="cancelEditProcess()">Cancel Edit</button>
@@ -682,43 +701,56 @@
         </section>
       </div>
 
-      <!-- VIEW DASHBOARD (LINE-WISE LIVE + DATE & STYLE SEARCH WITH PROCESS & SIZE WISE) -->
-      <div id="viewDashboard" style="display:none; flex-direction:column; gap:14px;">
+      <!-- VIEW DASHBOARD -->
+      <div id="viewDashboard" style="display:none; flex-direction:column; gap:16px;">
+        <!-- Search Box: Date, Line, Style -->
         <section class="card">
           <div class="view-section-title">
-            <span>Search Production (Date & Style)</span>
+            <span>Search Production</span>
             <button class="btn-mini" onclick="loadProductionRecords(true)">Refresh Live</button>
           </div>
 
-          <div class="input-row">
-            <input type="date" id="searchDate" class="input-field" />
-            <input type="text" id="searchStyle" class="input-field" placeholder="Style No. (e.g. ST-802)" />
+          <div class="field-group">
+            <label class="field-label" for="searchDate">Date</label>
+            <input type="date" id="searchDate" class="input-field" onchange="runSearch()" />
           </div>
+
+          <div class="input-row">
+            <div style="flex:1;">
+              <label class="field-label" for="searchLine">Line (Optional)</label>
+              <input type="text" id="searchLine" class="input-field" placeholder="e.g. Line-03" oninput="runSearch()" />
+            </div>
+            <div style="flex:1;">
+              <label class="field-label" for="searchStyle">Style No.</label>
+              <input type="text" id="searchStyle" class="input-field" placeholder="e.g. ST-802" oninput="runSearch()" />
+            </div>
+          </div>
+
           <div class="input-row" style="margin-bottom:0;">
             <button class="btn-primary" onclick="runSearch()">Search</button>
             <button class="btn-mini" onclick="clearSearch()">Clear</button>
           </div>
         </section>
 
-        <!-- Search Result: Process-wise with Size-wise Breakdown -->
+        <!-- Search Details Output -->
         <section class="card" id="searchResultCard">
           <div class="view-section-title">
-            <span>Process & Size-wise Production</span>
-            <span class="badge badge-done" id="searchCountBadge">0 Records</span>
+            <span>Style Search Details</span>
+            <span class="badge badge-done" id="searchCountBadge">0 Entries</span>
           </div>
           <div id="searchResultContainer">
-            <div class="muted-note">Date এবং Style দিয়ে Search চাপলে Process-wise ও Size-wise প্রোডাকশন আপডেট এখানে দেখাবে।</div>
+            <div class="muted-note">শুধু Style দিলে Size-wise breakdown দেখানো হবে; আর Line + Style দিলে কোন কোন TC এন্ট্রি হয়েছে এবং কোন Process-এ কত প্রোডাকশন হয়েছে তার বিস্তারিত দেখাবে।</div>
           </div>
         </section>
 
-        <!-- Line-wise Live Production Update -->
+        <!-- Always Visible Line-wise Live Output Production -->
         <section class="card">
           <div class="view-section-title">
-            <span>Line-wise Live Production Update</span>
+            <span>Live Line-wise Output Production</span>
             <span class="badge badge-ready" id="liveSyncStatus">LIVE</span>
           </div>
           <div id="lineWiseLiveContainer">
-            <div class="muted-note">লাইভ ডাটা লোড হচ্ছে...</div>
+            <div class="muted-note">লাইভ প্রোডাকশন ডাটা লোড হচ্ছে...</div>
           </div>
         </section>
       </div>
@@ -766,7 +798,7 @@
       clearTimeout(window._toastTimer);
       window._toastTimer = setTimeout(() => {
         box.className = "toast";
-      }, 4000);
+      }, 4500);
     }
 
     function onLoginRoleChange() {
@@ -797,7 +829,7 @@
         document.getElementById("bottomSaveBar").style.display = "none";
         document.getElementById("viewDashboard").style.display = "flex";
         loadProductionRecords(false);
-        liveRefreshTimer = setInterval(() => loadProductionRecords(false), 15000);
+        liveRefreshTimer = setInterval(() => loadProductionRecords(false), 12000);
       } else {
         document.getElementById("viewDashboard").style.display = "none";
         document.getElementById("scannerWorkspace").style.display = "flex";
@@ -872,20 +904,14 @@
     }
 
     function triggerDynamicScan() {
-      if (!opScanned) {
-        startCamera("OP");
-      } else if (!tcScanned) {
-        startCamera("TC");
-      }
+      if (!opScanned) startCamera("OP");
+      else if (!tcScanned) startCamera("TC");
     }
 
     function applyDynamicManual() {
       const val = document.getElementById("dynamicManualInput").value;
-      if (!opScanned) {
-        handleScannedValue("OP", val);
-      } else if (!tcScanned) {
-        handleScannedValue("TC", val);
-      }
+      if (!opScanned) handleScannedValue("OP", val);
+      else if (!tcScanned) handleScannedValue("TC", val);
     }
 
     function fillCurrentStepDemo() {
@@ -930,7 +956,7 @@
         opScanned = true;
         document.getElementById("dynamicManualInput").value = "";
         syncScanButtonUI();
-        showToast("Operator ID স্ক্যান সম্পন্ন! এখন বাটনে চাপ দিয়ে Scan TC Card করুন।", "ok");
+        showToast("Operator ID স্ক্যান সম্পন্ন! এখন Scan TC Card করুন।", "ok");
       } else if (type === "TC" && opScanned && !tcScanned) {
         tcData = {
           tc: parts[0] || "",
@@ -965,11 +991,7 @@
         opt.textContent = `${item.name} (SMV: ${item.smv})`;
         sel.appendChild(opt);
       });
-      if (processList.some(p => p.name === prev)) {
-        sel.value = prev;
-      } else {
-        sel.value = "";
-      }
+      sel.value = processList.some(p => p.name === prev) ? prev : "";
       onProcessChange();
     }
 
@@ -1118,52 +1140,79 @@
       showToast("Script URL সেভ হয়েছে।", "ok");
     }
 
-    function saveToGoogleSheet() {
+    /* DUPLICATE TC + SAME PROCESS CHECK & SAVE */
+    async function saveToGoogleSheet() {
       const procName = document.getElementById("processSelect").value;
-      const procObj = processList.find(p => p.name === procName);
-      const smvVal = procObj ? Number(procObj.smv) : 0;
-      const qtyVal = Number(tcData.bundleQty) || 0;
-      const earnedSah = Number(((qtyVal * smvVal) / 60).toFixed(4));
+      const tcVal = String(tcData.tc || "").trim();
 
-      const payload = {
-        timestamp: new Date().toISOString(),
-        operatorId: operatorData.id,
-        operatorName: operatorData.name,
-        floor: operatorData.floor,
-        dept: operatorData.dep,
-        jobType: operatorData.jobType,
-        line: operatorData.line,
-        tcNo: tcData.tc,
-        lotNo: tcData.lotNo,
-        buyer: tcData.buyer,
-        style: tcData.style,
-        color: tcData.color,
-        size: tcData.size,
-        bundleQty: qtyVal,
-        process: procName,
-        smv: smvVal,
-        earnedSah: earnedSah
-      };
+      if (!tcVal || !procName) {
+        showToast("TC এবং Process অবশ্যই থাকতে হবে।", "err");
+        return;
+      }
 
       const btn = document.getElementById("btnSave");
       btn.disabled = true;
-      btn.textContent = "SAVING...";
+      btn.textContent = "CHECKING & SAVING...";
 
-      fetch(getScriptUrl(), {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      })
-        .then(() => {
-          showToast("ডাটা Google Sheet-এ সেভ হয়েছে!", "ok");
-          resetScanFlow();
-        })
-        .catch(() => {
-          showToast("ডাটা পাঠাতে সমস্যা হয়েছে।", "err");
+      try {
+        // Fetch latest records to prevent same TC + same Process duplicate entry
+        const checkRes = await fetch(getScriptUrl());
+        const checkJson = await checkRes.json();
+        const latestRecords = (checkJson && checkJson.status === "SUCCESS" && Array.isArray(checkJson.records))
+          ? checkJson.records
+          : allProductionRecords;
+
+        const isDuplicateSameProcess = latestRecords.some(r =>
+          String(r.tcNo || "").trim().toUpperCase() === tcVal.toUpperCase() &&
+          String(r.process || "").trim().toUpperCase() === procName.trim().toUpperCase()
+        );
+
+        if (isDuplicateSameProcess) {
+          showToast("already entered this process", "err");
           btn.disabled = false;
           btn.textContent = "SAVE TO GOOGLE SHEET";
+          return;
+        }
+
+        const procObj = processList.find(p => p.name === procName);
+        const smvVal = procObj ? Number(procObj.smv) : 0;
+        const qtyVal = Number(tcData.bundleQty) || 0;
+        const earnedSah = Number(((qtyVal * smvVal) / 60).toFixed(4));
+
+        const payload = {
+          timestamp: new Date().toISOString(),
+          operatorId: operatorData.id,
+          operatorName: operatorData.name,
+          floor: operatorData.floor,
+          dept: operatorData.dep,
+          jobType: operatorData.jobType,
+          line: operatorData.line,
+          tcNo: tcVal,
+          lotNo: tcData.lotNo,
+          buyer: tcData.buyer,
+          style: tcData.style,
+          color: tcData.color,
+          size: tcData.size,
+          bundleQty: qtyVal,
+          process: procName,
+          smv: smvVal,
+          earnedSah: earnedSah
+        };
+
+        await fetch(getScriptUrl(), {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
         });
+
+        showToast(`ডাটা সেভ হয়েছে! (TC: ${tcVal} | Process: ${procName})`, "ok");
+        resetScanFlow();
+      } catch (err) {
+        showToast("ডাটা সেভ করতে সমস্যা হয়েছে। ইন্টারনেট বা Script URL চেক করুন।", "err");
+        btn.disabled = false;
+        btn.textContent = "SAVE TO GOOGLE SHEET";
+      }
     }
 
     function resetScanFlow() {
@@ -1182,7 +1231,24 @@
       syncScanButtonUI();
     }
 
-    /* VIEW DASHBOARD FUNCTIONS */
+    /* NORMALIZE RECORD DATE IN BROWSER (FIXES ISO/UTC TIMESTAMP DATE MISMATCH) */
+    function normalizeRecordDate(rec) {
+      if (rec && rec.timestamp) {
+        const d = new Date(rec.timestamp);
+        if (!isNaN(d.getTime())) {
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, "0");
+          const day = String(d.getDate()).padStart(2, "0");
+          return `${y}-${m}-${day}`;
+        }
+      }
+      if (rec && rec.date) {
+        return String(rec.date).slice(0, 10);
+      }
+      return "";
+    }
+
+    /* VIEW DASHBOARD: LIVE LINE-WISE + SEARCH */
     function loadProductionRecords(showMsg = false) {
       const badge = document.getElementById("liveSyncStatus");
       if (badge) badge.textContent = "SYNCING...";
@@ -1190,13 +1256,16 @@
         .then(res => res.json())
         .then(data => {
           if (data && data.status === "SUCCESS" && Array.isArray(data.records)) {
-            allProductionRecords = data.records;
+            allProductionRecords = data.records.map(r => ({
+              ...r,
+              cleanDate: normalizeRecordDate(r)
+            }));
             renderLineWiseLive(allProductionRecords);
             runSearch();
             if (badge) badge.textContent = "LIVE";
             if (showMsg) showToast("লাইভ ডাটা আপডেট হয়েছে।", "ok");
           } else {
-            if (badge) badge.textContent = "OFFLINE";
+            if (badge) badge.textContent = "NO DATA";
           }
         })
         .catch(() => {
@@ -1213,19 +1282,27 @@
 
       const byLine = {};
       records.forEach(r => {
-        const lineKey = r.line || "Unassigned Line";
-        const procKey = r.process || "Unknown Process";
-        if (!byLine[lineKey]) byLine[lineKey] = { totalQty: 0, totalSah: 0, procs: {} };
-        byLine[lineKey].totalQty += Number(r.bundleQty || 0);
-        byLine[lineKey].totalSah += Number(r.earnedSah || 0);
-        if (!byLine[lineKey].procs[procKey]) byLine[lineKey].procs[procKey] = { qty: 0, sah: 0 };
-        byLine[lineKey].procs[procKey].qty += Number(r.bundleQty || 0);
-        byLine[lineKey].procs[procKey].sah += Number(r.earnedSah || 0);
+        const lineKey = String(r.line || "Unassigned Line").trim() || "Unassigned Line";
+        const procKey = String(r.process || "Unknown Process").trim() || "Unknown Process";
+        const qty = Number(r.bundleQty || 0);
+        const sah = Number(r.earnedSah || 0);
+
+        if (!byLine[lineKey]) {
+          byLine[lineKey] = { totalQty: 0, totalSah: 0, procs: {} };
+        }
+        byLine[lineKey].totalQty += qty;
+        byLine[lineKey].totalSah += sah;
+
+        if (!byLine[lineKey].procs[procKey]) {
+          byLine[lineKey].procs[procKey] = { qty: 0, sah: 0 };
+        }
+        byLine[lineKey].procs[procKey].qty += qty;
+        byLine[lineKey].procs[procKey].sah += sah;
       });
 
       container.innerHTML = Object.keys(byLine).map(line => {
         const lObj = byLine[line];
-        const procHtml = Object.keys(lObj.procs).map(p => `
+        const procRows = Object.keys(lObj.procs).map(p => `
           <div class="proc-row">
             <span>${escapeHtml(p)}</span>
             <span>${lObj.procs[p].qty} pcs (${lObj.procs[p].sah.toFixed(2)} SAH)</span>
@@ -1236,9 +1313,9 @@
           <div class="line-box">
             <div class="line-header">
               <span>${escapeHtml(line)}</span>
-              <span>Total: ${lObj.totalQty} pcs | ${lObj.totalSah.toFixed(2)} SAH</span>
+              <span>Output: ${lObj.totalQty} pcs | ${lObj.totalSah.toFixed(2)} SAH</span>
             </div>
-            ${procHtml}
+            ${procRows}
           </div>
         `;
       }).join("");
@@ -1246,59 +1323,120 @@
 
     function runSearch() {
       const dateVal = document.getElementById("searchDate").value.trim();
+      const lineVal = document.getElementById("searchLine").value.trim().toLowerCase();
       const styleVal = document.getElementById("searchStyle").value.trim().toLowerCase();
       const container = document.getElementById("searchResultContainer");
       const countBadge = document.getElementById("searchCountBadge");
 
-      if (!dateVal && !styleVal) {
-        countBadge.textContent = "0 Filtered";
-        container.innerHTML = '<div class="muted-note">Date এবং Style সিলেক্ট করে Search চাপুন।</div>';
+      if (!dateVal && !lineVal && !styleVal) {
+        countBadge.textContent = "0 Entries";
+        container.innerHTML = '<div class="muted-note">শুধু Style দিলে Size-wise breakdown দেখানো হবে; আর Line + Style দিলে কোন কোন TC এন্ট্রি হয়েছে এবং কোন Process-এ কত প্রোডাকশন হয়েছে তার বিস্তারিত দেখাবে।</div>';
         return;
       }
 
       const matched = allProductionRecords.filter(r => {
-        const dateOk = !dateVal || r.date === dateVal;
+        const recDate = r.cleanDate || normalizeRecordDate(r);
+        const dateOk = !dateVal || recDate === dateVal;
+        const lineOk = !lineVal || String(r.line || "").toLowerCase().includes(lineVal);
         const styleOk = !styleVal || String(r.style || "").toLowerCase().includes(styleVal);
-        return dateOk && styleOk;
+        return dateOk && lineOk && styleOk;
       });
 
       countBadge.textContent = `${matched.length} Entries`;
 
       if (!matched.length) {
-        container.innerHTML = '<div class="muted-note">এই Date ও Style-এর কোনো প্রোডাকশন পাওয়া যায়নি।</div>';
+        container.innerHTML = '<div class="muted-note">এই ফিল্টারে কোনো প্রোডাকশন পাওয়া যায়নি।</div>';
         return;
       }
 
-      const byProcess = {};
-      matched.forEach(r => {
-        const proc = r.process || "Unknown Process";
-        const sz = r.size || "N/A";
-        const qty = Number(r.bundleQty || 0);
-        if (!byProcess[proc]) byProcess[proc] = { totalQty: 0, sizes: {} };
-        byProcess[proc].totalQty += qty;
-        byProcess[proc].sizes[sz] = (byProcess[proc].sizes[sz] || 0) + qty;
-      });
+      // Case A: Line + Style provided -> Show TCs entered & Process-wise production (plus Size-wise)
+      if (lineVal && styleVal) {
+        const tcSet = [...new Set(matched.map(r => String(r.tcNo || "").trim()).filter(Boolean))];
+        const byProcess = {};
+        let totalPcs = 0;
 
-      container.innerHTML = Object.keys(byProcess).map(proc => {
-        const pData = byProcess[proc];
-        const sizeChips = Object.keys(pData.sizes).map(sz => `
-          <span class="size-chip">${escapeHtml(sz)}: ${pData.sizes[sz]} pcs</span>
-        `).join("");
+        matched.forEach(r => {
+          const proc = String(r.process || "Unknown Process").trim();
+          const sz = String(r.size || "N/A").trim();
+          const qty = Number(r.bundleQty || 0);
+          totalPcs += qty;
+          if (!byProcess[proc]) byProcess[proc] = { qty: 0, sizes: {} };
+          byProcess[proc].qty += qty;
+          byProcess[proc].sizes[sz] = (byProcess[proc].sizes[sz] || 0) + qty;
+        });
 
-        return `
+        const procHtml = Object.keys(byProcess).map(proc => {
+          const pObj = byProcess[proc];
+          const sizesText = Object.keys(pObj.sizes).map(s => `${s}: ${pObj.sizes[s]}`).join(", ");
+          return `
+            <div class="proc-row">
+              <span>${escapeHtml(proc)} <small style="color:#475569;">(${escapeHtml(sizesText)})</small></span>
+              <span>${pObj.qty} pcs</span>
+            </div>
+          `;
+        }).join("");
+
+        const tcHtml = tcSet.length
+          ? tcSet.map(tc => `<span class="tc-pill">${escapeHtml(tc)}</span>`).join("")
+          : '<span class="muted-note">কোনো TC নম্বর পাওয়া যায়নি।</span>';
+
+        container.innerHTML = `
           <div class="line-box">
             <div class="line-header">
-              <span>Process: ${escapeHtml(proc)}</span>
-              <span>Total: ${pData.totalQty} pcs</span>
+              <span>Style: ${escapeHtml(styleVal.toUpperCase())} | Line: ${escapeHtml(lineVal.toUpperCase())}</span>
+              <span>Total: ${totalPcs} pcs</span>
             </div>
-            <div class="size-chips">${sizeChips}</div>
+            <div class="info-label" style="margin-top:6px;">Entered TC Numbers (${tcSet.length}):</div>
+            <div class="tc-tag-list" style="margin-bottom:10px;">${tcHtml}</div>
+            <div class="info-label" style="margin-bottom:6px;">Process-wise Production:</div>
+            ${procHtml}
           </div>
         `;
-      }).join("");
+        return;
+      }
+
+      // Case B: Style (with or without Date) -> Size-wise breakdown + Process summary
+      const bySize = {};
+      const byProcess = {};
+      let grandTotal = 0;
+
+      matched.forEach(r => {
+        const sz = String(r.size || "N/A").trim() || "N/A";
+        const proc = String(r.process || "Unknown Process").trim() || "Unknown Process";
+        const qty = Number(r.bundleQty || 0);
+        grandTotal += qty;
+        bySize[sz] = (bySize[sz] || 0) + qty;
+        byProcess[proc] = (byProcess[proc] || 0) + qty;
+      });
+
+      const sizeChips = Object.keys(bySize).map(sz => `
+        <span class="size-chip">${escapeHtml(sz)}: ${bySize[sz]} pcs</span>
+      `).join("");
+
+      const procRows = Object.keys(byProcess).map(proc => `
+        <div class="proc-row">
+          <span>${escapeHtml(proc)}</span>
+          <span>${byProcess[proc]} pcs</span>
+        </div>
+      `).join("");
+
+      container.innerHTML = `
+        <div class="line-box">
+          <div class="line-header">
+            <span>Style Details (${styleVal ? escapeHtml(styleVal.toUpperCase()) : "All Styles"})</span>
+            <span>Total: ${grandTotal} pcs</span>
+          </div>
+          <div class="info-label" style="margin-top:4px;">Size-wise Production Breakdown:</div>
+          <div class="size-chips" style="margin-bottom:12px;">${sizeChips}</div>
+          <div class="info-label" style="margin-bottom:6px;">Process-wise Production:</div>
+          ${procRows}
+        </div>
+      `;
     }
 
     function clearSearch() {
       document.getElementById("searchDate").value = "";
+      document.getElementById("searchLine").value = "";
       document.getElementById("searchStyle").value = "";
       runSearch();
     }
