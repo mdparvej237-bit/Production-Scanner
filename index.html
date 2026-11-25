@@ -49,9 +49,51 @@
     .card-head {
       display: flex; justify-content: center; align-items: center;
       flex-direction: column; margin-bottom: 12px; gap: 8px; text-align: center;
+      position: relative;
     }
     .card-title { margin: 0; font-size: 20px; font-weight: 800; text-align: center; }
     .hint { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.5; text-align: center; }
+
+    .dash-top-corner-row {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .btn-corner-find {
+      background: #0f2c59;
+      color: #ffffff;
+      border: 1px solid #1e40af;
+      border-radius: 9px;
+      padding: 6px 12px;
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn-corner-fs {
+      background: #e0e7ff;
+      color: #1e3a8a;
+      border: 1px solid #93c5fd;
+      border-radius: 9px;
+      padding: 6px 12px;
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .dash-fullscreen-mode {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 120 !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      max-width: 100% !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      overflow-y: auto !important;
+      background: var(--card) !important;
+    }
 
     .admin-menubar {
       display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
@@ -76,6 +118,7 @@
     input:focus, select:focus { outline: none; border-color: var(--cobalt); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
 
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
     .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
     .info-cell {
       background: #f8f7f3; border: 1px solid var(--border);
@@ -124,6 +167,7 @@
     .badge-upto { background: #dbeafe; color: #1e3a8a; border: 1px solid #93c5fd; padding: 5px 14px; border-radius: 999px; font-size: 15px; font-weight: 800; text-align: center; }
     .badge-lock { background: var(--red-soft); color: var(--red-text); padding: 5px 11px; border-radius: 999px; font-size: 14px; font-weight: 800; text-align: center; }
     .badge-count { background: #e0e7ff; color: #1e3a8a; padding: 4px 10px; border-radius: 999px; font-size: 13.5px; font-weight: 800; text-align: center; }
+    .badge-out { background: #dcfce7; color: #166534; padding: 3px 8px; border-radius: 999px; font-size: 12.5px; font-weight: 800; }
 
     .scanner-wrap { background: #090d16; color: #fff; border-radius: 14px; padding: 14px; text-align: center; }
     .step-banner {
@@ -146,7 +190,7 @@
     .locked-box { opacity: 0.55; pointer-events: none; user-select: none; }
 
     .dynamic-row {
-      display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 8px;
+      display: grid; grid-template-columns: 1.4fr 0.9fr 1.1fr auto; gap: 8px;
       align-items: center; margin-top: 8px; background: #f8f7f3;
       padding: 8px; border-radius: 10px; border: 1px solid var(--border);
     }
@@ -307,8 +351,12 @@
     </div>
 
     <div id="view-dashboard" class="hidden">
-      <div class="card">
+      <div id="dashMainCard" class="card">
         <div class="card-head">
+          <div class="dash-top-corner-row">
+            <button type="button" class="btn-corner-find" onclick="openFindYourDataSection()">Find your data</button>
+            <button id="dashFullScreenBtn" type="button" class="btn-corner-fs" onclick="toggleDashboardFullScreen()">Full Screen</button>
+          </div>
           <h2 class="card-title">Live Line-wise Output & Efficiency</h2>
           <p class="hint" style="margin-top:2px;">In-time 8:00 AM | Lunch 1:00 PM–2:00 PM বাদে লাইভ আপডেট (Max Forecast Hour সীমাবদ্ধ)</p>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;">
@@ -317,7 +365,6 @@
             <span id="liveBadge" class="badge-live">LIVE</span>
             <button class="btn-refresh" onclick="resetToRunningDateAndLoad()">Today (Running)</button>
             <button class="btn-refresh" onclick="loadDashboard()">Refresh Live</button>
-            <button id="toggleSearchBtn" class="btn-sage" style="padding:8px 12px;font-size:14.5px;" onclick="toggleSearchSection()">Show Search Details</button>
           </div>
         </div>
 
@@ -336,27 +383,35 @@
       <div id="dashboardSearchWrapper" class="hidden">
         <div class="card">
           <div class="card-head">
-            <h2 class="card-title">Search Production</h2>
-            <button class="btn-remove" onclick="toggleSearchSection()">Hide Search</button>
+            <h2 class="card-title">Find your data</h2>
+            <button class="btn-remove" onclick="toggleSearchSection()">Close Search</button>
           </div>
-          <label for="dateSelect">Date (From Sheet)</label>
-          <select id="dateSelect" onchange="onSheetDateSelectChange()"><option value="">Date</option></select>
-          <div class="grid-2">
-            <div><label for="lineInput">Line (Optional)</label><input id="lineInput" type="text" placeholder="e.g. Linking Line-02" /></div>
-            <div><label for="styleInput">Style No.</label><input id="styleInput" type="text" placeholder="e.g. 1896" /></div>
+          <p class="hint">Date, Line এবং Style দিয়ে সার্চ করলে ওই Style-এ কোন কোন TC এন্ট্রি হয়েছে তা দেখা যাবে। নতুন সার্চ করতে চাইলে নিচের বক্স বদলে আবার Search চাপুন।</p>
+          <div class="grid-3">
+            <div>
+              <label for="dateSelect">Date</label>
+              <select id="dateSelect" onchange="onSheetDateSelectChange()"><option value="">Date</option></select>
+            </div>
+            <div>
+              <label for="lineInput">Line</label>
+              <input id="lineInput" type="text" placeholder="e.g. Linking Line-02" onkeydown="if(event.key==='Enter') runFindYourDataSearch()" />
+            </div>
+            <div>
+              <label for="styleInput">Style No.</label>
+              <input id="styleInput" type="text" placeholder="e.g. 1896" onkeydown="if(event.key==='Enter') runFindYourDataSearch()" />
+            </div>
           </div>
           <div class="btn-row">
-            <button class="btn-primary" onclick="loadDashboard()">Search</button>
+            <button class="btn-primary" onclick="runFindYourDataSearch()">Search</button>
             <button class="btn-sage" onclick="clearSearch()">Clear</button>
           </div>
         </div>
 
         <div class="card">
           <div class="card-head">
-            <h2 class="card-title">Style Search Details</h2>
+            <h2 class="card-title">Style & TC Search Details</h2>
             <span id="entriesBadge" class="badge-entries">0 ENTRIES</span>
           </div>
-          <p class="hint">শুধু Style দিলে Size-wise breakdown দেখানো হবে; আর Line + Style দিলে কোন কোন TC এন্ট্রি হয়েছে এবং কোন Process-এ কত প্রোডাকশন হয়েছে তার বিস্তারিত দেখাবে।</p>
           <div id="styleResultArea" class="table-scroll"></div>
         </div>
       </div>
@@ -503,9 +558,17 @@
           <h2 id="adminFormTitle" class="card-title">Style, Process & SMV</h2>
           <button type="button" class="btn-refresh" onclick="addProcessSmvRow()">+ Add Process & SMV</button>
         </div>
-        <p class="hint">Style No. লিখে নিচে যত খুশি তত Process ও SMV যুক্ত করুন অথবা পুরনো কোনো এন্ট্রি Edit করে বদলান।</p>
-        <label for="adminStyleInput">Style No.</label>
-        <input id="adminStyleInput" type="text" placeholder="Style No. লিখুন (যেমন: 1896)" />
+        <p class="hint">Style No. লিখে নিচে যত খুশি তত Process ও SMV যুক্ত করুন। যে Process-এ আউটপুট হবে সেটি Output হিসেবে সিলেক্ট করুন।</p>
+        <div class="grid-2">
+          <div>
+            <label for="adminStyleInput">Style No.</label>
+            <input id="adminStyleInput" type="text" placeholder="Style No. লিখুন (যেমন: 1896)" />
+          </div>
+          <div>
+            <label for="adminLinkingSmvBox">Linking SMV (Total SMV)</label>
+            <input id="adminLinkingSmvBox" type="text" readonly value="0.00" style="background:#f1f5f9;font-weight:800;color:#0c2340;" />
+          </div>
+        </div>
         <div id="dynamicSmvRows"></div>
         <div class="btn-row">
           <button id="saveSmvBtn" type="button" class="btn-primary" onclick="saveAllStyleSmv()">Save Style Process & SMV</button>
@@ -519,7 +582,7 @@
           <h2 class="card-title">Saved Style Process & SMV</h2>
           <button type="button" class="btn-refresh" onclick="switchAdminSection('form')">+ New Add</button>
         </div>
-        <p class="hint">শুধু <b>Style</b> দেখাচ্ছে। যেকোনো <b>Style</b>-এ ক্লিক করলে তার <b>Process</b> ও <b>SMV</b> দেখাবে।</p>
+        <p class="hint">শুধু <b>Style</b> দেখাচ্ছে। যেকোনো <b>Style</b>-এ ক্লিক করলে তার <b>Process</b>, <b>SMV</b> ও <b>Output</b> দেখাবে।</p>
         <div id="styleAccordionList" class="style-group-list"></div>
       </div>
 
@@ -580,11 +643,11 @@
     let currentTcData = null;
 
     let styleSmvMaster = JSON.parse(localStorage.getItem('style_smv_master') || 'null') || [
-      { style: '1896', process: 'Linking', smv: 12.0 },
-      { style: '1896', process: 'Ironing', smv: 8.28 },
-      { style: '1895', process: 'Interlock', smv: 1.2 },
-      { style: '1895', process: 'Shoulder join', smv: 1.5 },
-      { style: '1895', process: 'Sleeve join', smv: 3.5 }
+      { style: '1896', process: 'Linking', smv: 12.0, isOutput: false },
+      { style: '1896', process: 'Ironing', smv: 8.28, isOutput: true },
+      { style: '1895', process: 'Interlock', smv: 1.2, isOutput: false },
+      { style: '1895', process: 'Shoulder join', smv: 1.5, isOutput: false },
+      { style: '1895', process: 'Sleeve join', smv: 3.5, isOutput: true }
     ];
 
     let forecastMaster = JSON.parse(localStorage.getItem(FORECAST_STORAGE_KEY) || '{}');
@@ -594,6 +657,7 @@
     const scannedTcProcessSet = new Set(scannedEntries.map(e => `${e.tcNo}__${e.process.toLowerCase()}`));
 
     let incRawRows = [];
+    let latestFetchedRecords = [];
 
     const ALL_LINKING_LINES = Array.from({ length: 33 }, (_, idx) => `Linking Line-${String(idx + 1).padStart(2, '0')}`);
 
@@ -745,10 +809,65 @@
       return { elapsedHours: cappedElapsedHours, rawElapsedHours: rawHours, maxForecastHr, upToLabel: `Up to ${addWorkingHoursTo8Am(cappedElapsedHours)}` };
     }
 
+    function openFindYourDataSection() {
+      const wrap = document.getElementById('dashboardSearchWrapper');
+      if (wrap.classList.contains('hidden')) {
+        wrap.classList.remove('hidden');
+      }
+      const dashPicker = document.getElementById('dashDatePicker');
+      const dateSelect = document.getElementById('dateSelect');
+      if (dashPicker && dateSelect && dashPicker.value && !dateSelect.value) {
+        dateSelect.value = dashPicker.value;
+      }
+      wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
     function toggleSearchSection() {
-      const wrap = document.getElementById('dashboardSearchWrapper'), btn = document.getElementById('toggleSearchBtn');
-      const isHidden = wrap.classList.toggle('hidden');
-      btn.textContent = isHidden ? 'Show Search Details' : 'Hide Search Details';
+      const wrap = document.getElementById('dashboardSearchWrapper');
+      wrap.classList.toggle('hidden');
+    }
+
+    function toggleDashboardFullScreen() {
+      const card = document.getElementById('dashMainCard');
+      const btn = document.getElementById('dashFullScreenBtn');
+      if (!card) return;
+      const isFs = card.classList.toggle('dash-fullscreen-mode');
+      if (btn) btn.textContent = isFs ? 'Exit Full Screen' : 'Full Screen';
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        const card = document.getElementById('dashMainCard');
+        const btn = document.getElementById('dashFullScreenBtn');
+        if (card && card.classList.contains('dash-fullscreen-mode')) {
+          card.classList.remove('dash-fullscreen-mode');
+          if (btn) btn.textContent = 'Full Screen';
+        }
+      }
+    });
+
+    function runFindYourDataSearch() {
+      const dateSelect = document.getElementById('dateSelect');
+      const dashPicker = document.getElementById('dashDatePicker');
+      const lineVal = document.getElementById('lineInput').value.trim().toLowerCase();
+      const styleVal = document.getElementById('styleInput').value.trim().toLowerCase();
+      const chosenDate = (dateSelect && dateSelect.value) ? dateSelect.value : ((dashPicker && dashPicker.value) ? dashPicker.value : '');
+
+      const filtered = latestFetchedRecords.filter(r => {
+        const rDate = extractRecordIsoDate(r);
+        const rLine = String(r.line || '').trim().toLowerCase();
+        const rStyle = String(r.style || '').trim().toLowerCase();
+        if (chosenDate && rDate !== chosenDate) return false;
+        if (lineVal && rLine.indexOf(lineVal) === -1) return false;
+        if (styleVal && rStyle.indexOf(styleVal) === -1) return false;
+        return true;
+      });
+
+      renderStyleBreakdown({
+        mode: 'find_tc_list',
+        entries: filtered.length,
+        tcEntries: filtered
+      }, styleVal || lineVal || chosenDate);
     }
 
     function onDashboardDateChange() {
@@ -794,6 +913,23 @@
       return target ? styleSmvMaster.filter(x => String(x.style || '').trim().toLowerCase() === target) : [];
     }
 
+    function getStyleTotalLinkingSmv(styleName) {
+      const matched = getProcessesForStyle(styleName);
+      let sum = 0;
+      matched.forEach(x => { const n = parseFloat(x.smv); if (!isNaN(n)) sum += n; });
+      return sum;
+    }
+
+    function isOutputProcessForStyle(styleName, processName) {
+      const st = String(styleName || '').trim().toLowerCase();
+      const pr = String(processName || '').trim().toLowerCase();
+      if (!pr) return false;
+      const exact = styleSmvMaster.find(x => String(x.style || '').trim().toLowerCase() === st && String(x.process || '').trim().toLowerCase() === pr);
+      if (exact) return Boolean(exact.isOutput);
+      const anyStyle = styleSmvMaster.find(x => String(x.process || '').trim().toLowerCase() === pr && x.isOutput);
+      return Boolean(anyStyle);
+    }
+
     function populateProcessDropdownForStyle(styleName) {
       const dd = document.getElementById('processDropdown'), hintEl = document.getElementById('styleProcessHint');
       const matched = getProcessesForStyle(styleName);
@@ -807,6 +943,18 @@
       }
     }
 
+    function recalculateLinkingSmvBox() {
+      const box = document.getElementById('adminLinkingSmvBox');
+      if (!box) return;
+      const rows = Array.from(document.querySelectorAll('#dynamicSmvRows .dynamic-row'));
+      let total = 0;
+      rows.forEach(r => {
+        const v = parseFloat(r.querySelector('.dyn-smv').value);
+        if (!isNaN(v) && v > 0) total += v;
+      });
+      box.value = total.toFixed(2);
+    }
+
     function switchAdminSection(sec) {
       const isForm = sec === 'form', isList = sec === 'list', isForecast = sec === 'forecast';
       document.getElementById('admin-sec-form').classList.toggle('hidden', !isForm);
@@ -815,7 +963,7 @@
       document.getElementById('admMenuSmvForm').classList.toggle('active', isForm);
       document.getElementById('admMenuSmvList').classList.toggle('active', isList);
       document.getElementById('admMenuForecast').classList.toggle('active', isForecast);
-      if (isForm) ensureAtLeastOneRow();
+      if (isForm) { ensureAtLeastOneRow(); recalculateLinkingSmvBox(); }
       else if (isList) renderSavedSmvTable();
       else if (isForecast) { initForecastDates(); const curDate = document.getElementById('forecastCustomDate').value; renderForecastTable(curDate); renderSavedForecastQuickList(curDate); }
     }
@@ -825,12 +973,21 @@
       if (!wrap.children.length) addProcessSmvRow();
     }
 
-    function addProcessSmvRow(processVal = '', smvVal = '') {
+    function addProcessSmvRow(processVal = '', smvVal = '', isOutputVal = false) {
       const wrap = document.getElementById('dynamicSmvRows');
       const row = document.createElement('div');
       row.className = 'dynamic-row';
-      row.innerHTML = `<input type="text" class="dyn-proc" placeholder="Process (e.g. Linking)" value="${esc(processVal)}" /><input type="number" step="0.01" class="dyn-smv" placeholder="SMV (e.g. 12.0)" value="${esc(smvVal)}" /><button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>`;
+      row.innerHTML = `
+        <input type="text" class="dyn-proc" placeholder="Process (e.g. Neck / Side)" value="${esc(processVal)}" />
+        <input type="number" step="0.01" class="dyn-smv" placeholder="SMV" value="${esc(smvVal)}" oninput="recalculateLinkingSmvBox()" />
+        <select class="dyn-out">
+          <option value="0" ${!isOutputVal ? 'selected' : ''}>Not Output</option>
+          <option value="1" ${isOutputVal ? 'selected' : ''}>Output Process</option>
+        </select>
+        <button type="button" class="btn-remove" onclick="this.parentElement.remove(); recalculateLinkingSmvBox();">X</button>
+      `;
       wrap.appendChild(row);
+      recalculateLinkingSmvBox();
     }
 
     function clearDynamicSmvForm() {
@@ -839,17 +996,23 @@
       document.getElementById('adminFormTitle').textContent = 'Style, Process & SMV';
       document.getElementById('saveSmvBtn').textContent = 'Save Style Process & SMV';
       addProcessSmvRow();
+      recalculateLinkingSmvBox();
       document.getElementById('adminSmvMsg').textContent = '';
     }
 
     function insertGroupedByStyle(itemsToInsert) {
       itemsToInsert.forEach(item => {
         const matchIdx = styleSmvMaster.findIndex(x => x.style.toLowerCase() === item.style.toLowerCase() && x.process.toLowerCase() === item.process.toLowerCase());
-        if (matchIdx >= 0) { styleSmvMaster[matchIdx] = { ...styleSmvMaster[matchIdx], style: item.style, process: item.process, smv: item.smv }; return; }
+        if (matchIdx >= 0) {
+          styleSmvMaster[matchIdx] = { ...styleSmvMaster[matchIdx], style: item.style, process: item.process, smv: item.smv, isOutput: Boolean(item.isOutput) };
+          return;
+        }
         let lastStyleIdx = -1;
-        for (let i = styleSmvMaster.length - 1; i >= 0; i--) { if (styleSmvMaster[i].style.toLowerCase() === item.style.toLowerCase()) { lastStyleIdx = i; break; } }
-        if (lastStyleIdx >= 0) styleSmvMaster.splice(lastStyleIdx + 1, 0, item);
-        else styleSmvMaster.push(item);
+        for (let i = styleSmvMaster.length - 1; i >= 0; i--) {
+          if (styleSmvMaster[i].style.toLowerCase() === item.style.toLowerCase()) { lastStyleIdx = i; break; }
+        }
+        if (lastStyleIdx >= 0) styleSmvMaster.splice(lastStyleIdx + 1, 0, { ...item, isOutput: Boolean(item.isOutput) });
+        else styleSmvMaster.push({ ...item, isOutput: Boolean(item.isOutput) });
       });
     }
 
@@ -858,16 +1021,22 @@
       const rows = Array.from(document.querySelectorAll('#dynamicSmvRows .dynamic-row'));
       if (!style) { msg.style.color = '#b91c1c'; msg.textContent = 'আগে Style No. লিখুন।'; return; }
       const newItems = [];
-      rows.forEach(r => { const pr = r.querySelector('.dyn-proc').value.trim(), smv = parseFloat(r.querySelector('.dyn-smv').value); if (pr && !isNaN(smv) && smv > 0) newItems.push({ style, process: pr, smv }); });
+      rows.forEach(r => {
+        const pr = r.querySelector('.dyn-proc').value.trim();
+        const smv = parseFloat(r.querySelector('.dyn-smv').value);
+        const isOut = r.querySelector('.dyn-out').value === '1';
+        if (pr && !isNaN(smv) && smv > 0) newItems.push({ style, process: pr, smv, isOutput: isOut });
+      });
       if (!newItems.length) { msg.style.color = '#b91c1c'; msg.textContent = 'কমপক্ষে একটি Process ও SMV দিন।'; return; }
       insertGroupedByStyle(newItems);
       expandedStyles.add(style.toLowerCase());
       localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
+      recalculateLinkingSmvBox();
       renderSavedSmvTable();
       if (currentTcData && currentTcData.style.toLowerCase() === style.toLowerCase()) populateProcessDropdownForStyle(currentTcData.style);
       document.getElementById('adminFormTitle').textContent = 'Style, Process & SMV';
       document.getElementById('saveSmvBtn').textContent = 'Save Style Process & SMV';
-      msg.style.color = '#15803d'; msg.textContent = `${style} Style-এ ${newItems.length}টি Process & SMV সেভ হয়েছে।`;
+      msg.style.color = '#15803d'; msg.textContent = `${style} Style-এ ${newItems.length}টি Process & SMV (Linking SMV: ${getStyleTotalLinkingSmv(style).toFixed(2)}) সেভ হয়েছে।`;
       try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'STYLE_SMV_BATCH', items: newItems }) }); } catch (_) {}
     }
 
@@ -877,11 +1046,12 @@
       renderSavedSmvTable();
     }
 
-    function editSavedSmv(style, process, smv) {
+    function editSavedSmv(style, process, smv, isOutput = false) {
       switchAdminSection('form');
       document.getElementById('adminStyleInput').value = style;
       document.getElementById('dynamicSmvRows').innerHTML = '';
-      addProcessSmvRow(process, smv);
+      addProcessSmvRow(process, smv, Boolean(isOutput));
+      recalculateLinkingSmvBox();
       document.getElementById('adminFormTitle').textContent = 'Edit Style, Process & SMV';
       document.getElementById('saveSmvBtn').textContent = 'Update SMV';
       document.getElementById('adminSmvMsg').style.color = '#1d4ed8';
@@ -906,8 +1076,32 @@
       });
       container.innerHTML = groups.map(g => {
         const isOpen = expandedStyles.has(g.key);
-        const rowsHtml = g.items.map(it => `<tr><td>${esc(it.process)}</td><td><b>${it.smv}</b></td><td><div style="display:flex;gap:6px;justify-content:center;"><button type="button" class="btn-edit" onclick="editSavedSmv('${esc(it.style)}','${esc(it.process)}',${it.smv})">Edit</button><button type="button" class="btn-remove" onclick="deleteSavedSmv('${esc(it.style)}','${esc(it.process)}')">Delete</button></div></td></tr>`).join('');
-        return `<div class="style-group-card"><button type="button" class="style-group-header" onclick="toggleStyleExpand('${esc(g.key)}')"><span>Style: <b>${esc(g.style)}</b></span><span style="display:flex;align-items:center;gap:8px;"><span class="badge-count">${g.items.length} Process</span><span>${isOpen ? '▲' : '▼'}</span></span></button><div class="style-group-body ${isOpen ? '' : 'hidden'}"><table><thead><tr><th>Process</th><th>SMV</th><th>Action</th></tr></thead><tbody>${rowsHtml}</tbody></table></div></div>`;
+        const totalSmv = g.items.reduce((acc, cur) => acc + (parseFloat(cur.smv) || 0), 0);
+        const rowsHtml = g.items.map(it => `
+          <tr>
+            <td>${esc(it.process)}</td>
+            <td><b>${it.smv}</b></td>
+            <td>${it.isOutput ? '<span class="badge-out">OUTPUT</span>' : '-'}</td>
+            <td>
+              <div style="display:flex;gap:6px;justify-content:center;">
+                <button type="button" class="btn-edit" onclick="editSavedSmv('${esc(it.style)}','${esc(it.process)}',${it.smv},${Boolean(it.isOutput)})">Edit</button>
+                <button type="button" class="btn-remove" onclick="deleteSavedSmv('${esc(it.style)}','${esc(it.process)}')">Delete</button>
+              </div>
+            </td>
+          </tr>`).join('');
+        return `
+          <div class="style-group-card">
+            <button type="button" class="style-group-header" onclick="toggleStyleExpand('${esc(g.key)}')">
+              <span>Style: <b>${esc(g.style)}</b> <span style="font-size:13.5px;color:#0c2340;">(Linking SMV: ${totalSmv.toFixed(2)})</span></span>
+              <span style="display:flex;align-items:center;gap:8px;">
+                <span class="badge-count">${g.items.length} Process</span>
+                <span>${isOpen ? '▲' : '▼'}</span>
+              </span>
+            </button>
+            <div class="style-group-body ${isOpen ? '' : 'hidden'}">
+              <table><thead><tr><th>Process</th><th>SMV</th><th>Type</th><th>Action</th></tr></thead><tbody>${rowsHtml}</tbody></table>
+            </div>
+          </div>`;
       }).join('');
     }
 
@@ -1031,7 +1225,10 @@
       }
       const found = styleSmvMaster.find(x => x.style.toLowerCase() === currentTcData.style.toLowerCase() && x.process.toLowerCase() === proc.toLowerCase());
       const smv = found ? Number(found.smv) : 0;
-      renderTcCard(proc, smv, Number(((currentTcData.bundleQty * smv) / 60).toFixed(2)));
+      const calcSah = found && found.isOutput
+        ? Number(((currentTcData.bundleQty * getStyleTotalLinkingSmv(currentTcData.style)) / 60).toFixed(2))
+        : Number(((currentTcData.bundleQty * smv) / 60).toFixed(2));
+      renderTcCard(proc, smv, calcSah);
     }
 
     async function confirmProcessEntry() {
@@ -1045,7 +1242,11 @@
         showNotification(`Notification: TC "${currentTcData.tcNo}" এই "${proc}" Process-এ ইতিমধ্যে স্ক্যান করা হয়েছে!`, 'dup'); return;
       }
       const found = styleSmvMaster.find(x => x.style.toLowerCase() === currentTcData.style.toLowerCase() && x.process.toLowerCase() === proc.toLowerCase());
-      const smv = found ? Number(found.smv) : 0, sah = Number(((currentTcData.bundleQty * smv) / 60).toFixed(2));
+      const smv = found ? Number(found.smv) : 0;
+      const isOut = Boolean(found && found.isOutput);
+      const sah = isOut
+        ? Number(((currentTcData.bundleQty * getStyleTotalLinkingSmv(currentTcData.style)) / 60).toFixed(2))
+        : Number(((currentTcData.bundleQty * smv) / 60).toFixed(2));
       const record = {
         timestamp: getBdTimestampNow(), operatorId: currentOperator.operatorId, operatorName: currentOperator.operatorName,
         floor: currentOperator.floor, dept: currentOperator.dept, jobType: currentOperator.jobType, line: currentOperator.line,
@@ -1400,7 +1601,7 @@
       const dateSelect = document.getElementById('dateSelect'), line = document.getElementById('lineInput').value.trim(), style = document.getElementById('styleInput').value.trim();
       document.getElementById('liveBadge').textContent = 'LOADING';
       try {
-        const res = await fetch(`${API_URL}?${new URLSearchParams({ date: activeIsoDate, line, style, t: Date.now() })}`);
+        const res = await fetch(`${API_URL}?${new URLSearchParams({ date: activeIsoDate, line: '', style: '', t: Date.now() })}`);
         const data = await res.json();
         if (data.status !== 'SUCCESS') { errEl.textContent = data.message || 'ডাটা আনা যায়নি।'; document.getElementById('liveBadge').textContent = 'ERROR'; return; }
         const prev = dateSelect.value || activeIsoDate;
@@ -1409,11 +1610,14 @@
         if (Array.isArray(data.smvList) && data.smvList.length) { insertGroupedByStyle(data.smvList); localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster)); }
         if (data.forecastMap && typeof data.forecastMap === 'object') { forecastMaster = { ...forecastMaster, ...data.forecastMap }; localStorage.setItem(FORECAST_STORAGE_KEY, JSON.stringify(forecastMaster)); }
         const allRecs = Array.isArray(data.records) ? data.records : (Array.isArray(data.rawRecords) ? data.rawRecords : []);
+        latestFetchedRecords = allRecs;
         const strictDateRecords = allRecs.filter(r => extractRecordIsoDate(r) === activeIsoDate);
         const workInfo = getElapsedWorkInfo(activeIsoDate);
         document.getElementById('upToTimeBadge').textContent = workInfo.upToLabel;
         renderLiveEfficiencyTable(strictDateRecords, activeIsoDate, runningIso, workInfo);
-        renderStyleBreakdown(data.styleDetails, style);
+        if (!document.getElementById('dashboardSearchWrapper').classList.contains('hidden') && (line || style)) {
+          runFindYourDataSearch();
+        }
         document.getElementById('liveBadge').textContent = 'LIVE';
       } catch (e) { errEl.textContent = 'সংযোগ সমস্যা: ' + e.message; document.getElementById('liveBadge').textContent = 'ERROR'; }
     }
@@ -1447,8 +1651,13 @@
         if (!lineStats[ln]) lineStats[ln] = { line: ln, uniqueOpIds: new Set(), outputQty: 0, earnedSah: 0 };
         const opId = String(r.operatorId || '').trim();
         if (opId) lineStats[ln].uniqueOpIds.add(opId);
-        if (String(r.process || '').trim().toLowerCase() === 'output') lineStats[ln].outputQty += Number(r.bundleQty || r.qty || 0);
-        lineStats[ln].earnedSah += Number(r.earnedSah || 0);
+        const procName = String(r.process || '').trim();
+        const qtyVal = Number(r.bundleQty || r.qty || 0);
+        if (isOutputProcessForStyle(r.style, procName)) {
+          lineStats[ln].outputQty += qtyVal;
+          const totalStyleSmv = getStyleTotalLinkingSmv(r.style);
+          lineStats[ln].earnedSah += (qtyVal * totalStyleSmv) / 60;
+        }
       });
       const floor3Sum = { forecastHr: 0, forecastPcs: 0, target: 0, output: 0, manpower: 0, wh: 0, sah: 0, effSum: 0, effCount: 0 };
       const floor2Sum = { forecastHr: 0, forecastPcs: 0, target: 0, output: 0, manpower: 0, wh: 0, sah: 0, effSum: 0, effCount: 0 };
@@ -1480,25 +1689,24 @@
       box.innerHTML = `<table><thead><tr><th>Line</th><th>Forecast Hr</th><th>Forecast Pcs</th><th>Target (${esc(workInfo.upToLabel)})</th><th>Output</th><th>Deviation</th><th>Total Manpower</th><th>Total W.H</th><th>Earned SAH</th><th>Efficiency</th></tr></thead><tbody>${floor3RowsHtml}${buildFloorSubtotalHtml('LINKING 3RD FLOOR (L-01 to L-16)', floor3Sum)}${floor2RowsHtml}${buildFloorSubtotalHtml('LINKING 2ND FLOOR (L-17 to L-33)', floor2Sum)}</tbody><tfoot><tr class="grand-total-row"><td>GRAND TOTAL (AVG EFF)</td><td>${grandForecastHr}</td><td>${grandForecastPcs}</td><td>${grandTarget}</td><td>${grandOutput}</td><td>${grandDev > 0 ? '+' + grandDev : grandDev}</td><td>${grandManpower}</td><td>${grandWH.toFixed(1)}</td><td>${grandSah.toFixed(2)}</td><td>${grandAvgEff}</td></tr></tfoot></table>`;
     }
 
-    function renderStyleBreakdown(details, styleQuery) {
+    function renderStyleBreakdown(details, queryLabel) {
       const badge = document.getElementById('entriesBadge'), box = document.getElementById('styleResultArea');
-      if (!styleQuery || !details || details.mode === 'none') { badge.textContent = '0 ENTRIES'; box.innerHTML = ''; return; }
-      badge.textContent = `${details.entries || 0} ENTRIES`;
-      if (details.mode === 'line_style') {
-        const list = details.tcProcessBreakdown || [];
-        if (!list.length) { box.innerHTML = '<p class="hint" style="margin-top:8px;">কোনো এন্ট্রি পাওয়া যায়নি।</p>'; return; }
-        box.innerHTML = '<table><thead><tr><th>TC No.</th><th>Process</th><th>Size</th><th>Qty</th></tr></thead><tbody>' + list.map(i => `<tr><td>${esc(i.tcNo)}</td><td>${esc(i.process)}</td><td>${esc(i.size)}</td><td><b>${i.qty}</b></td></tr>`).join('') + '</tbody></table>';
-      } else {
-        const list = details.sizeBreakdown || [];
-        if (!list.length) { box.innerHTML = '<p class="hint" style="margin-top:8px;">কোনো Size breakdown পাওয়া যায়নি।</p>'; return; }
-        box.innerHTML = '<table><thead><tr><th>Style</th><th>Size</th><th>Color</th><th>Qty</th></tr></thead><tbody>' + list.map(i => `<tr><td>${esc(i.style)}</td><td>${esc(i.size)}</td><td>${esc(i.color)}</td><td><b>${i.qty}</b></td></tr>`).join('') + '</tbody></table>';
+      if (!details) { badge.textContent = '0 ENTRIES'; box.innerHTML = ''; return; }
+      const list = details.tcEntries || [];
+      badge.textContent = `${list.length} ENTRIES`;
+      if (!list.length) {
+        box.innerHTML = '<p class="hint" style="margin-top:8px;">এই Date, Line বা Style অনুযায়ী কোনো TC এন্ট্রি পাওয়া যায়নি।</p>';
+        return;
       }
+      box.innerHTML = '<table><thead><tr><th>Date</th><th>Line</th><th>Style</th><th>TC No.</th><th>Process</th><th>Size</th><th>Qty</th></tr></thead><tbody>' + list.map(i => `<tr><td>${esc(i.date || '-')}</td><td>${esc(i.line || '-')}</td><td><b>${esc(i.style || '-')}</b></td><td><b>${esc(i.tcNo || '-')}</b></td><td>${esc(i.process || '-')}</td><td>${esc(i.size || '-')}</td><td><b>${Number(i.bundleQty || i.qty || 0)}</b></td></tr>`).join('') + '</tbody></table>';
     }
 
     function clearSearch() {
       document.getElementById('lineInput').value = '';
       document.getElementById('styleInput').value = '';
-      loadDashboard();
+      document.getElementById('dateSelect').value = '';
+      document.getElementById('entriesBadge').textContent = '0 ENTRIES';
+      document.getElementById('styleResultArea').innerHTML = '';
     }
 
     function esc(v) { return String(v ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
