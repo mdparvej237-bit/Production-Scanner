@@ -85,7 +85,6 @@
     .info-val { font-size: 16px; color: var(--text); font-weight: 800; margin-top: 2px; text-align: center; }
 
     .btn-row { display: grid; grid-template-columns: 2.2fr 1fr; gap: 10px; margin-top: 14px; }
-    .btn-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
 
     .btn-primary {
       background: linear-gradient(180deg, #3b82f6, var(--cobalt-dark));
@@ -297,9 +296,8 @@
           <button id="nextBtnMain" type="button" class="btn-next" style="width:100%;" onclick="onNextButtonClick()">Next</button>
         </div>
 
-        <div class="btn-row-2">
-          <button type="button" class="btn-primary" onclick="testSingleScan()">Test Scan (1 বার)</button>
-          <button type="button" class="btn-sage" onclick="resetOperatorFlow()">Reset All</button>
+        <div style="margin-top:14px;">
+          <button type="button" class="btn-sage" style="width:100%;" onclick="resetOperatorFlow()">Reset All</button>
         </div>
       </div>
 
@@ -459,7 +457,6 @@
     let flowMode = 'SCAN_OP';
     let currentOperator = null;
     let currentTcData = null;
-    let isTestScanMode = false;
 
     let styleSmvMaster = JSON.parse(localStorage.getItem('style_smv_master') || 'null') || [
       { style: '1896', process: 'Linking', smv: 12.0 },
@@ -1160,10 +1157,10 @@
       document.getElementById('processActionMsg').textContent = '';
       flowMode = 'SCAN_TC';
       updateFlowUI();
-      if (!isTestScanMode) startCameraIfNeeded();
+      startCameraIfNeeded();
     }
 
-    function handleBarcodeInput(rawCode, fromTest = false) {
+    function handleBarcodeInput(rawCode) {
       const code = String(rawCode || '').trim();
       if (!code) return;
       if (flowMode !== 'SCAN_OP' && flowMode !== 'SCAN_TC') return;
@@ -1171,7 +1168,6 @@
       stopCamera();
       playBeep('ok');
       clearNotification();
-      isTestScanMode = !!fromTest;
 
       if (flowMode === 'SCAN_OP') {
         const parts = code.split('|').map(s => s.trim());
@@ -1185,7 +1181,7 @@
         };
         flowMode = 'HOLD_AFTER_OP';
         updateFlowUI();
-        showNotification(`${isTestScanMode ? '[TEST] ' : ''}Operator "${currentOperator.operatorId}" স্ক্যান হয়েছে। পরের ধাপে যেতে "Next" চাপুন।`, 'ok');
+        showNotification(`Operator "${currentOperator.operatorId}" স্ক্যান হয়েছে। পরের ধাপে যেতে "Next" চাপুন।`, 'ok');
         return;
       }
 
@@ -1202,7 +1198,7 @@
         };
         flowMode = 'HOLD_AFTER_TC';
         updateFlowUI();
-        showNotification(`${isTestScanMode ? '[TEST] ' : ''}TC "${currentTcData.tcNo}" (Style: ${currentTcData.style}) স্ক্যান হয়েছে। এখন আপনার Process সিলেক্ট করুন।`, 'ok');
+        showNotification(`TC "${currentTcData.tcNo}" (Style: ${currentTcData.style}) স্ক্যান হয়েছে। এখন আপনার Process সিলেক্ট করুন।`, 'ok');
       }
     }
 
@@ -1214,15 +1210,13 @@
         return;
       }
 
-      if (!isTestScanMode) {
-        const dupKey = `${currentTcData.tcNo}__${proc.toLowerCase()}`;
-        if (scannedTcProcessSet.has(dupKey)) {
-          playBeep('dup');
-          showNotification(`Notification: TC "${currentTcData.tcNo}" একই "${proc}" Process-এ দুবার স্ক্যান হবে না!`, 'dup');
-          document.getElementById('processDropdown').value = '';
-          renderTcCard();
-          return;
-        }
+      const dupKey = `${currentTcData.tcNo}__${proc.toLowerCase()}`;
+      if (scannedTcProcessSet.has(dupKey)) {
+        playBeep('dup');
+        showNotification(`Notification: TC "${currentTcData.tcNo}" একই "${proc}" Process-এ দুবার স্ক্যান হবে না!`, 'dup');
+        document.getElementById('processDropdown').value = '';
+        renderTcCard();
+        return;
       }
 
       const found = styleSmvMaster.find(
@@ -1249,28 +1243,19 @@
         return;
       }
 
-      const found = styleSmvMaster.find(
-        x => x.style.toLowerCase() === currentTcData.style.toLowerCase() &&
-             x.process.toLowerCase() === proc.toLowerCase()
-      );
-      const smv = found ? Number(found.smv) : 0;
-      const sah = Number(((currentTcData.bundleQty * smv) / 60).toFixed(2));
-
-      // Test Scan হলে Google Sheet বা মেইন প্রোডাকশন রেকর্ডে সেভ হবে না
-      if (isTestScanMode) {
-        flowMode = 'HOLD_AFTER_SAVE';
-        updateFlowUI();
-        renderTcCard(proc, smv, sah);
-        showNotification(`[TEST SCAN] শুধু টেস্ট প্রিভিউ সম্পন্ন হয়েছে—Google Sheet-এ সেভ হয়নি।`, 'ok');
-        return;
-      }
-
       const dupKey = `${currentTcData.tcNo}__${proc.toLowerCase()}`;
       if (scannedTcProcessSet.has(dupKey)) {
         playBeep('dup');
         showNotification(`Notification: TC "${currentTcData.tcNo}" এই "${proc}" Process-এ ইতিমধ্যে স্ক্যান করা হয়েছে!`, 'dup');
         return;
       }
+
+      const found = styleSmvMaster.find(
+        x => x.style.toLowerCase() === currentTcData.style.toLowerCase() &&
+             x.process.toLowerCase() === proc.toLowerCase()
+      );
+      const smv = found ? Number(found.smv) : 0;
+      const sah = Number(((currentTcData.bundleQty * smv) / 60).toFixed(2));
 
       const record = {
         timestamp: getBdTimestampNow(),
@@ -1314,31 +1299,17 @@
       stopCamera();
       currentOperator = null;
       currentTcData = null;
-      isTestScanMode = false;
       flowMode = 'SCAN_OP';
       document.getElementById('processActionMsg').textContent = '';
       clearNotification();
       updateFlowUI();
     }
 
-    let testTcSeq = 500;
-    function testSingleScan() {
-      if (flowMode === 'SCAN_OP') {
-        handleBarcodeInput('OP-9001|Md. Parvej Miah|2nd Floor|Linking|Regular|Linking Line-02', true);
-      } else if (flowMode === 'SCAN_TC') {
-        testTcSeq += 1;
-        handleBarcodeInput(`TC-${testTcSeq}|LOT-101|Buyer-A|1896|Blue|M|12`, true);
-      } else {
-        playBeep('dup');
-        showNotification('পরের ধাপে যেতে "Next" বাটনে ক্লিক করুন।', 'dup');
-      }
-    }
-
     function runScannerStart(cameraConfig) {
       return html5QrScanner.start(
         cameraConfig,
         { fps: 10, qrbox: { width: 240, height: 140 } },
-        (decodedText) => handleBarcodeInput(decodedText, false)
+        (decodedText) => handleBarcodeInput(decodedText)
       );
     }
 
