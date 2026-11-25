@@ -1020,6 +1020,7 @@
       const style = document.getElementById('adminStyleInput').value.trim(), msg = document.getElementById('adminSmvMsg');
       const rows = Array.from(document.querySelectorAll('#dynamicSmvRows .dynamic-row'));
       if (!style) { msg.style.color = '#b91c1c'; msg.textContent = 'আগে Style No. লিখুন।'; return; }
+
       const newItems = [];
       rows.forEach(r => {
         const pr = r.querySelector('.dyn-proc').value.trim();
@@ -1028,16 +1029,29 @@
         if (pr && !isNaN(smv) && smv > 0) newItems.push({ style, process: pr, smv, isOutput: isOut });
       });
       if (!newItems.length) { msg.style.color = '#b91c1c'; msg.textContent = 'কমপক্ষে একটি Process ও SMV দিন।'; return; }
-      insertGroupedByStyle(newItems);
+
+      const otherStyles = styleSmvMaster.filter(x => x.style.toLowerCase() !== style.toLowerCase());
+      styleSmvMaster = [...otherStyles, ...newItems];
       expandedStyles.add(style.toLowerCase());
       localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
+
       recalculateLinkingSmvBox();
       renderSavedSmvTable();
       if (currentTcData && currentTcData.style.toLowerCase() === style.toLowerCase()) populateProcessDropdownForStyle(currentTcData.style);
+
       document.getElementById('adminFormTitle').textContent = 'Style, Process & SMV';
       document.getElementById('saveSmvBtn').textContent = 'Save Style Process & SMV';
-      msg.style.color = '#15803d'; msg.textContent = `${style} Style-এ ${newItems.length}টি Process & SMV (Linking SMV: ${getStyleTotalLinkingSmv(style).toFixed(2)}) সেভ হয়েছে।`;
-      try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'STYLE_SMV_BATCH', items: newItems }) }); } catch (_) {}
+      msg.style.color = '#15803d';
+      msg.textContent = `${style} Style-এর ${newItems.length}টি Process, SMV ও Output সেটিং (Linking SMV: ${getStyleTotalLinkingSmv(style).toFixed(2)}) সেভ/আপডেট হয়েছে।`;
+
+      try {
+        await fetch(API_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'STYLE_SMV_BATCH', items: newItems })
+        });
+      } catch (_) {}
     }
 
     function toggleStyleExpand(styleLower) {
@@ -1046,16 +1060,47 @@
       renderSavedSmvTable();
     }
 
-    function editSavedSmv(style, process, smv, isOutput = false) {
+    function editSavedSmv(style) {
       switchAdminSection('form');
       document.getElementById('adminStyleInput').value = style;
-      document.getElementById('dynamicSmvRows').innerHTML = '';
-      addProcessSmvRow(process, smv, Boolean(isOutput));
+      const wrap = document.getElementById('dynamicSmvRows');
+      wrap.innerHTML = '';
+      const styleRows = getProcessesForStyle(style);
+      if (styleRows.length) {
+        styleRows.forEach(item => addProcessSmvRow(item.process, item.smv, Boolean(item.isOutput)));
+      } else {
+        addProcessSmvRow();
+      }
       recalculateLinkingSmvBox();
-      document.getElementById('adminFormTitle').textContent = 'Edit Style, Process & SMV';
-      document.getElementById('saveSmvBtn').textContent = 'Update SMV';
+      document.getElementById('adminFormTitle').textContent = `Edit Style (${style}) Process, SMV & Output`;
+      document.getElementById('saveSmvBtn').textContent = 'Update Style Process & SMV';
       document.getElementById('adminSmvMsg').style.color = '#1d4ed8';
-      document.getElementById('adminSmvMsg').textContent = `${style} (${process}) এডিট করে Update SMV চাপুন।`;
+      document.getElementById('adminSmvMsg').textContent = `${style} Style-এর Process, SMV বা Output Process বদলে "Update Style Process & SMV" চাপুন।`;
+    }
+
+    async function toggleListOutputProcess(style, process) {
+      const targetStyle = String(style || '').trim().toLowerCase();
+      const targetProc = String(process || '').trim().toLowerCase();
+      let updatedItem = null;
+      styleSmvMaster = styleSmvMaster.map(x => {
+        if (x.style.toLowerCase() === targetStyle && x.process.toLowerCase() === targetProc) {
+          updatedItem = { ...x, isOutput: !Boolean(x.isOutput) };
+          return updatedItem;
+        }
+        return x;
+      });
+      localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
+      renderSavedSmvTable();
+      if (updatedItem) {
+        try {
+          await fetch(API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: 'STYLE_SMV_BATCH', items: [updatedItem] })
+          });
+        } catch (_) {}
+      }
     }
 
     async function deleteSavedSmv(style, process) {
@@ -1081,10 +1126,14 @@
           <tr>
             <td>${esc(it.process)}</td>
             <td><b>${it.smv}</b></td>
-            <td>${it.isOutput ? '<span class="badge-out">OUTPUT</span>' : '-'}</td>
+            <td>
+              <button type="button" class="${it.isOutput ? 'btn-edit' : 'btn-remove'}" onclick="toggleListOutputProcess('${esc(it.style)}','${esc(it.process)}')">
+                ${it.isOutput ? 'Output Process' : 'Not Output'}
+              </button>
+            </td>
             <td>
               <div style="display:flex;gap:6px;justify-content:center;">
-                <button type="button" class="btn-edit" onclick="editSavedSmv('${esc(it.style)}','${esc(it.process)}',${it.smv},${Boolean(it.isOutput)})">Edit</button>
+                <button type="button" class="btn-edit" onclick="editSavedSmv('${esc(it.style)}')">Edit</button>
                 <button type="button" class="btn-remove" onclick="deleteSavedSmv('${esc(it.style)}','${esc(it.process)}')">Delete</button>
               </div>
             </td>
@@ -1099,7 +1148,7 @@
               </span>
             </button>
             <div class="style-group-body ${isOpen ? '' : 'hidden'}">
-              <table><thead><tr><th>Process</th><th>SMV</th><th>Type</th><th>Action</th></tr></thead><tbody>${rowsHtml}</tbody></table>
+              <table><thead><tr><th>Process</th><th>SMV</th><th>Output Status</th><th>Action</th></tr></thead><tbody>${rowsHtml}</tbody></table>
             </div>
           </div>`;
       }).join('');
