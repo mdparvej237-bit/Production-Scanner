@@ -27,6 +27,44 @@
     * { box-sizing: border-box; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 16px; }
     body { margin: 0; background: var(--bg); color: var(--text); font-size: 16px; }
 
+    @keyframes jlBlinkGlow {
+      0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+        box-shadow: 0 0 14px rgba(34, 197, 94, 0.85), 0 0 24px rgba(59, 130, 246, 0.55);
+      }
+      50% {
+        opacity: 0.25;
+        transform: scale(0.97);
+        box-shadow: 0 0 2px rgba(34, 197, 94, 0.15);
+      }
+    }
+
+    .jl-gif-anim-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(90deg, #091d3d, #159957);
+      color: #ffffff;
+      border: 1px solid #86efac;
+      border-radius: 999px;
+      padding: 5px 14px;
+      font-size: 13.5px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      animation: jlBlinkGlow 1.35s infinite ease-in-out;
+    }
+
+    .page-footer-credit {
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border);
+      text-align: center;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
     .topbar {
       background: linear-gradient(135deg, var(--navy), var(--navy-2));
       color: #fff; padding: 13px 15px; display: flex; justify-content: space-between;
@@ -119,6 +157,7 @@
 
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
     .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
     .info-cell {
       background: #f8f7f3; border: 1px solid var(--border);
@@ -128,6 +167,7 @@
     .info-val { font-size: 16px; color: var(--text); font-weight: 800; margin-top: 2px; text-align: center; }
 
     .btn-row { display: grid; grid-template-columns: 2.2fr 1fr; gap: 10px; margin-top: 14px; }
+    .btn-row-3 { display: grid; grid-template-columns: 1.5fr 1.5fr 1fr; gap: 10px; margin-top: 14px; }
 
     .btn-primary {
       background: linear-gradient(180deg, #3b82f6, var(--cobalt-dark));
@@ -340,6 +380,9 @@
 
   <div class="container">
     <div id="loginCard" class="card">
+      <div class="card-head">
+        <span class="jl-gif-anim-badge">JL Fashions Limited</span>
+      </div>
       <h2 class="card-title">System PIN Login</h2>
       <p class="hint" style="margin-top:4px;">আপনার নির্ধারিত PIN কোডটি লিখে Login চাপুন।</p>
       <label for="pinField">PIN Code</label>
@@ -348,6 +391,7 @@
         <button type="button" class="btn-primary" style="width:100%;" onclick="handleLogin()">Login</button>
       </div>
       <div id="loginMsg" class="msg" style="color:#b91c1c;"></div>
+      <div class="page-footer-credit">This Web App Created By Parvej</div>
     </div>
 
     <div id="view-dashboard" class="hidden">
@@ -355,6 +399,7 @@
         <div class="card-head">
           <div class="dash-top-corner-row">
             <button type="button" class="btn-corner-find" onclick="openFindYourDataSection()">Find your data</button>
+            <span class="jl-gif-anim-badge">JL Fashions Limited</span>
             <button id="dashFullScreenBtn" type="button" class="btn-corner-fs" onclick="toggleDashboardFullScreen()">Full Screen</button>
           </div>
           <h2 class="card-title">Live Line-wise Output & Efficiency</h2>
@@ -378,6 +423,7 @@
 
         <div id="dashErr" class="msg" style="color:#b91c1c;"></div>
         <div id="liveResultArea" class="table-scroll"><p class="hint">ডাটা লোড হচ্ছে...</p></div>
+        <div class="page-footer-credit">This Web App Created By Parvej</div>
       </div>
 
       <div id="dashboardSearchWrapper" class="hidden">
@@ -386,8 +432,8 @@
             <h2 class="card-title">Find your data</h2>
             <button class="btn-remove" onclick="toggleSearchSection()">Close Search</button>
           </div>
-          <p class="hint">Date, Line এবং Style দিয়ে সার্চ করলে ওই Style-এ কোন কোন TC এন্ট্রি হয়েছে তা দেখা যাবে। নতুন সার্চ করতে চাইলে নিচের বক্স বদলে আবার Search চাপুন।</p>
-          <div class="grid-3">
+          <p class="hint">Date, Line ও Style দিয়ে TC এন্ট্রি খুঁজুন অথবা Style ও Color দিয়ে Size Breakdown সার্চ করুন।</p>
+          <div class="grid-4">
             <div>
               <label for="dateSelect">Date</label>
               <select id="dateSelect" onchange="onSheetDateSelectChange()"><option value="">Date</option></select>
@@ -400,19 +446,25 @@
               <label for="styleInput">Style No.</label>
               <input id="styleInput" type="text" placeholder="e.g. 1896" onkeydown="if(event.key==='Enter') runFindYourDataSearch()" />
             </div>
+            <div>
+              <label for="colorInput">Color</label>
+              <input id="colorInput" type="text" placeholder="e.g. Blue" onkeydown="if(event.key==='Enter') runStyleColorSizeSearch()" />
+            </div>
           </div>
-          <div class="btn-row">
-            <button class="btn-primary" onclick="runFindYourDataSearch()">Search</button>
+          <div class="btn-row-3">
+            <button class="btn-primary" onclick="runFindYourDataSearch()">Search TC</button>
+            <button class="btn-next" style="padding:11px 14px;font-size:15px;" onclick="runStyleColorSizeSearch()">Size Breakdown (Style & Color)</button>
             <button class="btn-sage" onclick="clearSearch()">Clear</button>
           </div>
         </div>
 
         <div class="card">
           <div class="card-head">
-            <h2 class="card-title">Style & TC Search Details</h2>
+            <h2 id="searchResultTitle" class="card-title">Style & TC Search Details</h2>
             <span id="entriesBadge" class="badge-entries">0 ENTRIES</span>
           </div>
           <div id="styleResultArea" class="table-scroll"></div>
+          <div class="page-footer-credit">This Web App Created By Parvej</div>
         </div>
       </div>
     </div>
@@ -420,6 +472,7 @@
     <div id="view-operator" class="hidden">
       <div class="card">
         <div class="card-head">
+          <span class="jl-gif-anim-badge">JL Fashions Limited</span>
           <h2 class="card-title">Barcode Scanner</h2>
           <button id="camToggleBtn" type="button" class="btn-camera-green" onclick="toggleCamera()">Start Camera</button>
         </div>
@@ -486,6 +539,10 @@
         </div>
         <div id="processActionMsg" class="msg"></div>
       </div>
+
+      <div class="card">
+        <div class="page-footer-credit" style="margin-top:0;border-top:none;padding-top:0;">This Web App Created By Parvej</div>
+      </div>
     </div>
 
     <div id="view-incentive" class="hidden">
@@ -495,8 +552,8 @@
             <div class="inc-brand-left">
               <button class="inc-menu-btn" id="incMenuBtn" type="button" aria-label="Menu">☰</button>
               <div>
-                <div class="inc-title">JL Fashion's Limited</div>
-                <div class="inc-credit">Created by Parvej</div>
+                <div class="inc-title"><span class="jl-gif-anim-badge" style="padding:3px 10px;font-size:13px;">JL Fashions Limited</span></div>
+                <div class="inc-credit">This Web App Created By Parvej</div>
               </div>
             </div>
             <button class="inc-sync-btn" id="incSyncBtn" type="button">↻ Sync</button>
@@ -542,11 +599,16 @@
           <div class="table-scroll" id="incTableWrap">
             <div class="hint" style="padding:20px 12px;">ID বা Line লিখে সার্চ করুন অথবা Sync চাপুন।</div>
           </div>
+          <div class="page-footer-credit">This Web App Created By Parvej</div>
         </section>
       </div>
     </div>
 
     <div id="view-admin" class="hidden">
+      <div class="card" style="padding:10px 14px;margin-bottom:12px;text-align:center;">
+        <span class="jl-gif-anim-badge">JL Fashions Limited</span>
+      </div>
+
       <div class="admin-menubar">
         <button id="admMenuSmvForm" type="button" class="admin-menu-btn active" onclick="switchAdminSection('form')">Style, Process & SMV</button>
         <button id="admMenuSmvList" type="button" class="admin-menu-btn" onclick="switchAdminSection('list')">SMV List & Edit</button>
@@ -575,6 +637,7 @@
           <button type="button" class="btn-sage" onclick="clearDynamicSmvForm()">Clear</button>
         </div>
         <div id="adminSmvMsg" class="msg" style="color:#15803d;"></div>
+        <div class="page-footer-credit">This Web App Created By Parvej</div>
       </div>
 
       <div id="admin-sec-list" class="card hidden">
@@ -584,6 +647,7 @@
         </div>
         <p class="hint">শুধু <b>Style</b> দেখাচ্ছে। যেকোনো <b>Style</b>-এ ক্লিক করলে তার <b>Process</b>, <b>SMV</b> ও <b>Output</b> দেখাবে।</p>
         <div id="styleAccordionList" class="style-group-list"></div>
+        <div class="page-footer-credit">This Web App Created By Parvej</div>
       </div>
 
       <div id="admin-sec-forecast" class="card hidden">
@@ -613,14 +677,15 @@
           <p class="hint">যে লাইনের Forecast Hour বা Forecast Pcs পরিবর্তন করতে চান, তার পাশে <b>Edit</b> বাটনে ক্লিক করুন।</p>
           <div id="savedForecastQuickList" class="table-scroll"></div>
         </div>
+        <div class="page-footer-credit">This Web App Created By Parvej</div>
       </div>
     </div>
   </div>
 
   <div class="drawer-backdrop" id="incDrawerBackdrop">
     <div class="drawer-panel">
-      <div class="drawer-title">JL Fashion's Limited</div>
-      <div class="drawer-info" id="incDrawerMeta">Created by Parvej<br>Source: <strong>Sheet</strong></div>
+      <div class="drawer-title"><span class="jl-gif-anim-badge">JL Fashions Limited</span></div>
+      <div class="drawer-info" id="incDrawerMeta">This Web App Created By Parvej<br>Source: <strong>Sheet</strong></div>
       <button class="drawer-btn" id="incDrawerSyncBtn" type="button">Sync Now</button>
       <button class="drawer-btn" id="incDrawerClearBtn" type="button">Reset Search</button>
       <button class="drawer-close" id="incDrawerCloseBtn" type="button">Close</button>
@@ -851,23 +916,68 @@
       const dashPicker = document.getElementById('dashDatePicker');
       const lineVal = document.getElementById('lineInput').value.trim().toLowerCase();
       const styleVal = document.getElementById('styleInput').value.trim().toLowerCase();
+      const colorVal = document.getElementById('colorInput').value.trim().toLowerCase();
       const chosenDate = (dateSelect && dateSelect.value) ? dateSelect.value : ((dashPicker && dashPicker.value) ? dashPicker.value : '');
 
       const filtered = latestFetchedRecords.filter(r => {
         const rDate = extractRecordIsoDate(r);
         const rLine = String(r.line || '').trim().toLowerCase();
         const rStyle = String(r.style || '').trim().toLowerCase();
+        const rColor = String(r.color || '').trim().toLowerCase();
         if (chosenDate && rDate !== chosenDate) return false;
         if (lineVal && rLine.indexOf(lineVal) === -1) return false;
         if (styleVal && rStyle.indexOf(styleVal) === -1) return false;
+        if (colorVal && rColor.indexOf(colorVal) === -1) return false;
         return true;
       });
 
+      document.getElementById('searchResultTitle').textContent = 'Style & TC Search Details';
       renderStyleBreakdown({
         mode: 'find_tc_list',
         entries: filtered.length,
         tcEntries: filtered
-      }, styleVal || lineVal || chosenDate);
+      });
+    }
+
+    function runStyleColorSizeSearch() {
+      const dateSelect = document.getElementById('dateSelect');
+      const dashPicker = document.getElementById('dashDatePicker');
+      const lineVal = document.getElementById('lineInput').value.trim().toLowerCase();
+      const styleVal = document.getElementById('styleInput').value.trim().toLowerCase();
+      const colorVal = document.getElementById('colorInput').value.trim().toLowerCase();
+      const chosenDate = (dateSelect && dateSelect.value) ? dateSelect.value : '';
+
+      const filtered = latestFetchedRecords.filter(r => {
+        const rDate = extractRecordIsoDate(r);
+        const rLine = String(r.line || '').trim().toLowerCase();
+        const rStyle = String(r.style || '').trim().toLowerCase();
+        const rColor = String(r.color || '').trim().toLowerCase();
+        if (chosenDate && rDate !== chosenDate) return false;
+        if (lineVal && rLine.indexOf(lineVal) === -1) return false;
+        if (styleVal && rStyle.indexOf(styleVal) === -1) return false;
+        if (colorVal && rColor.indexOf(colorVal) === -1) return false;
+        return true;
+      });
+
+      const sizeMap = {};
+      filtered.forEach(item => {
+        const sz = String(item.size || 'Unspecified').trim() || 'Unspecified';
+        const st = String(item.style || '-').trim() || '-';
+        const cl = String(item.color || '-').trim() || '-';
+        const key = `${st.toLowerCase()}__${cl.toLowerCase()}__${sz.toLowerCase()}`;
+        if (!sizeMap[key]) {
+          sizeMap[key] = { style: st, color: cl, size: sz, qty: 0 };
+        }
+        sizeMap[key].qty += Number(item.bundleQty || item.qty || 0);
+      });
+
+      const sizeList = Object.keys(sizeMap).map(k => sizeMap[k]);
+      document.getElementById('searchResultTitle').textContent = 'Size Breakdown (Style & Color)';
+      renderStyleBreakdown({
+        mode: 'size_breakdown_style_color',
+        entries: sizeList.length,
+        sizeRows: sizeList
+      });
     }
 
     function onDashboardDateChange() {
@@ -1514,7 +1624,7 @@
     function applyIncentiveData(rows, tag) {
       incRawRows = Array.isArray(rows) ? rows : [];
       document.getElementById("incStatusText").textContent = incRawRows.length > 0 ? (tag + " (" + incRawRows.length + " rows)") : "No data";
-      document.getElementById("incDrawerMeta").innerHTML = "Created by Parvej<br>Rows: <strong>" + incRawRows.length + "</strong><br>Upto: <strong>" + esc(incGetLatestDateLabel(incRawRows)) + "</strong>";
+      document.getElementById("incDrawerMeta").innerHTML = "This Web App Created By Parvej<br>Rows: <strong>" + incRawRows.length + "</strong><br>Upto: <strong>" + esc(incGetLatestDateLabel(incRawRows)) + "</strong>";
       renderIncQuickPills(incRawRows);
       renderIncentiveReport();
     }
@@ -1647,7 +1757,7 @@
       updateRunningDateBadge();
       const runningIso = getTodayIso(), dashPicker = document.getElementById('dashDatePicker');
       const activeIsoDate = (dashPicker && dashPicker.value) ? dashPicker.value : runningIso;
-      const dateSelect = document.getElementById('dateSelect'), line = document.getElementById('lineInput').value.trim(), style = document.getElementById('styleInput').value.trim();
+      const dateSelect = document.getElementById('dateSelect'), line = document.getElementById('lineInput').value.trim(), style = document.getElementById('styleInput').value.trim(), color = document.getElementById('colorInput').value.trim();
       document.getElementById('liveBadge').textContent = 'LOADING';
       try {
         const res = await fetch(`${API_URL}?${new URLSearchParams({ date: activeIsoDate, line: '', style: '', t: Date.now() })}`);
@@ -1664,7 +1774,7 @@
         const workInfo = getElapsedWorkInfo(activeIsoDate);
         document.getElementById('upToTimeBadge').textContent = workInfo.upToLabel;
         renderLiveEfficiencyTable(strictDateRecords, activeIsoDate, runningIso, workInfo);
-        if (!document.getElementById('dashboardSearchWrapper').classList.contains('hidden') && (line || style)) {
+        if (!document.getElementById('dashboardSearchWrapper').classList.contains('hidden') && (line || style || color)) {
           runFindYourDataSearch();
         }
         document.getElementById('liveBadge').textContent = 'LIVE';
@@ -1738,22 +1848,40 @@
       box.innerHTML = `<table><thead><tr><th>Line</th><th>Forecast Hr</th><th>Forecast Pcs</th><th>Target (${esc(workInfo.upToLabel)})</th><th>Output</th><th>Deviation</th><th>Total Manpower</th><th>Total W.H</th><th>Earned SAH</th><th>Efficiency</th></tr></thead><tbody>${floor3RowsHtml}${buildFloorSubtotalHtml('LINKING 3RD FLOOR (L-01 to L-16)', floor3Sum)}${floor2RowsHtml}${buildFloorSubtotalHtml('LINKING 2ND FLOOR (L-17 to L-33)', floor2Sum)}</tbody><tfoot><tr class="grand-total-row"><td>GRAND TOTAL (AVG EFF)</td><td>${grandForecastHr}</td><td>${grandForecastPcs}</td><td>${grandTarget}</td><td>${grandOutput}</td><td>${grandDev > 0 ? '+' + grandDev : grandDev}</td><td>${grandManpower}</td><td>${grandWH.toFixed(1)}</td><td>${grandSah.toFixed(2)}</td><td>${grandAvgEff}</td></tr></tfoot></table>`;
     }
 
-    function renderStyleBreakdown(details, queryLabel) {
+    function renderStyleBreakdown(details) {
       const badge = document.getElementById('entriesBadge'), box = document.getElementById('styleResultArea');
       if (!details) { badge.textContent = '0 ENTRIES'; box.innerHTML = ''; return; }
+
+      if (details.mode === 'size_breakdown_style_color') {
+        const sizeRows = details.sizeRows || [];
+        badge.textContent = `${sizeRows.length} SIZES`;
+        if (!sizeRows.length) {
+          box.innerHTML = '<p class="hint" style="margin-top:8px;">এই Style ও Color অনুযায়ী কোনো Size breakdown পাওয়া যায়নি।</p>';
+          return;
+        }
+        let totalSizeQty = 0;
+        sizeRows.forEach(s => { totalSizeQty += Number(s.qty || 0); });
+        box.innerHTML = '<table><thead><tr><th>Style</th><th>Color</th><th>Size</th><th>Production Qty</th></tr></thead><tbody>' +
+          sizeRows.map(i => `<tr><td><b>${esc(i.style)}</b></td><td>${esc(i.color)}</td><td><b>${esc(i.size)}</b></td><td><b>${Number(i.qty || 0)}</b></td></tr>`).join('') +
+          `<tr class="floor-sub-row"><td colspan="3">TOTAL SIZE PRODUCTION</td><td>${totalSizeQty}</td></tr></tbody></table>`;
+        return;
+      }
+
       const list = details.tcEntries || [];
       badge.textContent = `${list.length} ENTRIES`;
       if (!list.length) {
-        box.innerHTML = '<p class="hint" style="margin-top:8px;">এই Date, Line বা Style অনুযায়ী কোনো TC এন্ট্রি পাওয়া যায়নি।</p>';
+        box.innerHTML = '<p class="hint" style="margin-top:8px;">এই Date, Line, Style বা Color অনুযায়ী কোনো TC এন্ট্রি পাওয়া যায়নি।</p>';
         return;
       }
-      box.innerHTML = '<table><thead><tr><th>Date</th><th>Line</th><th>Style</th><th>TC No.</th><th>Process</th><th>Size</th><th>Qty</th></tr></thead><tbody>' + list.map(i => `<tr><td>${esc(i.date || '-')}</td><td>${esc(i.line || '-')}</td><td><b>${esc(i.style || '-')}</b></td><td><b>${esc(i.tcNo || '-')}</b></td><td>${esc(i.process || '-')}</td><td>${esc(i.size || '-')}</td><td><b>${Number(i.bundleQty || i.qty || 0)}</b></td></tr>`).join('') + '</tbody></table>';
+      box.innerHTML = '<table><thead><tr><th>Date</th><th>Line</th><th>Style</th><th>Color</th><th>TC No.</th><th>Process</th><th>Size</th><th>Qty</th></tr></thead><tbody>' + list.map(i => `<tr><td>${esc(i.date || '-')}</td><td>${esc(i.line || '-')}</td><td><b>${esc(i.style || '-')}</b></td><td>${esc(i.color || '-')}</td><td><b>${esc(i.tcNo || '-')}</b></td><td>${esc(i.process || '-')}</td><td>${esc(i.size || '-')}</td><td><b>${Number(i.bundleQty || i.qty || 0)}</b></td></tr>`).join('') + '</tbody></table>';
     }
 
     function clearSearch() {
       document.getElementById('lineInput').value = '';
       document.getElementById('styleInput').value = '';
+      document.getElementById('colorInput').value = '';
       document.getElementById('dateSelect').value = '';
+      document.getElementById('searchResultTitle').textContent = 'Style & TC Search Details';
       document.getElementById('entriesBadge').textContent = '0 ENTRIES';
       document.getElementById('styleResultArea').innerHTML = '';
     }
