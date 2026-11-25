@@ -557,7 +557,7 @@
   <div class="drawer-backdrop" id="incDrawerBackdrop">
     <div class="drawer-panel">
       <div class="drawer-title">JL Fashion's Limited</div>
-      <div class="drawer-info" id="incDrawerMeta">Created by Parvej<br>Source: <strong>Database</strong> tab.</div>
+      <div class="drawer-info" id="incDrawerMeta">Created by Parvej<br>Source: <strong>Sheet</strong></div>
       <button class="drawer-btn" id="incDrawerSyncBtn" type="button">Sync Now</button>
       <button class="drawer-btn" id="incDrawerClearBtn" type="button">Reset Search</button>
       <button class="drawer-close" id="incDrawerCloseBtn" type="button">Close</button>
@@ -565,9 +565,7 @@
   </div>
 
   <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbw7j-f4pOE1kZvQKBhjYFov5ntrasH6KTsbNgyxXTaFHELOJdblVbfnSRifM9lhdUDA/exec';
-    const INC_SHEET_ID = '1Wu3uAsJzwAuQP6nGTzp2YrMgmgEqkMv58pq2mV1qfLY';
-    const INC_SHEET_TAB = 'Database';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyWnveGrJjO52Rft9xbv4WPjxWkoaSAg5sHs_at9xDWJew5gsI_NorrpEuUc4YU2zcW2A/exec';
     const PINS = { '1111': 'dashboard', '2222': 'operator', '3333': 'incentive', '9999': 'admin' };
     const SESSION_KEY = 'prod_system_role_v1';
     const FORECAST_STORAGE_KEY = 'linking_forecast_master_v1';
@@ -1245,32 +1243,6 @@
       renderIncentiveReport();
     }
 
-    function normalizeGvizRows(gvizTable) {
-      if (!gvizTable || !Array.isArray(gvizTable.rows)) return [];
-      const out = [];
-      gvizTable.rows.forEach(r => {
-        if (!r || !Array.isArray(r.c)) return;
-        const c = r.c.map(cell => (cell && cell.v !== null && cell.v !== undefined) ? cell.v : "");
-        const idVal = String(c[1] || "").trim(), nameVal = String(c[2] || "").trim();
-        if (!idVal && !nameVal) return;
-        let dtStr = "";
-        const rawDt = c[0];
-        if (typeof rawDt === "string" && rawDt.indexOf("Date(") === 0) {
-          const m = rawDt.match(/Date\((\d+),(\d+),(\d+)/);
-          if (m) {
-            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            dtStr = `${String(Number(m[3])).padStart(2, "0")}-${months[Number(m[2])]}-${String(Number(m[1])).slice(-2)}`;
-          }
-        } else dtStr = rawDt ? String(rawDt).trim() : "";
-        out.push([
-          dtStr, idVal, nameVal,
-          String(c[3] || "").trim(), String(c[4] || "").trim(), String(c[5] || "").trim(), String(c[6] || "").trim(), String(c[7] || "").trim(),
-          incToNum(c[8]), incToNum(c[9]), incToNum(c[10]), incToNum(c[11]), incToNum(c[12]), incToNum(c[13]), incToNum(c[14]), incToNum(c[15])
-        ]);
-      });
-      return out;
-    }
-
     async function fetchIncentiveSheet(forceRefresh) {
       const statusEl = document.getElementById("incStatusText");
       if (!forceRefresh && incRawRows.length === 0) {
@@ -1293,25 +1265,37 @@
       }
 
       try {
-        const gvizUrl = `https://docs.google.com/spreadsheets/d/${INC_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(INC_SHEET_TAB)}&t=${Date.now()}`;
-        const txt = await (await fetch(gvizUrl)).text();
-        const jsonMatch = txt.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);?\s*$/);
-        if (jsonMatch && jsonMatch[1]) {
-          const parsedGviz = JSON.parse(jsonMatch[1]);
-          if (parsedGviz && parsedGviz.status === "ok" && parsedGviz.table) {
-            const rows = normalizeGvizRows(parsedGviz.table);
-            try { localStorage.setItem(INC_CACHE_KEY, JSON.stringify(rows)); } catch (_) {}
-            applyIncentiveData(rows, "Live");
-            return;
-          }
-        }
-      } catch (_) {}
-
-      try {
         const res = await fetch(`${API_URL}?action=incentive&force=${forceRefresh ? "1" : "0"}&t=${Date.now()}`);
         const data = await res.json();
-        if (data && data.ok) { try { localStorage.setItem(INC_CACHE_KEY, JSON.stringify(data.rows || [])); } catch (_) {} applyIncentiveData(data.rows, "Live"); }
-        else statusEl.textContent = (data && data.error) ? data.error : "Database tab data unavailable";
+        if (data && data.ok && Array.isArray(data.rows)) {
+          try { localStorage.setItem(INC_CACHE_KEY, JSON.stringify(data.rows)); } catch (_) {}
+          applyIncentiveData(data.rows, "Live");
+          return;
+        }
+        if (data && data.status === "SUCCESS" && Array.isArray(data.records)) {
+          const mapped = data.records.map(r => [
+            r.date || r.timestamp || "",
+            r.operatorId || "",
+            r.operatorName || "",
+            r.floor || "",
+            r.jobType || "",
+            r.line || "",
+            r.tcNo || "",
+            r.style || "",
+            Number(r.smv || 0),
+            Number(r.bundleQty || 0),
+            8,
+            0,
+            0,
+            Number(r.earnedSah || 0),
+            0,
+            0
+          ]);
+          try { localStorage.setItem(INC_CACHE_KEY, JSON.stringify(mapped)); } catch (_) {}
+          applyIncentiveData(mapped, "Live");
+          return;
+        }
+        statusEl.textContent = (data && data.error) ? data.error : "Sheet data unavailable";
       } catch (e) {
         statusEl.textContent = incRawRows.length > 0 ? "Cached" : "Sync failed";
       }
