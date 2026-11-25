@@ -23,6 +23,9 @@
       --amber-soft: #fef3c7; --amber-text: #b45309;
       --red-soft: #fee2e2; --red-text: #991b1b;
       --bg: #f4f2ec; --card: #fdfcfa; --border: #e2dfd7; --text: #111827; --muted: #5b6472;
+      --inc-navy: #0f2c59; --inc-navy-dark: #091d3d; --inc-blue: #1c64b8;
+      --inc-green: #159957; --inc-green-badge: #16a34a; --inc-amber-badge: #c88a12;
+      --inc-total-bg: #dde2e8;
     }
     * { box-sizing: border-box; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 16px; }
     body { margin: 0; background: var(--bg); color: var(--text); font-size: 16px; }
@@ -189,6 +192,306 @@
 
     .msg { margin-top: 8px; font-size: 15px; font-weight: 700; text-align: center; }
     .hidden { display: none !important; }
+
+    /* --- OPERATOR INCENTIVE INTERFACE STYLES --- */
+    .inc-wrap {
+      max-width: 540px;
+      margin: 0 auto;
+    }
+    .inc-header-card {
+      background: linear-gradient(180deg, var(--inc-navy) 0%, var(--inc-navy-dark) 100%);
+      color: #ffffff;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 14px rgba(9, 29, 61, 0.2);
+    }
+    .inc-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .inc-brand-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .inc-menu-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .inc-title {
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.2;
+      text-align: left;
+    }
+    .inc-credit {
+      font-size: 12px;
+      color: #cbd5e1;
+      font-weight: 600;
+      margin-top: 2px;
+      text-align: left;
+    }
+    .inc-sync-btn {
+      background: rgba(255, 255, 255, 0.16);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .inc-search-box {
+      background: #ffffff;
+      border-radius: 9px;
+      padding: 5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .inc-search-input {
+      flex: 1;
+      height: 38px;
+      border: none !important;
+      padding: 0 10px !important;
+      font-size: 14.5px !important;
+      font-weight: 600 !important;
+      color: #1e293b !important;
+      background: transparent !important;
+      text-align: left !important;
+      box-shadow: none !important;
+    }
+    .inc-search-btn {
+      height: 38px;
+      padding: 0 16px;
+      border: none;
+      border-radius: 7px;
+      background: linear-gradient(180deg, #2774cc 0%, var(--inc-blue) 100%);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .inc-meta-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .inc-upto-tag {
+      background: var(--inc-navy);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    .inc-pills-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .inc-pill-btn {
+      background: #ffffff;
+      color: var(--inc-navy);
+      border: 1px solid #cbd5e1;
+      border-radius: 999px;
+      padding: 5px 11px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .inc-section-card {
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid #d8e0e8;
+      box-shadow: 0 2px 8px rgba(15, 44, 89, 0.06);
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .inc-section-head {
+      padding: 11px 14px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .inc-section-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #1e293b;
+    }
+    .inc-profile-body {
+      padding: 4px 14px 14px;
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .inc-profile-info {
+      flex: 1;
+      min-width: 160px;
+      text-align: center;
+    }
+    .inc-op-name {
+      font-size: 18px;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 2px;
+    }
+    .inc-op-id {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    .inc-op-row {
+      font-size: 13.5px;
+      color: #334155;
+      line-height: 1.5;
+      font-weight: 600;
+    }
+    .inc-money-box {
+      background: linear-gradient(180deg, #19aa61 0%, var(--inc-green) 100%);
+      color: #ffffff;
+      border-radius: 10px;
+      padding: 10px 14px;
+      min-width: 145px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-shadow: 0 3px 8px rgba(21, 153, 87, 0.25);
+    }
+    .inc-money-label {
+      font-size: 12.5px;
+      font-weight: 700;
+      opacity: 0.95;
+      margin-bottom: 3px;
+    }
+    .inc-money-val {
+      font-size: 19px;
+      font-weight: 800;
+      line-height: 1.15;
+    }
+    .inc-table {
+      width: 100%;
+      min-width: 460px;
+      border-collapse: collapse;
+      margin-top: 0;
+      font-size: 13px;
+    }
+    .inc-table thead th {
+      background-color: var(--inc-navy) !important;
+      color: #ffffff !important;
+      font-weight: 700;
+      padding: 9px 6px;
+      text-align: center !important;
+      border-right: 1px solid rgba(255, 255, 255, 0.14);
+      font-size: 12.5px;
+    }
+    .inc-table tbody td {
+      padding: 8px 6px;
+      text-align: center !important;
+      border-bottom: 1px solid #e2e8f0;
+      border-right: 1px solid #edf2f7;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .inc-table tfoot td {
+      background-color: var(--inc-total-bg) !important;
+      color: #0f172a !important;
+      font-weight: 800;
+      padding: 9px 6px;
+      border-top: 2px solid #94a3b8;
+      font-size: 13px;
+    }
+    .eff-pill {
+      display: inline-block;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 3px 7px;
+      border-radius: 5px;
+      min-width: 44px;
+    }
+    .eff-high { background-color: var(--inc-green-badge); }
+    .eff-mid { background-color: var(--inc-amber-badge); }
+    .inc-cell { color: var(--inc-green) !important; font-weight: 800 !important; }
+
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      display: none;
+      z-index: 90;
+    }
+    .drawer-backdrop.open { display: block; }
+    .drawer-panel {
+      width: 265px;
+      height: 100%;
+      background: #ffffff;
+      padding: 18px 16px;
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.25);
+      text-align: center;
+    }
+    .drawer-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--inc-navy);
+      margin-bottom: 10px;
+    }
+    .drawer-info {
+      font-size: 13px;
+      color: #64748b;
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+    .drawer-btn {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: none;
+      background: var(--inc-navy);
+      color: #ffffff;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+    .drawer-close {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      background: #f1f5f9;
+      color: #1e293b;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -197,6 +500,7 @@
     <div id="navBar" class="topbar-right hidden">
       <button id="btnTabDash" class="pill pill-tab" onclick="switchView('dashboard')">Dashboard</button>
       <button id="btnTabOp" class="pill pill-tab" onclick="switchView('operator')">Barcode Scan</button>
+      <button id="btnTabInc" class="pill pill-tab" onclick="switchView('incentive')">Operator Incentive</button>
       <button id="btnTabAdmin" class="pill pill-tab" onclick="switchView('admin')">Admin</button>
       <button class="pill pill-logout" onclick="logoutSystem()">Logout</button>
     </div>
@@ -355,6 +659,74 @@
       </div>
     </div>
 
+    <!-- OPERATOR INCENTIVE VIEW -->
+    <div id="view-incentive" class="hidden">
+      <div class="inc-wrap">
+        <div class="inc-header-card">
+          <div class="inc-top-row">
+            <div class="inc-brand-left">
+              <button class="inc-menu-btn" id="incMenuBtn" type="button" aria-label="Menu">☰</button>
+              <div>
+                <div class="inc-title">JL Fashion's Limited</div>
+                <div class="inc-credit">Created by Parvej</div>
+              </div>
+            </div>
+            <button class="inc-sync-btn" id="incSyncBtn" type="button">↻ Sync</button>
+          </div>
+
+          <div class="inc-search-box">
+            <input
+              id="incSearchInput"
+              class="inc-search-input"
+              type="text"
+              placeholder="Enter Operator ID or Line No..."
+              autocomplete="off"
+            />
+            <button class="inc-search-btn" id="incSearchBtn" type="button">Search</button>
+          </div>
+        </div>
+
+        <div class="inc-meta-strip">
+          <span id="incStatusText">Ready</span>
+          <span class="inc-upto-tag" id="incTopUptoBadge">Upto —</span>
+        </div>
+
+        <div class="inc-pills-row" id="incQuickPills"></div>
+
+        <section class="inc-section-card">
+          <div class="inc-section-head">
+            <div class="inc-section-title">Profile Summary</div>
+            <span class="inc-upto-tag" id="incProfileUptoBadge">Upto —</span>
+          </div>
+
+          <div class="inc-profile-body">
+            <div class="inc-profile-info">
+              <div class="inc-op-name" id="incOpName">Operator</div>
+              <div class="inc-op-id" id="incOpId">ID: —</div>
+              <div class="inc-op-row"><strong>Job Type:</strong> <span id="incOpJob">—</span></div>
+              <div class="inc-op-row"><strong>Line No:</strong> <span id="incOpLine">—</span></div>
+            </div>
+
+            <div class="inc-money-box">
+              <div class="inc-money-label">Total Incentive:</div>
+              <div class="inc-money-val" id="incTotalBox">৳0 BDT</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="inc-section-card">
+          <div class="inc-section-head">
+            <div class="inc-section-title" id="incBreakdownHeading">Date-wise Breakdown</div>
+            <span class="inc-upto-tag" id="incTableUptoBadge">Upto —</span>
+          </div>
+
+          <div class="table-scroll" id="incTableWrap">
+            <div class="hint" style="padding:20px 12px;">ID বা Line লিখে সার্চ করুন অথবা Sync চাপুন।</div>
+          </div>
+        </section>
+      </div>
+    </div>
+
     <!-- ADMIN VIEW WITH MENU BAR -->
     <div id="view-admin" class="hidden">
       <div class="admin-menubar">
@@ -444,11 +816,26 @@
     </div>
   </div>
 
+  <!-- INCENTIVE DRAWER -->
+  <div class="drawer-backdrop" id="incDrawerBackdrop">
+    <div class="drawer-panel">
+      <div class="drawer-title">JL Fashion's Limited</div>
+      <div class="drawer-info" id="incDrawerMeta">
+        Created by Parvej<br>
+        Source: <strong>Database</strong> tab.
+      </div>
+      <button class="drawer-btn" id="incDrawerSyncBtn" type="button">Sync Now</button>
+      <button class="drawer-btn" id="incDrawerClearBtn" type="button">Reset Search</button>
+      <button class="drawer-close" id="incDrawerCloseBtn" type="button">Close</button>
+    </div>
+  </div>
+
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbw7j-f4pOE1kZvQKBhjYFov5ntrasH6KTsbNgyxXTaFHELOJdblVbfnSRifM9lhdUDA/exec';
-    const PINS = { '1111': 'dashboard', '2222': 'operator', '9999': 'admin' };
+    const PINS = { '1111': 'dashboard', '2222': 'operator', '3333': 'incentive', '9999': 'admin' };
     const SESSION_KEY = 'prod_system_role_v1';
     const FORECAST_STORAGE_KEY = 'linking_forecast_master_v1';
+    const INC_CACHE_KEY = 'jl_fashion_op_inc_v1';
 
     let html5QrScanner = null;
     let cameraRunning = false;
@@ -471,6 +858,8 @@
 
     let scannedEntries = JSON.parse(localStorage.getItem('scanned_entries_v4') || '[]');
     const scannedTcProcessSet = new Set(scannedEntries.map(e => `${e.tcNo}__${e.process.toLowerCase()}`));
+
+    let incRawRows = [];
 
     const ALL_LINKING_LINES = Array.from({ length: 33 }, (_, idx) => {
       const num = String(idx + 1).padStart(2, '0');
@@ -1384,6 +1773,319 @@
       }
     }
 
+    // --- OPERATOR INCENTIVE FUNCTIONS ---
+    function incToNum(v) {
+      if (typeof v === "number") return isFinite(v) ? v : 0;
+      const cleaned = String(v || "").replace(/[^0-9.-]/g, "");
+      const n = parseFloat(cleaned);
+      return isFinite(n) ? n : 0;
+    }
+
+    function incFormatMoney(num) {
+      const rounded = Math.round(num);
+      return "৳" + rounded.toLocaleString("en-US");
+    }
+
+    function incParseDateObj(str) {
+      if (!str) return null;
+      const s = String(str).trim();
+      const parts = s.split("-");
+      if (parts.length === 3) {
+        const months = {
+          jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+          jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11
+        };
+        const d = parseInt(parts[0], 10);
+        const m = months[parts[1].toLowerCase().slice(0, 3)];
+        const y = parseInt(parts[2], 10);
+        if (!isNaN(d) && m !== undefined && !isNaN(y)) {
+          return new Date(y < 100 ? y + 2000 : y, m, d);
+        }
+      }
+      const ts = Date.parse(s);
+      return isNaN(ts) ? null : new Date(ts);
+    }
+
+    function incFormatTwoLineDate(rawStr) {
+      const d = incParseDateObj(rawStr);
+      if (!d) return esc(rawStr || "—");
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      return `${d.getDate()} ${months[d.getMonth()]}<br>${days[d.getDay()]}`;
+    }
+
+    function incGetLatestDateLabel(rows) {
+      if (!rows || !rows.length) return "—";
+      let bestStr = String(rows[rows.length - 1][0] || "").trim() || "—";
+      let bestDate = incParseDateObj(bestStr);
+      let bestMs = bestDate ? bestDate.getTime() : NaN;
+
+      for (let i = 0; i < rows.length; i++) {
+        const curStr = String(rows[i][0] || "").trim();
+        if (!curStr) continue;
+        const curDate = incParseDateObj(curStr);
+        const curMs = curDate ? curDate.getTime() : NaN;
+        if (!isNaN(curMs)) {
+          if (isNaN(bestMs) || curMs >= bestMs) {
+            bestMs = curMs;
+            bestStr = curStr;
+          }
+        } else {
+          bestStr = curStr;
+        }
+      }
+      return bestStr || "—";
+    }
+
+    function renderIncQuickPills(rows) {
+      const wrap = document.getElementById("incQuickPills");
+      if (!wrap) return;
+      const seenId = {};
+      const seenLine = {};
+      const items = [];
+
+      for (let i = 0; i < rows.length && items.length < 6; i++) {
+        const idVal = String(rows[i][1] || "").trim();
+        const lineVal = String(rows[i][5] || "").trim();
+        if (idVal && !seenId[idVal] && items.length < 4) {
+          seenId[idVal] = true;
+          items.push(idVal);
+        } else if (lineVal && !seenLine[lineVal] && items.length < 6) {
+          seenLine[lineVal] = true;
+          items.push(lineVal);
+        }
+      }
+
+      wrap.innerHTML = items.map(qItem =>
+        `<button class="inc-pill-btn" type="button" data-q="${esc(qItem)}">${esc(qItem)}</button>`
+      ).join("");
+
+      wrap.querySelectorAll(".inc-pill-btn").forEach(btn => {
+        btn.addEventListener("click", function () {
+          document.getElementById("incSearchInput").value = this.getAttribute("data-q");
+          renderIncentiveReport();
+        });
+      });
+    }
+
+    function renderIncentiveReport() {
+      const q = (document.getElementById("incSearchInput").value || "").trim().toLowerCase();
+      const matched = [];
+
+      if (q) {
+        for (let i = 0; i < incRawRows.length; i++) {
+          const r = incRawRows[i];
+          const idVal = String(r[1] || "").trim().toLowerCase();
+          const nameVal = String(r[2] || "").trim().toLowerCase();
+          const lineVal = String(r[5] || "").trim().toLowerCase();
+          if (idVal.indexOf(q) !== -1 || lineVal.indexOf(q) !== -1 || nameVal.indexOf(q) !== -1) {
+            matched.push(r);
+          }
+        }
+      } else if (incRawRows.length > 0) {
+        const firstId = String(incRawRows[0][1] || "").trim();
+        for (let m = 0; m < incRawRows.length; m++) {
+          if (String(incRawRows[m][1] || "").trim() === firstId) {
+            matched.push(incRawRows[m]);
+          }
+        }
+      }
+
+      const uptoStr = "Upto " + incGetLatestDateLabel(matched.length ? matched : incRawRows);
+      document.getElementById("incTopUptoBadge").textContent = uptoStr;
+      document.getElementById("incProfileUptoBadge").textContent = uptoStr;
+      document.getElementById("incTableUptoBadge").textContent = uptoStr;
+
+      if (!matched.length) {
+        document.getElementById("incOpName").textContent = "No Record Found";
+        document.getElementById("incOpId").textContent = q ? ("Search: " + q.toUpperCase()) : "ID: —";
+        document.getElementById("incOpJob").textContent = "—";
+        document.getElementById("incOpLine").textContent = "—";
+        document.getElementById("incTotalBox").textContent = "৳0 BDT";
+        document.getElementById("incTableWrap").innerHTML = '<div class="hint" style="padding:20px 12px;">এই ID বা Line-এর কোনো ডাটা পাওয়া যায়নি।</div>';
+        return;
+      }
+
+      const uniqueIds = {};
+      const uniqueLines = {};
+      let idCount = 0;
+      let lineCount = 0;
+
+      for (let u = 0; u < matched.length; u++) {
+        const uid = String(matched[u][1] || "").trim();
+        const uline = String(matched[u][5] || "").trim();
+        if (uid && !uniqueIds[uid]) {
+          uniqueIds[uid] = true;
+          idCount++;
+        }
+        if (uline && !uniqueLines[uline]) {
+          uniqueLines[uline] = true;
+          lineCount++;
+        }
+      }
+
+      const firstRow = matched[0];
+      document.getElementById("incOpName").textContent =
+        idCount === 1
+          ? (String(firstRow[2] || "Operator").trim() || "Operator")
+          : ("Line Report (" + idCount + " Operators)");
+
+      document.getElementById("incOpId").textContent =
+        idCount === 1
+          ? ("ID: " + String(firstRow[1] || "").trim())
+          : ("Filter: " + (q ? q.toUpperCase() : "All"));
+
+      document.getElementById("incOpJob").textContent = String(firstRow[4] || "—").trim() || "—";
+      document.getElementById("incOpLine").textContent =
+        lineCount === 1 ? (String(firstRow[5] || "—").trim() || "—") : (lineCount + " Lines");
+
+      const dateMap = {};
+      const dateOrder = [];
+
+      for (let x = 0; x < matched.length; x++) {
+        const row = matched[x];
+        const dtKey = String(row[0] || "—").trim() || "—";
+        const smv = incToNum(row[8]);
+        const wh = incToNum(row[10]);
+        const tgt = incToNum(row[11]);
+        const sah = incToNum(row[13]);
+        const targetSah = (tgt * smv) / 60;
+
+        if (!dateMap[dtKey]) {
+          dateMap[dtKey] = {
+            rawDate: dtKey,
+            dateTotalWh: 0,
+            dateTotalTargetSah: 0,
+            dateTotalAchSah: 0
+          };
+          dateOrder.push(dtKey);
+        }
+
+        dateMap[dtKey].dateTotalWh += wh;
+        dateMap[dtKey].dateTotalTargetSah += targetSah;
+        dateMap[dtKey].dateTotalAchSah += sah;
+      }
+
+      let totalHrs = 0;
+      let totalTargetSah = 0;
+      let totalAchSah = 0;
+      let totalInc = 0;
+      let rowsHtml = "";
+
+      for (let dIdx = 0; dIdx < dateOrder.length; dIdx++) {
+        const item = dateMap[dateOrder[dIdx]];
+        const dayWh = item.dateTotalWh;
+        const dayTargetSah = item.dateTotalTargetSah;
+        const dayAchSah = item.dateTotalAchSah;
+
+        const dayEffPct = dayWh > 0 ? Math.round((dayAchSah / dayWh) * 100) : 0;
+        const extraSah = Math.max(0, dayAchSah - (dayWh * 0.70));
+        const dayInc = extraSah * 60 * 0.80;
+
+        totalHrs += dayWh;
+        totalTargetSah += dayTargetSah;
+        totalAchSah += dayAchSah;
+        totalInc += dayInc;
+
+        const badgeClass = dayEffPct >= 100 ? "eff-pill eff-high" : "eff-pill eff-mid";
+
+        rowsHtml +=
+          "<tr>" +
+          "<td>" + incFormatTwoLineDate(item.rawDate) + "</td>" +
+          "<td>" + dayWh.toFixed(1) + "</td>" +
+          "<td>" + dayTargetSah.toFixed(1) + "</td>" +
+          "<td>" + dayAchSah.toFixed(1) + "</td>" +
+          '<td><span class="' + badgeClass + '">' + dayEffPct + "%</span></td>" +
+          '<td class="inc-cell">' + incFormatMoney(dayInc) + "</td>" +
+          "</tr>";
+      }
+
+      const overallEffPct = totalHrs > 0 ? Math.round((totalAchSah / totalHrs) * 100) : 0;
+      document.getElementById("incTotalBox").textContent = incFormatMoney(totalInc) + " BDT";
+
+      const footHtml =
+        "<tfoot><tr>" +
+        "<td>Grand<br>Total</td>" +
+        "<td>" + totalHrs.toFixed(1) + "</td>" +
+        "<td>" + totalTargetSah.toFixed(1) + "</td>" +
+        "<td>" + totalAchSah.toFixed(1) + "</td>" +
+        "<td>" + overallEffPct + "%</td>" +
+        "<td>" + incFormatMoney(totalInc) + "</td>" +
+        "</tr></tfoot>";
+
+      document.getElementById("incTableWrap").innerHTML =
+        '<table class="inc-table">' +
+        "<thead><tr>" +
+        "<th>Date</th>" +
+        "<th>Hrs</th>" +
+        "<th>Target<br>(SAH)</th>" +
+        "<th>Achieved<br>(SAH)</th>" +
+        "<th>Eff %</th>" +
+        "<th>Incentive<br>(৳)</th>" +
+        "</tr></thead>" +
+        "<tbody>" + rowsHtml + "</tbody>" +
+        footHtml +
+        "</table>";
+    }
+
+    function applyIncentiveData(rows, tag) {
+      incRawRows = Array.isArray(rows) ? rows : [];
+      document.getElementById("incStatusText").textContent =
+        incRawRows.length > 0 ? (tag + " (" + incRawRows.length + " rows)") : "No data";
+      document.getElementById("incDrawerMeta").innerHTML =
+        "Created by Parvej<br>Rows: <strong>" + incRawRows.length + "</strong><br>Upto: <strong>" + esc(incGetLatestDateLabel(incRawRows)) + "</strong>";
+      renderIncQuickPills(incRawRows);
+      renderIncentiveReport();
+    }
+
+    async function fetchIncentiveSheet(forceRefresh) {
+      const statusEl = document.getElementById("incStatusText");
+
+      if (!forceRefresh && incRawRows.length === 0) {
+        try {
+          const saved = localStorage.getItem(INC_CACHE_KEY);
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              applyIncentiveData(parsed, "Instant");
+            }
+          }
+        } catch (_) {}
+      }
+
+      statusEl.textContent = incRawRows.length > 0 ? "Updating..." : "Syncing...";
+
+      if (typeof google !== "undefined" && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function (res) {
+            if (res && res.ok) {
+              try { localStorage.setItem(INC_CACHE_KEY, JSON.stringify(res.rows || [])); } catch (_) {}
+              applyIncentiveData(res.rows, "Live");
+            } else {
+              statusEl.textContent = (res && res.error) ? res.error : "Error";
+            }
+          })
+          .withFailureHandler(function (err) {
+            statusEl.textContent = (err && err.message) ? err.message : "Failed";
+          })
+          .getSheetRows(Boolean(forceRefresh));
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_URL}?action=incentive&force=${forceRefresh ? "1" : "0"}&t=${Date.now()}`);
+        const data = await res.json();
+        if (data && data.ok) {
+          try { localStorage.setItem(INC_CACHE_KEY, JSON.stringify(data.rows || [])); } catch (_) {}
+          applyIncentiveData(data.rows, "Live");
+        } else {
+          statusEl.textContent = (data && data.error) ? data.error : "Database tab data unavailable";
+        }
+      } catch (e) {
+        statusEl.textContent = incRawRows.length > 0 ? "Cached" : "Sync failed";
+      }
+    }
+
     function handleLogin() {
       const el = document.getElementById('pinField');
       const rawPin = (el ? el.value : '').replace(/\s+/g, '').trim();
@@ -1405,27 +2107,35 @@
     function logoutSystem() {
       try { sessionStorage.removeItem(SESSION_KEY); } catch (_) {}
       stopCamera();
+      const drawer = document.getElementById('incDrawerBackdrop');
+      if (drawer) drawer.className = 'drawer-backdrop';
       const el = document.getElementById('pinField');
       if (el) el.value = '';
       document.getElementById('loginMsg').textContent = '';
       document.getElementById('loginCard').classList.remove('hidden');
       document.getElementById('navBar').classList.add('hidden');
-      ['dashboard', 'operator', 'admin'].forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
+      ['dashboard', 'operator', 'incentive', 'admin'].forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
     }
 
     function applyRoleUI(role) {
       document.getElementById('loginCard').classList.add('hidden');
       document.getElementById('navBar').classList.remove('hidden');
-      document.getElementById('btnTabDash').classList.toggle('hidden', role === 'operator');
-      document.getElementById('btnTabOp').classList.toggle('hidden', role === 'dashboard');
+      document.getElementById('btnTabDash').classList.toggle('hidden', role === 'operator' || role === 'incentive');
+      document.getElementById('btnTabOp').classList.toggle('hidden', role === 'dashboard' || role === 'incentive');
+      document.getElementById('btnTabInc').classList.toggle('hidden', role === 'dashboard' || role === 'operator');
       document.getElementById('btnTabAdmin').classList.toggle('hidden', role !== 'admin');
       switchView(role);
     }
 
     function switchView(view) {
-      ['dashboard', 'operator', 'admin'].forEach(v => {
+      ['dashboard', 'operator', 'incentive', 'admin'].forEach(v => {
         document.getElementById('view-' + v).classList.toggle('hidden', v !== view);
-        const btn = document.getElementById(v === 'dashboard' ? 'btnTabDash' : v === 'operator' ? 'btnTabOp' : 'btnTabAdmin');
+        const btn = document.getElementById(
+          v === 'dashboard' ? 'btnTabDash'
+            : v === 'operator' ? 'btnTabOp'
+            : v === 'incentive' ? 'btnTabInc'
+            : 'btnTabAdmin'
+        );
         if (btn) btn.classList.toggle('active', v === view);
       });
       if (view === 'dashboard') {
@@ -1436,6 +2146,7 @@
         loadDashboard();
       }
       if (view === 'operator') { updateFlowUI(); syncSmvMasterFromServer(); }
+      if (view === 'incentive') { stopCamera(); fetchIncentiveSheet(false); }
       if (view === 'admin') { stopCamera(); switchAdminSection('form'); renderSavedSmvTable(); syncSmvMasterFromServer(); }
     }
 
@@ -1767,6 +2478,33 @@
     window.addEventListener('DOMContentLoaded', () => {
       initForecastDates();
       updateFlowUI();
+
+      document.getElementById('incSearchBtn').addEventListener('click', renderIncentiveReport);
+      document.getElementById('incSearchInput').addEventListener('input', renderIncentiveReport);
+      document.getElementById('incSearchInput').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') renderIncentiveReport();
+      });
+      document.getElementById('incSyncBtn').addEventListener('click', function () {
+        fetchIncentiveSheet(true);
+      });
+
+      const incDrawer = document.getElementById('incDrawerBackdrop');
+      document.getElementById('incMenuBtn').addEventListener('click', function () {
+        incDrawer.className = 'drawer-backdrop open';
+      });
+      document.getElementById('incDrawerCloseBtn').addEventListener('click', function () {
+        incDrawer.className = 'drawer-backdrop';
+      });
+      document.getElementById('incDrawerSyncBtn').addEventListener('click', function () {
+        incDrawer.className = 'drawer-backdrop';
+        fetchIncentiveSheet(true);
+      });
+      document.getElementById('incDrawerClearBtn').addEventListener('click', function () {
+        document.getElementById('incSearchInput').value = '';
+        incDrawer.className = 'drawer-backdrop';
+        renderIncentiveReport();
+      });
+
       let savedRole = '';
       try { savedRole = sessionStorage.getItem(SESSION_KEY) || ''; } catch (_) {}
       if (PINS[savedRole]) applyRoleUI(savedRole);
