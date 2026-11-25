@@ -569,7 +569,7 @@
     const PINS = { '1111': 'dashboard', '2222': 'operator', '3333': 'incentive', '9999': 'admin' };
     const SESSION_KEY = 'prod_system_role_v1';
     const FORECAST_STORAGE_KEY = 'linking_forecast_master_v1';
-    const INC_CACHE_KEY = 'jl_fashion_op_inc_v1';
+    const INC_CACHE_KEY = 'jl_fashion_op_inc_v2';
 
     let html5QrScanner = null;
     let cameraRunning = false;
@@ -1125,6 +1125,18 @@
       return isNaN(ts) ? null : new Date(ts);
     }
 
+    function incNormalizeDateKey(rawStr) {
+      const s = String(rawStr || "").trim();
+      if (!s) return "—";
+      const d = incParseDateObj(s);
+      if (d) {
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      }
+      const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
+      if (isoMatch) return isoMatch[1];
+      return s;
+    }
+
     function incFormatTwoLineDate(rawStr) {
       const d = incParseDateObj(rawStr);
       if (!d) return esc(rawStr || "—");
@@ -1211,10 +1223,12 @@
 
       const dateMap = {}, dateOrder = [];
       for (let x = 0; x < matched.length; x++) {
-        const row = matched[x], dtKey = String(row[0] || "—").trim() || "—";
+        const row = matched[x];
+        const rawDateStr = String(row[0] || "—").trim() || "—";
+        const dtKey = incNormalizeDateKey(rawDateStr);
         const wh = incToNum(row[10]), sah = incToNum(row[13]);
         if (!dateMap[dtKey]) {
-          dateMap[dtKey] = { rawDate: dtKey, whSum: 0, whCount: 0, achSahSum: 0 };
+          dateMap[dtKey] = { rawDate: rawDateStr, whSum: 0, whCount: 0, achSahSum: 0 };
           dateOrder.push(dtKey);
         }
         dateMap[dtKey].whSum += wh;
@@ -1257,6 +1271,8 @@
 
     async function fetchIncentiveSheet(forceRefresh) {
       const statusEl = document.getElementById("incStatusText");
+      try { localStorage.removeItem("jl_fashion_op_inc_v1"); } catch (_) {}
+
       if (!forceRefresh && incRawRows.length === 0) {
         try {
           const saved = localStorage.getItem(INC_CACHE_KEY);
