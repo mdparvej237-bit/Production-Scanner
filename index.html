@@ -12,9 +12,6 @@
   <meta name="theme-color" content="#0c2340" />
   <link rel="manifest" href="manifest.json" />
 
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%230c2340'/%3E%3Crect x='34' y='42' width='124' height='108' rx='18' fill='%2315365f' stroke='%2322c55e' stroke-width='8'/%3E%3Cpath d='M56 72h80M56 98h56' stroke='%23ffffff' stroke-width='10' stroke-linecap='round'/%3E%3Ccircle cx='130' cy='122' r='13' fill='%2322c55e'/%3E%3C/svg%3E" />
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%230c2340'/%3E%3Crect x='34' y='42' width='124' height='108' rx='18' fill='%2315365f' stroke='%2322c55e' stroke-width='8'/%3E%3Cpath d='M56 72h80M56 98h56' stroke='%23ffffff' stroke-width='10' stroke-linecap='round'/%3E%3Ccircle cx='130' cy='122' r='13' fill='%2322c55e'/%3E%3C/svg%3E" />
-
   <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
     :root {
@@ -108,15 +105,9 @@
     }
     .btn-camera-green {
       background: linear-gradient(180deg, #22c55e, #15803d);
-      color: #ffffff;
-      border: 2px solid #166534;
-      border-radius: 12px;
-      padding: 10px 18px;
-      font-size: 18px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(21, 128, 61, 0.28);
-      text-align: center;
+      color: #ffffff; border: 2px solid #166534; border-radius: 12px;
+      padding: 10px 18px; font-size: 18px; font-weight: 800; cursor: pointer;
+      box-shadow: 0 4px 12px rgba(21, 128, 61, 0.28); text-align: center;
     }
     .btn-edit {
       background: var(--sage-soft); color: var(--sage-text); border: 1px solid #b8d8c5;
@@ -193,304 +184,101 @@
     .msg { margin-top: 8px; font-size: 15px; font-weight: 700; text-align: center; }
     .hidden { display: none !important; }
 
-    /* --- OPERATOR INCENTIVE INTERFACE STYLES --- */
-    .inc-wrap {
-      max-width: 540px;
-      margin: 0 auto;
-    }
+    .inc-wrap { max-width: 540px; margin: 0 auto; }
     .inc-header-card {
       background: linear-gradient(180deg, var(--inc-navy) 0%, var(--inc-navy-dark) 100%);
-      color: #ffffff;
-      border-radius: 14px;
-      padding: 14px;
-      margin-bottom: 12px;
+      color: #ffffff; border-radius: 14px; padding: 14px; margin-bottom: 12px;
       box-shadow: 0 4px 14px rgba(9, 29, 61, 0.2);
     }
-    .inc-top-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .inc-brand-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .inc-top-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+    .inc-brand-left { display: flex; align-items: center; gap: 10px; }
     .inc-menu-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.24);
-      background: rgba(255, 255, 255, 0.12);
-      color: #ffffff;
-      font-size: 18px;
-      font-weight: 700;
-      cursor: pointer;
+      width: 38px; height: 38px; border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.24); background: rgba(255, 255, 255, 0.12);
+      color: #ffffff; font-size: 18px; font-weight: 700; cursor: pointer;
     }
-    .inc-title {
-      font-size: 17px;
-      font-weight: 800;
-      line-height: 1.2;
-      text-align: left;
-    }
-    .inc-credit {
-      font-size: 12px;
-      color: #cbd5e1;
-      font-weight: 600;
-      margin-top: 2px;
-      text-align: left;
-    }
+    .inc-title { font-size: 17px; font-weight: 800; line-height: 1.2; text-align: left; }
+    .inc-credit { font-size: 12px; color: #cbd5e1; font-weight: 600; margin-top: 2px; text-align: left; }
     .inc-sync-btn {
-      background: rgba(255, 255, 255, 0.16);
-      color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.28);
-      border-radius: 8px;
-      padding: 7px 12px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
+      background: rgba(255, 255, 255, 0.16); color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.28); border-radius: 8px;
+      padding: 7px 12px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap;
     }
-    .inc-search-box {
-      background: #ffffff;
-      border-radius: 9px;
-      padding: 5px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .inc-search-box { background: #ffffff; border-radius: 9px; padding: 5px; display: flex; align-items: center; gap: 6px; }
     .inc-search-input {
-      flex: 1;
-      height: 38px;
-      border: none !important;
-      padding: 0 10px !important;
-      font-size: 14.5px !important;
-      font-weight: 600 !important;
-      color: #1e293b !important;
-      background: transparent !important;
-      text-align: left !important;
-      box-shadow: none !important;
+      flex: 1; height: 38px; border: none !important; padding: 0 10px !important;
+      font-size: 14.5px !important; font-weight: 600 !important; color: #1e293b !important;
+      background: transparent !important; text-align: left !important; box-shadow: none !important;
     }
     .inc-search-btn {
-      height: 38px;
-      padding: 0 16px;
-      border: none;
-      border-radius: 7px;
+      height: 38px; padding: 0 16px; border: none; border-radius: 7px;
       background: linear-gradient(180deg, #2774cc 0%, var(--inc-blue) 100%);
-      color: #ffffff;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
+      color: #ffffff; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap;
     }
     .inc-meta-strip {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 10px;
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 600;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px; margin-bottom: 10px; font-size: 13px; color: var(--muted); font-weight: 600;
     }
     .inc-upto-tag {
-      background: var(--inc-navy);
-      color: #ffffff;
-      font-size: 12px;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 999px;
-      white-space: nowrap;
+      background: var(--inc-navy); color: #ffffff; font-size: 12px;
+      font-weight: 700; padding: 4px 10px; border-radius: 999px; white-space: nowrap;
     }
-    .inc-pills-row {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 6px;
-      margin-bottom: 12px;
-    }
+    .inc-pills-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 12px; }
     .inc-pill-btn {
-      background: #ffffff;
-      color: var(--inc-navy);
-      border: 1px solid #cbd5e1;
-      border-radius: 999px;
-      padding: 5px 11px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
+      background: #ffffff; color: var(--inc-navy); border: 1px solid #cbd5e1;
+      border-radius: 999px; padding: 5px 11px; font-size: 12px; font-weight: 700; cursor: pointer;
     }
     .inc-section-card {
-      background: #ffffff;
-      border-radius: 12px;
-      border: 1px solid #d8e0e8;
-      box-shadow: 0 2px 8px rgba(15, 44, 89, 0.06);
-      margin-bottom: 12px;
-      overflow: hidden;
+      background: #ffffff; border-radius: 12px; border: 1px solid #d8e0e8;
+      box-shadow: 0 2px 8px rgba(15, 44, 89, 0.06); margin-bottom: 12px; overflow: hidden;
     }
-    .inc-section-head {
-      padding: 11px 14px 8px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-    .inc-section-title {
-      font-size: 16px;
-      font-weight: 800;
-      color: #1e293b;
-    }
-    .inc-profile-body {
-      padding: 4px 14px 14px;
-      display: flex;
-      align-items: stretch;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .inc-profile-info {
-      flex: 1;
-      min-width: 160px;
-      text-align: center;
-    }
-    .inc-op-name {
-      font-size: 18px;
-      font-weight: 800;
-      color: #1e293b;
-      margin-bottom: 2px;
-    }
-    .inc-op-id {
-      font-size: 13.5px;
-      font-weight: 700;
-      color: #64748b;
-      margin-bottom: 8px;
-    }
-    .inc-op-row {
-      font-size: 13.5px;
-      color: #334155;
-      line-height: 1.5;
-      font-weight: 600;
-    }
+    .inc-section-head { padding: 11px 14px 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .inc-section-title { font-size: 16px; font-weight: 800; color: #1e293b; }
+    .inc-profile-body { padding: 4px 14px 14px; display: flex; align-items: stretch; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .inc-profile-info { flex: 1; min-width: 160px; text-align: center; }
+    .inc-op-name { font-size: 18px; font-weight: 800; color: #1e293b; margin-bottom: 2px; }
+    .inc-op-id { font-size: 13.5px; font-weight: 700; color: #64748b; margin-bottom: 8px; }
+    .inc-op-row { font-size: 13.5px; color: #334155; line-height: 1.5; font-weight: 600; }
     .inc-money-box {
       background: linear-gradient(180deg, #19aa61 0%, var(--inc-green) 100%);
-      color: #ffffff;
-      border-radius: 10px;
-      padding: 10px 14px;
-      min-width: 145px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      box-shadow: 0 3px 8px rgba(21, 153, 87, 0.25);
+      color: #ffffff; border-radius: 10px; padding: 10px 14px; min-width: 145px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; box-shadow: 0 3px 8px rgba(21, 153, 87, 0.25);
     }
-    .inc-money-label {
-      font-size: 12.5px;
-      font-weight: 700;
-      opacity: 0.95;
-      margin-bottom: 3px;
-    }
-    .inc-money-val {
-      font-size: 19px;
-      font-weight: 800;
-      line-height: 1.15;
-    }
-    .inc-table {
-      width: 100%;
-      min-width: 460px;
-      border-collapse: collapse;
-      margin-top: 0;
-      font-size: 13px;
-    }
+    .inc-money-label { font-size: 12.5px; font-weight: 700; opacity: 0.95; margin-bottom: 3px; }
+    .inc-money-val { font-size: 19px; font-weight: 800; line-height: 1.15; }
+    .inc-table { width: 100%; min-width: 460px; border-collapse: collapse; margin-top: 0; font-size: 13px; }
     .inc-table thead th {
-      background-color: var(--inc-navy) !important;
-      color: #ffffff !important;
-      font-weight: 700;
-      padding: 9px 6px;
-      text-align: center !important;
-      border-right: 1px solid rgba(255, 255, 255, 0.14);
-      font-size: 12.5px;
+      background-color: var(--inc-navy) !important; color: #ffffff !important;
+      font-weight: 700; padding: 9px 6px; text-align: center !important;
+      border-right: 1px solid rgba(255, 255, 255, 0.14); font-size: 12.5px;
     }
     .inc-table tbody td {
-      padding: 8px 6px;
-      text-align: center !important;
-      border-bottom: 1px solid #e2e8f0;
-      border-right: 1px solid #edf2f7;
-      font-size: 13px;
-      font-weight: 600;
+      padding: 8px 6px; text-align: center !important;
+      border-bottom: 1px solid #e2e8f0; border-right: 1px solid #edf2f7;
+      font-size: 13px; font-weight: 600;
     }
     .inc-table tfoot td {
-      background-color: var(--inc-total-bg) !important;
-      color: #0f172a !important;
-      font-weight: 800;
-      padding: 9px 6px;
-      border-top: 2px solid #94a3b8;
-      font-size: 13px;
+      background-color: var(--inc-total-bg) !important; color: #0f172a !important;
+      font-weight: 800; padding: 9px 6px; border-top: 2px solid #94a3b8; font-size: 13px;
     }
-    .eff-pill {
-      display: inline-block;
-      color: #ffffff;
-      font-size: 12px;
-      font-weight: 800;
-      padding: 3px 7px;
-      border-radius: 5px;
-      min-width: 44px;
-    }
+    .eff-pill { display: inline-block; color: #ffffff; font-size: 12px; font-weight: 800; padding: 3px 7px; border-radius: 5px; min-width: 44px; }
     .eff-high { background-color: var(--inc-green-badge); }
     .eff-mid { background-color: var(--inc-amber-badge); }
     .inc-cell { color: var(--inc-green) !important; font-weight: 800 !important; }
 
-    .drawer-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.5);
-      display: none;
-      z-index: 90;
-    }
+    .drawer-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); display: none; z-index: 90; }
     .drawer-backdrop.open { display: block; }
-    .drawer-panel {
-      width: 265px;
-      height: 100%;
-      background: #ffffff;
-      padding: 18px 16px;
-      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.25);
-      text-align: center;
-    }
-    .drawer-title {
-      font-size: 16px;
-      font-weight: 800;
-      color: var(--inc-navy);
-      margin-bottom: 10px;
-    }
-    .drawer-info {
-      font-size: 13px;
-      color: #64748b;
-      line-height: 1.5;
-      margin-bottom: 14px;
-    }
+    .drawer-panel { width: 265px; height: 100%; background: #ffffff; padding: 18px 16px; box-shadow: 4px 0 20px rgba(0, 0, 0, 0.25); text-align: center; }
+    .drawer-title { font-size: 16px; font-weight: 800; color: var(--inc-navy); margin-bottom: 10px; }
+    .drawer-info { font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 14px; }
     .drawer-btn {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: none;
-      background: var(--inc-navy);
-      color: #ffffff;
-      font-size: 13.5px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-bottom: 8px;
+      width: 100%; padding: 10px 12px; border-radius: 8px; border: none;
+      background: var(--inc-navy); color: #ffffff; font-size: 13.5px; font-weight: 700; cursor: pointer; margin-bottom: 8px;
     }
     .drawer-close {
-      width: 100%;
-      padding: 9px 12px;
-      border-radius: 8px;
-      border: 1px solid #cbd5e1;
-      background: #f1f5f9;
-      color: #1e293b;
-      font-size: 13.5px;
-      font-weight: 700;
-      cursor: pointer;
+      width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid #cbd5e1;
+      background: #f1f5f9; color: #1e293b; font-size: 13.5px; font-weight: 700; cursor: pointer;
     }
   </style>
 </head>
@@ -507,22 +295,17 @@
   </div>
 
   <div class="container">
-    <!-- PIN LOGIN (SINGLE OPTION ONLY) -->
     <div id="loginCard" class="card">
       <h2 class="card-title">System PIN Login</h2>
       <p class="hint" style="margin-top:4px;">আপনার নির্ধারিত PIN কোডটি লিখে Login চাপুন।</p>
-
       <label for="pinField">PIN Code</label>
       <input id="pinField" type="text" inputmode="numeric" autocomplete="off" placeholder="PIN কোড লিখুন" onkeydown="if(event.key==='Enter') handleLogin()" />
-
       <div style="margin-top:14px;">
         <button type="button" class="btn-primary" style="width:100%;" onclick="handleLogin()">Login</button>
       </div>
-
       <div id="loginMsg" class="msg" style="color:#b91c1c;"></div>
     </div>
 
-    <!-- DASHBOARD VIEW -->
     <div id="view-dashboard" class="hidden">
       <div class="card">
         <div class="card-head">
@@ -550,7 +333,6 @@
         <div id="liveResultArea" class="table-scroll"><p class="hint">ডাটা লোড হচ্ছে...</p></div>
       </div>
 
-      <!-- HIDDEN BY DEFAULT: SEARCH PRODUCTION & DETAILS -->
       <div id="dashboardSearchWrapper" class="hidden">
         <div class="card">
           <div class="card-head">
@@ -580,32 +362,26 @@
       </div>
     </div>
 
-    <!-- OPERATOR BARCODE SCAN VIEW -->
     <div id="view-operator" class="hidden">
       <div class="card">
         <div class="card-head">
           <h2 class="card-title">Barcode Scanner</h2>
           <button id="camToggleBtn" type="button" class="btn-camera-green" onclick="toggleCamera()">Start Camera</button>
         </div>
-
         <div class="scanner-wrap">
           <div id="scanStepBanner" class="step-banner">Operator ID Scan</div>
           <div id="scanInstructionText" style="font-size:15px;color:#cbd5e1;text-align:center;">প্রথমে Operator ID স্ক্যান করুন। স্ক্যান হলে Next বাটন আসবে।</div>
           <div id="reader"></div>
         </div>
-
         <div id="scanNotifyBox" class="notify-box"></div>
-
         <div id="nextActionArea" class="hidden" style="margin-top:12px;">
           <button id="nextBtnMain" type="button" class="btn-next" style="width:100%;" onclick="onNextButtonClick()">Next</button>
         </div>
-
         <div style="margin-top:14px;">
           <button type="button" class="btn-sage" style="width:100%;" onclick="resetOperatorFlow()">Reset All</button>
         </div>
       </div>
 
-      <!-- OPERATOR INFORMATION -->
       <div class="card">
         <div class="card-head">
           <h2 class="card-title">Operator Information</h2>
@@ -621,7 +397,6 @@
         </div>
       </div>
 
-      <!-- TC INFORMATION -->
       <div id="tcStepCard" class="card locked-box">
         <div class="card-head">
           <h2 class="card-title">TC Information</h2>
@@ -641,7 +416,6 @@
         </div>
       </div>
 
-      <!-- PROCESS DROPDOWN -->
       <div id="processStepCard" class="card hidden">
         <div class="card-head">
           <h2 class="card-title">Select Process</h2>
@@ -659,7 +433,6 @@
       </div>
     </div>
 
-    <!-- OPERATOR INCENTIVE VIEW -->
     <div id="view-incentive" class="hidden">
       <div class="inc-wrap">
         <div class="inc-header-card">
@@ -675,13 +448,7 @@
           </div>
 
           <div class="inc-search-box">
-            <input
-              id="incSearchInput"
-              class="inc-search-input"
-              type="text"
-              placeholder="Enter Operator ID or Line No..."
-              autocomplete="off"
-            />
+            <input id="incSearchInput" class="inc-search-input" type="text" placeholder="Enter Operator ID or Line No..." autocomplete="off" />
             <button class="inc-search-btn" id="incSearchBtn" type="button">Search</button>
           </div>
         </div>
@@ -698,7 +465,6 @@
             <div class="inc-section-title">Profile Summary</div>
             <span class="inc-upto-tag" id="incProfileUptoBadge">Upto —</span>
           </div>
-
           <div class="inc-profile-body">
             <div class="inc-profile-info">
               <div class="inc-op-name" id="incOpName">Operator</div>
@@ -706,7 +472,6 @@
               <div class="inc-op-row"><strong>Job Type:</strong> <span id="incOpJob">—</span></div>
               <div class="inc-op-row"><strong>Line No:</strong> <span id="incOpLine">—</span></div>
             </div>
-
             <div class="inc-money-box">
               <div class="inc-money-label">Total Incentive:</div>
               <div class="inc-money-val" id="incTotalBox">৳0 BDT</div>
@@ -719,7 +484,6 @@
             <div class="inc-section-title" id="incBreakdownHeading">Date-wise Breakdown</div>
             <span class="inc-upto-tag" id="incTableUptoBadge">Upto —</span>
           </div>
-
           <div class="table-scroll" id="incTableWrap">
             <div class="hint" style="padding:20px 12px;">ID বা Line লিখে সার্চ করুন অথবা Sync চাপুন।</div>
           </div>
@@ -727,33 +491,22 @@
       </div>
     </div>
 
-    <!-- ADMIN VIEW WITH MENU BAR -->
     <div id="view-admin" class="hidden">
       <div class="admin-menubar">
-        <button id="admMenuSmvForm" type="button" class="admin-menu-btn active" onclick="switchAdminSection('form')">
-          Style, Process & SMV
-        </button>
-        <button id="admMenuSmvList" type="button" class="admin-menu-btn" onclick="switchAdminSection('list')">
-          SMV List & Edit
-        </button>
-        <button id="admMenuForecast" type="button" class="admin-menu-btn" onclick="switchAdminSection('forecast')">
-          Forecast Hour
-        </button>
+        <button id="admMenuSmvForm" type="button" class="admin-menu-btn active" onclick="switchAdminSection('form')">Style, Process & SMV</button>
+        <button id="admMenuSmvList" type="button" class="admin-menu-btn" onclick="switchAdminSection('list')">SMV List & Edit</button>
+        <button id="admMenuForecast" type="button" class="admin-menu-btn" onclick="switchAdminSection('forecast')">Forecast Hour</button>
       </div>
 
-      <!-- SECTION 1: ADD / EDIT STYLE, PROCESS & SMV -->
       <div id="admin-sec-form" class="card">
         <div class="card-head">
           <h2 id="adminFormTitle" class="card-title">Style, Process & SMV</h2>
           <button type="button" class="btn-refresh" onclick="addProcessSmvRow()">+ Add Process & SMV</button>
         </div>
         <p class="hint">Style No. লিখে নিচে যত খুশি তত Process ও SMV যুক্ত করুন অথবা পুরনো কোনো এন্ট্রি Edit করে বদলান।</p>
-
         <label for="adminStyleInput">Style No.</label>
         <input id="adminStyleInput" type="text" placeholder="Style No. লিখুন (যেমন: 1896)" />
-
         <div id="dynamicSmvRows"></div>
-
         <div class="btn-row">
           <button id="saveSmvBtn" type="button" class="btn-primary" onclick="saveAllStyleSmv()">Save Style Process & SMV</button>
           <button type="button" class="btn-sage" onclick="clearDynamicSmvForm()">Clear</button>
@@ -761,52 +514,37 @@
         <div id="adminSmvMsg" class="msg" style="color:#15803d;"></div>
       </div>
 
-      <!-- SECTION 2: STYLE-ONLY ACCORDION LIST -->
       <div id="admin-sec-list" class="card hidden">
         <div class="card-head">
           <h2 class="card-title">Saved Style Process & SMV</h2>
           <button type="button" class="btn-refresh" onclick="switchAdminSection('form')">+ New Add</button>
         </div>
         <p class="hint">শুধু <b>Style</b> দেখাচ্ছে। যেকোনো <b>Style</b>-এ ক্লিক করলে তার <b>Process</b> ও <b>SMV</b> দেখাবে।</p>
-
         <div id="styleAccordionList" class="style-group-list"></div>
       </div>
 
-      <!-- SECTION 3: FORECAST HOUR (LINKING LINE-01 TO LINKING LINE-33) -->
       <div id="admin-sec-forecast" class="card hidden">
         <div class="card-head">
           <h2 class="card-title">Forecast Hour & Target Pcs</h2>
           <button type="button" class="btn-primary" onclick="saveForecastForDate()">Save Forecast</button>
         </div>
         <p class="hint">যেকোনো তারিখ সিলেক্ট করে <b>Forecast Hour</b> ও <b>Forecast Pcs</b> সেভ করার পরও যেকোনো সময় সংখ্যা বদলে আবার <b>Save / Update Forecast</b> চাপলেই সাথে সাথে পরিবর্তন আপডেট হবে।</p>
-
         <div style="max-width:320px;margin:0 auto 12px;">
           <label for="forecastCustomDate">Pick Any Date (Previous / Current / Next Month)</label>
           <input id="forecastCustomDate" type="date" onchange="onForecastCustomDateChange()" />
         </div>
-
         <div id="forecastMsg" class="msg" style="color:#15803d;"></div>
-
         <div class="table-scroll">
           <table>
             <thead>
-              <tr>
-                <th>Line</th>
-                <th id="fcDateColHeader">Date</th>
-                <th>Forecast Hour</th>
-                <th>Forecast Pcs</th>
-                <th>Per Hour Target</th>
-              </tr>
+              <tr><th>Line</th><th id="fcDateColHeader">Date</th><th>Forecast Hour</th><th>Forecast Pcs</th><th>Per Hour Target</th></tr>
             </thead>
             <tbody id="forecastLinesBody"></tbody>
           </table>
         </div>
-
         <div style="margin-top:14px;">
           <button type="button" class="btn-primary" style="width:100%;" onclick="saveForecastForDate()">Save / Update All 33 Lines Forecast</button>
         </div>
-
-        <!-- SAVED FORECAST LIST WITH DIRECT EDIT -->
         <div style="margin-top:22px;padding-top:16px;border-top:2px solid var(--border);">
           <h3 class="card-title" style="font-size:18px;margin-bottom:6px;">Saved Forecast List (Click Edit to Change)</h3>
           <p class="hint">যে লাইনের Forecast Hour বা Forecast Pcs পরিবর্তন করতে চান, তার পাশে <b>Edit</b> বাটনে ক্লিক করুন।</p>
@@ -816,14 +554,10 @@
     </div>
   </div>
 
-  <!-- INCENTIVE DRAWER -->
   <div class="drawer-backdrop" id="incDrawerBackdrop">
     <div class="drawer-panel">
       <div class="drawer-title">JL Fashion's Limited</div>
-      <div class="drawer-info" id="incDrawerMeta">
-        Created by Parvej<br>
-        Source: <strong>Database</strong> tab.
-      </div>
+      <div class="drawer-info" id="incDrawerMeta">Created by Parvej<br>Source: <strong>Database</strong> tab.</div>
       <button class="drawer-btn" id="incDrawerSyncBtn" type="button">Sync Now</button>
       <button class="drawer-btn" id="incDrawerClearBtn" type="button">Reset Search</button>
       <button class="drawer-close" id="incDrawerCloseBtn" type="button">Close</button>
@@ -832,6 +566,8 @@
 
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbw7j-f4pOE1kZvQKBhjYFov5ntrasH6KTsbNgyxXTaFHELOJdblVbfnSRifM9lhdUDA/exec';
+    const INC_SHEET_ID = '1Wu3uAsJzwAuQP6nGTzp2YrMgmgEqkMv58pq2mV1qfLY';
+    const INC_SHEET_TAB = 'Database';
     const PINS = { '1111': 'dashboard', '2222': 'operator', '3333': 'incentive', '9999': 'admin' };
     const SESSION_KEY = 'prod_system_role_v1';
     const FORECAST_STORAGE_KEY = 'linking_forecast_master_v1';
@@ -861,10 +597,7 @@
 
     let incRawRows = [];
 
-    const ALL_LINKING_LINES = Array.from({ length: 33 }, (_, idx) => {
-      const num = String(idx + 1).padStart(2, '0');
-      return `Linking Line-${num}`;
-    });
+    const ALL_LINKING_LINES = Array.from({ length: 33 }, (_, idx) => `Linking Line-${String(idx + 1).padStart(2, '0')}`);
 
     function formatDisplayDate(isoDate) {
       if (!isoDate) return '';
@@ -875,63 +608,39 @@
 
     function getTodayIso() {
       try {
-        const parts = new Intl.DateTimeFormat('en-CA', {
-          timeZone: 'Asia/Dhaka',
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit'
-        }).formatToParts(new Date());
-        const y = parts.find(p => p.type === 'year').value;
-        const m = parts.find(p => p.type === 'month').value;
-        const d = parts.find(p => p.type === 'day').value;
-        return `${y}-${m}-${d}`;
+        const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Dhaka', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date());
+        return `${parts.find(p => p.type === 'year').value}-${parts.find(p => p.type === 'month').value}-${parts.find(p => p.type === 'day').value}`;
       } catch (_) {
         const now = new Date();
-        const y = now.getFullYear();
-        const m = String(now.getMonth() + 1).padStart(2, '0');
-        const d = String(now.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
       }
     }
 
     function getBdTimestampNow() {
       try {
         const parts = new Intl.DateTimeFormat('en-CA', {
-          timeZone: 'Asia/Dhaka',
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: false
+          timeZone: 'Asia/Dhaka', year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
         }).formatToParts(new Date());
-        const get = t => parts.find(p => p.type === t).value;
-        return `${get('year')}-${get('month')}-${get('day')} ${get('hour')}:${get('minute')}:${get('second')}`;
+        const g = t => parts.find(p => p.type === t).value;
+        return `${g('year')}-${g('month')}-${g('day')} ${g('hour')}:${g('minute')}:${g('second')}`;
       } catch (_) {
         return new Date().toLocaleString('sv-SE', { timeZone: 'Asia/Dhaka' });
       }
     }
 
     function updateRunningDateBadge() {
-      const runningIso = getTodayIso();
       const badge = document.getElementById('runningDateBadge');
-      if (badge) {
-        badge.textContent = `Running Date: ${formatDisplayDate(runningIso)}`;
-      }
+      if (badge) badge.textContent = `Running Date: ${formatDisplayDate(getTodayIso())}`;
     }
 
     function initForecastDates() {
       updateRunningDateBadge();
       const runningIso = getTodayIso();
       const fcPicker = document.getElementById('forecastCustomDate');
-      if (fcPicker && !fcPicker.value) {
-        fcPicker.value = runningIso;
-      }
+      if (fcPicker && !fcPicker.value) fcPicker.value = runningIso;
       const dashPicker = document.getElementById('dashDatePicker');
-      if (dashPicker && !dashPicker.value) {
-        dashPicker.value = runningIso;
-      }
+      if (dashPicker && !dashPicker.value) dashPicker.value = runningIso;
     }
 
     function onForecastCustomDateChange() {
@@ -945,22 +654,11 @@
       const dateStr = isoDate || document.getElementById('forecastCustomDate').value || getTodayIso();
       document.getElementById('fcDateColHeader').textContent = `Date: ${formatDisplayDate(dateStr)}`;
       const dayData = forecastMaster[dateStr] || {};
-      const tbody = document.getElementById('forecastLinesBody');
-
-      tbody.innerHTML = ALL_LINKING_LINES.map(line => {
+      document.getElementById('forecastLinesBody').innerHTML = ALL_LINKING_LINES.map(line => {
         const rec = dayData[line] || { hour: '', pcs: '' };
-        const h = parseFloat(rec.hour);
-        const p = parseFloat(rec.pcs);
+        const h = parseFloat(rec.hour), p = parseFloat(rec.pcs);
         const perHr = (h > 0 && p > 0) ? (p / h).toFixed(1) : '-';
-        return `
-          <tr data-line="${esc(line)}">
-            <td><b>${esc(line)}</b></td>
-            <td>${esc(formatDisplayDate(dateStr))}</td>
-            <td><input type="number" step="0.5" min="0" max="24" class="fc-input fc-hour" placeholder="Hour" value="${rec.hour !== '' ? rec.hour : ''}" oninput="updateForecastRowPreview(this)" /></td>
-            <td><input type="number" step="1" min="0" class="fc-input fc-pcs" placeholder="Target Pcs" value="${rec.pcs !== '' ? rec.pcs : ''}" oninput="updateForecastRowPreview(this)" /></td>
-            <td class="fc-per-hr"><b>${perHr}</b></td>
-          </tr>
-        `;
+        return `<tr data-line="${esc(line)}"><td><b>${esc(line)}</b></td><td>${esc(formatDisplayDate(dateStr))}</td><td><input type="number" step="0.5" min="0" max="24" class="fc-input fc-hour" placeholder="Hour" value="${rec.hour !== '' ? rec.hour : ''}" oninput="updateForecastRowPreview(this)" /></td><td><input type="number" step="1" min="0" class="fc-input fc-pcs" placeholder="Target Pcs" value="${rec.pcs !== '' ? rec.pcs : ''}" oninput="updateForecastRowPreview(this)" /></td><td class="fc-per-hr"><b>${perHr}</b></td></tr>`;
       }).join('');
     }
 
@@ -969,40 +667,13 @@
       if (!box) return;
       const dateStr = isoDate || document.getElementById('forecastCustomDate').value || getTodayIso();
       const dayData = forecastMaster[dateStr] || {};
-
       const rowsHtml = ALL_LINKING_LINES.map(line => {
         const rec = dayData[line] || { hour: '', pcs: '' };
-        const h = parseFloat(rec.hour);
-        const p = parseFloat(rec.pcs);
-        const hrDisplay = (rec.hour !== '' && !isNaN(h)) ? h : '-';
-        const pcsDisplay = (rec.pcs !== '' && !isNaN(p)) ? p : '-';
+        const h = parseFloat(rec.hour), p = parseFloat(rec.pcs);
         const perHr = (h > 0 && p > 0) ? (p / h).toFixed(1) : '-';
-
-        return `
-          <tr>
-            <td><b>${esc(line)}</b></td>
-            <td>${hrDisplay}</td>
-            <td>${pcsDisplay}</td>
-            <td>${perHr}</td>
-            <td><button type="button" class="btn-edit" onclick="focusForecastLineForEdit('${esc(line)}')">Edit</button></td>
-          </tr>
-        `;
+        return `<tr><td><b>${esc(line)}</b></td><td>${rec.hour !== '' && !isNaN(h) ? h : '-'}</td><td>${rec.pcs !== '' && !isNaN(p) ? p : '-'}</td><td>${perHr}</td><td><button type="button" class="btn-edit" onclick="focusForecastLineForEdit('${esc(line)}')">Edit</button></td></tr>`;
       }).join('');
-
-      box.innerHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th>Line</th>
-              <th>Saved Hour (${esc(formatDisplayDate(dateStr))})</th>
-              <th>Saved Pcs</th>
-              <th>Per Hour Target</th>
-              <th>Change</th>
-            </tr>
-          </thead>
-          <tbody>${rowsHtml}</tbody>
-        </table>
-      `;
+      box.innerHTML = `<table><thead><tr><th>Line</th><th>Saved Hour (${esc(formatDisplayDate(dateStr))})</th><th>Saved Pcs</th><th>Per Hour Target</th><th>Change</th></tr></thead><tbody>${rowsHtml}</tbody></table>`;
     }
 
     function focusForecastLineForEdit(lineName) {
@@ -1011,150 +682,92 @@
       document.querySelectorAll('#forecastLinesBody tr.fc-highlight').forEach(el => el.classList.remove('fc-highlight'));
       tr.classList.add('fc-highlight');
       const hrInput = tr.querySelector('.fc-hour');
-      if (hrInput) {
-        tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        hrInput.focus();
-        hrInput.select();
-      }
+      if (hrInput) { tr.scrollIntoView({ behavior: 'smooth', block: 'center' }); hrInput.focus(); hrInput.select(); }
       const msg = document.getElementById('forecastMsg');
-      if (msg) {
-        msg.style.color = '#1d4ed8';
-        msg.textContent = `${lineName} সিলেক্ট হয়েছে—Forecast Hour বা Forecast Pcs বদলে "Save / Update Forecast" চাপুন।`;
-      }
+      if (msg) { msg.style.color = '#1d4ed8'; msg.textContent = `${lineName} সিলেক্ট হয়েছে—Forecast Hour বা Forecast Pcs বদলে "Save / Update Forecast" চাপুন।`; }
     }
 
     function updateForecastRowPreview(inputEl) {
       const tr = inputEl.closest('tr');
-      const h = parseFloat(tr.querySelector('.fc-hour').value);
-      const p = parseFloat(tr.querySelector('.fc-pcs').value);
-      const cell = tr.querySelector('.fc-per-hr');
-      cell.innerHTML = `<b>${(h > 0 && p > 0) ? (p / h).toFixed(1) : '-'}</b>`;
+      const h = parseFloat(tr.querySelector('.fc-hour').value), p = parseFloat(tr.querySelector('.fc-pcs').value);
+      tr.querySelector('.fc-per-hr').innerHTML = `<b>${(h > 0 && p > 0) ? (p / h).toFixed(1) : '-'}</b>`;
     }
 
     async function saveForecastForDate() {
       const isoDate = document.getElementById('forecastCustomDate').value || getTodayIso();
       const rows = Array.from(document.querySelectorAll('#forecastLinesBody tr'));
-      const dayRecord = {};
-      const itemsForServer = [];
-
+      const dayRecord = {}, itemsForServer = [];
       rows.forEach(tr => {
         const line = tr.getAttribute('data-line');
-        const hVal = tr.querySelector('.fc-hour').value.trim();
-        const pVal = tr.querySelector('.fc-pcs').value.trim();
-        const hour = hVal === '' ? '' : Number(hVal);
-        const pcs = pVal === '' ? '' : Number(pVal);
+        const hVal = tr.querySelector('.fc-hour').value.trim(), pVal = tr.querySelector('.fc-pcs').value.trim();
+        const hour = hVal === '' ? '' : Number(hVal), pcs = pVal === '' ? '' : Number(pVal);
         dayRecord[line] = { hour, pcs };
-        if (hour !== '' || pcs !== '') {
-          itemsForServer.push({ date: isoDate, displayDate: formatDisplayDate(isoDate), line, hour: hour || 0, pcs: pcs || 0 });
-        }
+        if (hour !== '' || pcs !== '') itemsForServer.push({ date: isoDate, displayDate: formatDisplayDate(isoDate), line, hour: hour || 0, pcs: pcs || 0 });
       });
-
       forecastMaster[isoDate] = dayRecord;
       localStorage.setItem(FORECAST_STORAGE_KEY, JSON.stringify(forecastMaster));
       renderSavedForecastQuickList(isoDate);
-
       const msg = document.getElementById('forecastMsg');
       msg.style.color = '#15803d';
       msg.textContent = `Date ${formatDisplayDate(isoDate)} এর Forecast Hour ও Pcs সেভ/আপডেট হয়েছে।`;
-
       try {
-        await fetch(API_URL, {
-          method: 'POST', mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'FORECAST_BATCH', date: isoDate, items: itemsForServer })
-        });
+        await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'FORECAST_BATCH', date: isoDate, items: itemsForServer }) });
       } catch (_) {}
     }
 
     function getMaxForecastHourForDate(isoDate) {
       const dayData = forecastMaster[isoDate] || {};
       let maxHr = 0;
-      Object.keys(dayData).forEach(ln => {
-        const h = Number(dayData[ln] && dayData[ln].hour);
-        if (!isNaN(h) && h > maxHr) {
-          maxHr = h;
-        }
-      });
+      Object.keys(dayData).forEach(ln => { const h = Number(dayData[ln] && dayData[ln].hour); if (!isNaN(h) && h > maxHr) maxHr = h; });
       return maxHr;
     }
 
     function addWorkingHoursTo8Am(hoursFrom8Am) {
       let endDec = 8 + Math.max(0, hoursFrom8Am);
-      if (endDec > 13) {
-        endDec += 1;
-      }
+      if (endDec > 13) endDec += 1;
       const totalMinutes = Math.round(endDec * 60);
-      const hr24 = Math.floor(totalMinutes / 60) % 24;
-      const min = totalMinutes % 60;
-      const ampm = hr24 >= 12 ? 'PM' : 'AM';
-      const hr12 = hr24 % 12 === 0 ? 12 : hr24 % 12;
-      const minStr = min > 0 ? `:${String(min).padStart(2, '0')}` : ':00';
-      return `${hr12}${minStr} ${ampm}`;
+      const hr24 = Math.floor(totalMinutes / 60) % 24, min = totalMinutes % 60;
+      const ampm = hr24 >= 12 ? 'PM' : 'AM', hr12 = hr24 % 12 === 0 ? 12 : hr24 % 12;
+      return `${hr12}${min > 0 ? ':' + String(min).padStart(2, '0') : ':00'} ${ampm}`;
     }
 
     function getElapsedWorkInfo(selectedIsoDate) {
-      const now = new Date();
-      const runningIso = getTodayIso();
+      const now = new Date(), runningIso = getTodayIso();
       let currentDecimalHour = now.getHours() + (now.getMinutes() / 60);
-
-      if (selectedIsoDate && selectedIsoDate < runningIso) {
-        currentDecimalHour = 23;
-      }
-
+      if (selectedIsoDate && selectedIsoDate < runningIso) currentDecimalHour = 23;
       let rawHours = 0;
       if (currentDecimalHour > 8) {
         rawHours = currentDecimalHour - 8;
-        if (currentDecimalHour >= 14) {
-          rawHours -= 1;
-        } else if (currentDecimalHour > 13) {
-          rawHours -= (currentDecimalHour - 13);
-        }
+        if (currentDecimalHour >= 14) rawHours -= 1;
+        else if (currentDecimalHour > 13) rawHours -= (currentDecimalHour - 13);
         rawHours = Math.max(0, rawHours);
       }
-
       const maxForecastHr = getMaxForecastHourForDate(selectedIsoDate);
       const cappedElapsedHours = maxForecastHr > 0 ? Math.min(rawHours, maxForecastHr) : rawHours;
-      const upToTimeStr = addWorkingHoursTo8Am(cappedElapsedHours);
-      const upToLabel = `Up to ${upToTimeStr}`;
-
-      return {
-        elapsedHours: cappedElapsedHours,
-        rawElapsedHours: rawHours,
-        maxForecastHr,
-        upToLabel
-      };
+      return { elapsedHours: cappedElapsedHours, rawElapsedHours: rawHours, maxForecastHr, upToLabel: `Up to ${addWorkingHoursTo8Am(cappedElapsedHours)}` };
     }
 
     function toggleSearchSection() {
-      const wrap = document.getElementById('dashboardSearchWrapper');
-      const btn = document.getElementById('toggleSearchBtn');
+      const wrap = document.getElementById('dashboardSearchWrapper'), btn = document.getElementById('toggleSearchBtn');
       const isHidden = wrap.classList.toggle('hidden');
       btn.textContent = isHidden ? 'Show Search Details' : 'Hide Search Details';
     }
 
     function onDashboardDateChange() {
-      const dashPicker = document.getElementById('dashDatePicker');
-      const dateSelect = document.getElementById('dateSelect');
-      if (dashPicker && dateSelect && dashPicker.value) {
-        dateSelect.value = dashPicker.value;
-      }
+      const dashPicker = document.getElementById('dashDatePicker'), dateSelect = document.getElementById('dateSelect');
+      if (dashPicker && dateSelect && dashPicker.value) dateSelect.value = dashPicker.value;
       loadDashboard();
     }
 
     function onSheetDateSelectChange() {
-      const dateSelect = document.getElementById('dateSelect');
-      const dashPicker = document.getElementById('dashDatePicker');
-      if (dateSelect && dashPicker && dateSelect.value) {
-        dashPicker.value = dateSelect.value;
-      }
+      const dateSelect = document.getElementById('dateSelect'), dashPicker = document.getElementById('dashDatePicker');
+      if (dateSelect && dashPicker && dateSelect.value) dashPicker.value = dateSelect.value;
       loadDashboard();
     }
 
     function resetToRunningDateAndLoad() {
       updateRunningDateBadge();
-      const runningIso = getTodayIso();
-      const dashPicker = document.getElementById('dashDatePicker');
-      const dateSelect = document.getElementById('dateSelect');
+      const runningIso = getTodayIso(), dashPicker = document.getElementById('dashDatePicker'), dateSelect = document.getElementById('dateSelect');
       if (dashPicker) dashPicker.value = runningIso;
       if (dateSelect) dateSelect.value = runningIso;
       loadDashboard();
@@ -1168,9 +781,7 @@
           if (Array.isArray(data.smvList) && data.smvList.length) {
             insertGroupedByStyle(data.smvList);
             localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
-            if (currentTcData && currentTcData.style && flowMode === 'HOLD_AFTER_TC') {
-              populateProcessDropdownForStyle(currentTcData.style);
-            }
+            if (currentTcData && currentTcData.style && flowMode === 'HOLD_AFTER_TC') populateProcessDropdownForStyle(currentTcData.style);
           }
           if (data.forecastMap && typeof data.forecastMap === 'object') {
             forecastMaster = { ...forecastMaster, ...data.forecastMap };
@@ -1182,54 +793,33 @@
 
     function getProcessesForStyle(styleName) {
       const target = String(styleName || '').trim().toLowerCase();
-      if (!target) return [];
-      return styleSmvMaster.filter(x => String(x.style || '').trim().toLowerCase() === target);
+      return target ? styleSmvMaster.filter(x => String(x.style || '').trim().toLowerCase() === target) : [];
     }
 
     function populateProcessDropdownForStyle(styleName) {
-      const dd = document.getElementById('processDropdown');
-      const hintEl = document.getElementById('styleProcessHint');
+      const dd = document.getElementById('processDropdown'), hintEl = document.getElementById('styleProcessHint');
       const matched = getProcessesForStyle(styleName);
-
       if (matched.length > 0) {
-        dd.innerHTML = '<option value="">-- Process সিলেক্ট করুন --</option>' +
-          matched.map(item => `<option value="${esc(item.process)}">${esc(item.process)} (SMV: ${item.smv})</option>`).join('');
-        if (hintEl) {
-          hintEl.textContent = `Style "${styleName}" এর ${matched.length}টি Process পাওয়া গেছে। আপনি যে Process-এ কাজ করছেন সেটি সিলেক্ট করুন।`;
-        }
+        dd.innerHTML = '<option value="">-- Process সিলেক্ট করুন --</option>' + matched.map(item => `<option value="${esc(item.process)}">${esc(item.process)} (SMV: ${item.smv})</option>`).join('');
+        if (hintEl) hintEl.textContent = `Style "${styleName}" এর ${matched.length}টি Process পাওয়া গেছে। আপনি যে Process-এ কাজ করছেন সেটি সিলেক্ট করুন।`;
       } else {
         const defaults = ['Linking', 'Ironing', 'Sewing', 'Overlock', 'Checking', 'Output'];
-        dd.innerHTML = '<option value="">-- Process সিলেক্ট করুন --</option>' +
-          defaults.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('');
-        if (hintEl) {
-          hintEl.textContent = styleName
-            ? `Style "${styleName}" এর জন্য Admin-এ আলাদা Process সেভ করা নেই, সাধারণ Process দেখানো হচ্ছে।`
-            : 'Process সিলেক্ট করুন।';
-        }
+        dd.innerHTML = '<option value="">-- Process সিলেক্ট করুন --</option>' + defaults.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('');
+        if (hintEl) hintEl.textContent = styleName ? `Style "${styleName}" এর জন্য Admin-এ আলাদা Process সেভ করা নেই, সাধারণ Process দেখানো হচ্ছে।` : 'Process সিলেক্ট করুন।';
       }
     }
 
     function switchAdminSection(sec) {
-      const isForm = sec === 'form';
-      const isList = sec === 'list';
-      const isForecast = sec === 'forecast';
-
+      const isForm = sec === 'form', isList = sec === 'list', isForecast = sec === 'forecast';
       document.getElementById('admin-sec-form').classList.toggle('hidden', !isForm);
       document.getElementById('admin-sec-list').classList.toggle('hidden', !isList);
       document.getElementById('admin-sec-forecast').classList.toggle('hidden', !isForecast);
-
       document.getElementById('admMenuSmvForm').classList.toggle('active', isForm);
       document.getElementById('admMenuSmvList').classList.toggle('active', isList);
       document.getElementById('admMenuForecast').classList.toggle('active', isForecast);
-
       if (isForm) ensureAtLeastOneRow();
       else if (isList) renderSavedSmvTable();
-      else if (isForecast) {
-        initForecastDates();
-        const curDate = document.getElementById('forecastCustomDate').value;
-        renderForecastTable(curDate);
-        renderSavedForecastQuickList(curDate);
-      }
+      else if (isForecast) { initForecastDates(); const curDate = document.getElementById('forecastCustomDate').value; renderForecastTable(curDate); renderSavedForecastQuickList(curDate); }
     }
 
     function ensureAtLeastOneRow() {
@@ -1241,11 +831,7 @@
       const wrap = document.getElementById('dynamicSmvRows');
       const row = document.createElement('div');
       row.className = 'dynamic-row';
-      row.innerHTML = `
-        <input type="text" class="dyn-proc" placeholder="Process (e.g. Linking)" value="${esc(processVal)}" />
-        <input type="number" step="0.01" class="dyn-smv" placeholder="SMV (e.g. 12.0)" value="${esc(smvVal)}" />
-        <button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>
-      `;
+      row.innerHTML = `<input type="text" class="dyn-proc" placeholder="Process (e.g. Linking)" value="${esc(processVal)}" /><input type="number" step="0.01" class="dyn-smv" placeholder="SMV (e.g. 12.0)" value="${esc(smvVal)}" /><button type="button" class="btn-remove" onclick="this.parentElement.remove()">X</button>`;
       wrap.appendChild(row);
     }
 
@@ -1260,66 +846,31 @@
 
     function insertGroupedByStyle(itemsToInsert) {
       itemsToInsert.forEach(item => {
-        const matchIdx = styleSmvMaster.findIndex(
-          x => x.style.toLowerCase() === item.style.toLowerCase() &&
-               x.process.toLowerCase() === item.process.toLowerCase()
-        );
-        if (matchIdx >= 0) {
-          styleSmvMaster[matchIdx] = { ...styleSmvMaster[matchIdx], style: item.style, process: item.process, smv: item.smv };
-          return;
-        }
-
+        const matchIdx = styleSmvMaster.findIndex(x => x.style.toLowerCase() === item.style.toLowerCase() && x.process.toLowerCase() === item.process.toLowerCase());
+        if (matchIdx >= 0) { styleSmvMaster[matchIdx] = { ...styleSmvMaster[matchIdx], style: item.style, process: item.process, smv: item.smv }; return; }
         let lastStyleIdx = -1;
-        for (let i = styleSmvMaster.length - 1; i >= 0; i--) {
-          if (styleSmvMaster[i].style.toLowerCase() === item.style.toLowerCase()) {
-            lastStyleIdx = i;
-            break;
-          }
-        }
-
-        if (lastStyleIdx >= 0) {
-          styleSmvMaster.splice(lastStyleIdx + 1, 0, item);
-        } else {
-          styleSmvMaster.push(item);
-        }
+        for (let i = styleSmvMaster.length - 1; i >= 0; i--) { if (styleSmvMaster[i].style.toLowerCase() === item.style.toLowerCase()) { lastStyleIdx = i; break; } }
+        if (lastStyleIdx >= 0) styleSmvMaster.splice(lastStyleIdx + 1, 0, item);
+        else styleSmvMaster.push(item);
       });
     }
 
     async function saveAllStyleSmv() {
-      const style = document.getElementById('adminStyleInput').value.trim();
-      const msg = document.getElementById('adminSmvMsg');
+      const style = document.getElementById('adminStyleInput').value.trim(), msg = document.getElementById('adminSmvMsg');
       const rows = Array.from(document.querySelectorAll('#dynamicSmvRows .dynamic-row'));
       if (!style) { msg.style.color = '#b91c1c'; msg.textContent = 'আগে Style No. লিখুন।'; return; }
-
       const newItems = [];
-      rows.forEach(r => {
-        const pr = r.querySelector('.dyn-proc').value.trim();
-        const smv = parseFloat(r.querySelector('.dyn-smv').value);
-        if (pr && !isNaN(smv) && smv > 0) newItems.push({ style, process: pr, smv });
-      });
+      rows.forEach(r => { const pr = r.querySelector('.dyn-proc').value.trim(), smv = parseFloat(r.querySelector('.dyn-smv').value); if (pr && !isNaN(smv) && smv > 0) newItems.push({ style, process: pr, smv }); });
       if (!newItems.length) { msg.style.color = '#b91c1c'; msg.textContent = 'কমপক্ষে একটি Process ও SMV দিন।'; return; }
-
       insertGroupedByStyle(newItems);
       expandedStyles.add(style.toLowerCase());
-
       localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
       renderSavedSmvTable();
-      if (currentTcData && currentTcData.style.toLowerCase() === style.toLowerCase()) {
-        populateProcessDropdownForStyle(currentTcData.style);
-      }
-
+      if (currentTcData && currentTcData.style.toLowerCase() === style.toLowerCase()) populateProcessDropdownForStyle(currentTcData.style);
       document.getElementById('adminFormTitle').textContent = 'Style, Process & SMV';
       document.getElementById('saveSmvBtn').textContent = 'Save Style Process & SMV';
-      msg.style.color = '#15803d';
-      msg.textContent = `${style} Style-এ ${newItems.length}টি Process & SMV সেভ হয়েছে।`;
-
-      try {
-        await fetch(API_URL, {
-          method: 'POST', mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'STYLE_SMV_BATCH', items: newItems })
-        });
-      } catch (_) {}
+      msg.style.color = '#15803d'; msg.textContent = `${style} Style-এ ${newItems.length}টি Process & SMV সেভ হয়েছে।`;
+      try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'STYLE_SMV_BATCH', items: newItems }) }); } catch (_) {}
     }
 
     function toggleStyleExpand(styleLower) {
@@ -1340,94 +891,38 @@
     }
 
     async function deleteSavedSmv(style, process) {
-      styleSmvMaster = styleSmvMaster.filter(
-        x => !(x.style.toLowerCase() === style.toLowerCase() && x.process.toLowerCase() === process.toLowerCase())
-      );
+      styleSmvMaster = styleSmvMaster.filter(x => !(x.style.toLowerCase() === style.toLowerCase() && x.process.toLowerCase() === process.toLowerCase()));
       localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
       renderSavedSmvTable();
-
-      try {
-        await fetch(API_URL, {
-          method: 'POST', mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'DELETE_STYLE_SMV', style, process })
-        });
-      } catch (_) {}
+      try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'DELETE_STYLE_SMV', style, process }) }); } catch (_) {}
     }
 
     function renderSavedSmvTable() {
       const container = document.getElementById('styleAccordionList');
-      if (!styleSmvMaster.length) {
-        container.innerHTML = '<p class="hint">কোনো Style Process & SMV সেভ করা নেই।</p>';
-        return;
-      }
-
-      const groups = [];
-      const groupMap = {};
+      if (!styleSmvMaster.length) { container.innerHTML = '<p class="hint">কোনো Style Process & SMV সেভ করা নেই।</p>'; return; }
+      const groups = [], groupMap = {};
       styleSmvMaster.forEach(item => {
         const key = item.style.toLowerCase();
-        if (!groupMap[key]) {
-          groupMap[key] = { style: item.style, key: key, items: [] };
-          groups.push(groupMap[key]);
-        }
+        if (!groupMap[key]) { groupMap[key] = { style: item.style, key, items: [] }; groups.push(groupMap[key]); }
         groupMap[key].items.push(item);
       });
-
       container.innerHTML = groups.map(g => {
         const isOpen = expandedStyles.has(g.key);
-        const rowsHtml = g.items.map(it => `
-          <tr>
-            <td>${esc(it.process)}</td>
-            <td><b>${it.smv}</b></td>
-            <td>
-              <div style="display:flex;gap:6px;justify-content:center;">
-                <button type="button" class="btn-edit" onclick="editSavedSmv('${esc(it.style)}','${esc(it.process)}',${it.smv})">Edit</button>
-                <button type="button" class="btn-remove" onclick="deleteSavedSmv('${esc(it.style)}','${esc(it.process)}')">Delete</button>
-              </div>
-            </td>
-          </tr>
-        `).join('');
-
-        return `
-          <div class="style-group-card">
-            <button type="button" class="style-group-header" onclick="toggleStyleExpand('${esc(g.key)}')">
-              <span>Style: <b>${esc(g.style)}</b></span>
-              <span style="display:flex;align-items:center;gap:8px;">
-                <span class="badge-count">${g.items.length} Process</span>
-                <span>${isOpen ? '▲' : '▼'}</span>
-              </span>
-            </button>
-            <div class="style-group-body ${isOpen ? '' : 'hidden'}">
-              <table>
-                <thead>
-                  <tr><th>Process</th><th>SMV</th><th>Action</th></tr>
-                </thead>
-                <tbody>${rowsHtml}</tbody>
-              </table>
-            </div>
-          </div>
-        `;
+        const rowsHtml = g.items.map(it => `<tr><td>${esc(it.process)}</td><td><b>${it.smv}</b></td><td><div style="display:flex;gap:6px;justify-content:center;"><button type="button" class="btn-edit" onclick="editSavedSmv('${esc(it.style)}','${esc(it.process)}',${it.smv})">Edit</button><button type="button" class="btn-remove" onclick="deleteSavedSmv('${esc(it.style)}','${esc(it.process)}')">Delete</button></div></td></tr>`).join('');
+        return `<div class="style-group-card"><button type="button" class="style-group-header" onclick="toggleStyleExpand('${esc(g.key)}')"><span>Style: <b>${esc(g.style)}</b></span><span style="display:flex;align-items:center;gap:8px;"><span class="badge-count">${g.items.length} Process</span><span>${isOpen ? '▲' : '▼'}</span></span></button><div class="style-group-body ${isOpen ? '' : 'hidden'}"><table><thead><tr><th>Process</th><th>SMV</th><th>Action</th></tr></thead><tbody>${rowsHtml}</tbody></table></div></div>`;
       }).join('');
     }
 
-    // --- OPERATOR ENTRY ---
     function playBeep(type = 'ok') {
       try {
-        if (!audioCtx) {
-          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-          audioCtx = new AudioContextClass();
-        }
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = type === 'dup' ? 320 : 880;
+        const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+        osc.type = 'sine'; osc.frequency.value = type === 'dup' ? 320 : 880;
         gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.19);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.19);
       } catch (_) {}
     }
 
@@ -1439,8 +934,7 @@
 
     function clearNotification() {
       const box = document.getElementById('scanNotifyBox');
-      box.className = 'notify-box';
-      box.textContent = '';
+      box.className = 'notify-box'; box.textContent = '';
     }
 
     function renderOperatorCard() {
@@ -1466,127 +960,63 @@
     }
 
     function updateFlowUI() {
-      const banner = document.getElementById('scanStepBanner');
-      const instr = document.getElementById('scanInstructionText');
-      const opBadge = document.getElementById('opLockBadge');
-      const tcCard = document.getElementById('tcStepCard');
-      const tcBadge = document.getElementById('tcLockBadge');
-      const procCard = document.getElementById('processStepCard');
-      const nextArea = document.getElementById('nextActionArea');
-      const nextBtn = document.getElementById('nextBtnMain');
-
-      renderOperatorCard();
-      renderTcCard();
-
+      const banner = document.getElementById('scanStepBanner'), instr = document.getElementById('scanInstructionText');
+      const opBadge = document.getElementById('opLockBadge'), tcCard = document.getElementById('tcStepCard'), tcBadge = document.getElementById('tcLockBadge');
+      const procCard = document.getElementById('processStepCard'), nextArea = document.getElementById('nextActionArea'), nextBtn = document.getElementById('nextBtnMain');
+      renderOperatorCard(); renderTcCard();
       if (flowMode === 'SCAN_OP') {
-        banner.className = 'step-banner';
-        banner.textContent = 'Operator ID Scan';
+        banner.className = 'step-banner'; banner.textContent = 'Operator ID Scan';
         instr.textContent = 'প্রথমে Operator ID স্ক্যান করুন। স্ক্যান হলে Next বাটন আসবে।';
-        opBadge.className = 'badge-live';
-        opBadge.textContent = 'WAITING SCAN';
-        tcCard.classList.add('locked-box');
-        tcBadge.className = 'badge-lock';
-        tcBadge.textContent = 'LOCKED';
-        procCard.classList.add('hidden');
-        nextArea.classList.add('hidden');
+        opBadge.className = 'badge-live'; opBadge.textContent = 'WAITING SCAN';
+        tcCard.classList.add('locked-box'); tcBadge.className = 'badge-lock'; tcBadge.textContent = 'LOCKED';
+        procCard.classList.add('hidden'); nextArea.classList.add('hidden');
       } else if (flowMode === 'HOLD_AFTER_OP') {
-        banner.className = 'step-banner hold-step';
-        banner.textContent = 'Operator Scanned — Next';
+        banner.className = 'step-banner hold-step'; banner.textContent = 'Operator Scanned — Next';
         instr.textContent = 'Operator তথ্য এসেছে। পরবর্তী TC স্ক্যান করতে "Next" বাটনে ক্লিক করুন।';
-        opBadge.className = 'badge-entries';
-        opBadge.textContent = 'SCANNED';
-        tcCard.classList.add('locked-box');
-        tcBadge.className = 'badge-lock';
-        tcBadge.textContent = 'LOCKED (CLICK NEXT)';
-        procCard.classList.add('hidden');
-        nextArea.classList.remove('hidden');
-        nextBtn.textContent = 'Next';
+        opBadge.className = 'badge-entries'; opBadge.textContent = 'SCANNED';
+        tcCard.classList.add('locked-box'); tcBadge.className = 'badge-lock'; tcBadge.textContent = 'LOCKED (CLICK NEXT)';
+        procCard.classList.add('hidden'); nextArea.classList.remove('hidden'); nextBtn.textContent = 'Next';
       } else if (flowMode === 'SCAN_TC') {
-        banner.className = 'step-banner tc-step';
-        banner.textContent = 'TC Card Scan';
+        banner.className = 'step-banner tc-step'; banner.textContent = 'TC Card Scan';
         instr.textContent = 'এখন TC Card স্ক্যান করুন। স্ক্যান হলে Process সিলেক্ট করার অপশন আসবে।';
-        opBadge.className = 'badge-entries';
-        opBadge.textContent = 'SCANNED';
-        tcCard.classList.remove('locked-box');
-        tcBadge.className = 'badge-live';
-        tcBadge.textContent = 'READY TO SCAN';
-        procCard.classList.add('hidden');
-        nextArea.classList.add('hidden');
+        opBadge.className = 'badge-entries'; opBadge.textContent = 'SCANNED';
+        tcCard.classList.remove('locked-box'); tcBadge.className = 'badge-live'; tcBadge.textContent = 'READY TO SCAN';
+        procCard.classList.add('hidden'); nextArea.classList.add('hidden');
       } else if (flowMode === 'HOLD_AFTER_TC') {
-        banner.className = 'step-banner proc-step';
-        banner.textContent = 'TC Scanned — Select Process';
+        banner.className = 'step-banner proc-step'; banner.textContent = 'TC Scanned — Select Process';
         instr.textContent = 'TC স্ক্যান হয়েছে। Style অনুযায়ী নিচের Process Dropdown থেকে আপনার Process সিলেক্ট করুন।';
-        opBadge.className = 'badge-entries';
-        opBadge.textContent = 'SCANNED';
-        tcCard.classList.remove('locked-box');
-        tcBadge.className = 'badge-entries';
-        tcBadge.textContent = 'SCANNED';
-        procCard.classList.remove('hidden');
-        nextArea.classList.add('hidden');
+        opBadge.className = 'badge-entries'; opBadge.textContent = 'SCANNED';
+        tcCard.classList.remove('locked-box'); tcBadge.className = 'badge-entries'; tcBadge.textContent = 'SCANNED';
+        procCard.classList.remove('hidden'); nextArea.classList.add('hidden');
         populateProcessDropdownForStyle(currentTcData ? currentTcData.style : '');
       } else if (flowMode === 'HOLD_AFTER_SAVE') {
-        banner.className = 'step-banner hold-step';
-        banner.textContent = 'Saved — Click Next for Next Scan';
+        banner.className = 'step-banner hold-step'; banner.textContent = 'Saved — Click Next for Next Scan';
         instr.textContent = 'পরের TC স্ক্যান করতে "Next" বাটনে ক্লিক করুন।';
-        opBadge.className = 'badge-entries';
-        opBadge.textContent = 'SCANNED';
-        tcCard.classList.remove('locked-box');
-        tcBadge.className = 'badge-entries';
-        tcBadge.textContent = 'SAVED';
-        procCard.classList.add('hidden');
-        nextArea.classList.remove('hidden');
-        nextBtn.textContent = 'Next';
+        opBadge.className = 'badge-entries'; opBadge.textContent = 'SCANNED';
+        tcCard.classList.remove('locked-box'); tcBadge.className = 'badge-entries'; tcBadge.textContent = 'SAVED';
+        procCard.classList.add('hidden'); nextArea.classList.remove('hidden'); nextBtn.textContent = 'Next';
       }
     }
 
     function onNextButtonClick() {
-      playBeep('ok');
-      clearNotification();
-      currentTcData = null;
+      playBeep('ok'); clearNotification(); currentTcData = null;
       document.getElementById('processActionMsg').textContent = '';
-      flowMode = 'SCAN_TC';
-      updateFlowUI();
-      startCameraIfNeeded();
+      flowMode = 'SCAN_TC'; updateFlowUI(); startCameraIfNeeded();
     }
 
     function handleBarcodeInput(rawCode) {
       const code = String(rawCode || '').trim();
-      if (!code) return;
-      if (flowMode !== 'SCAN_OP' && flowMode !== 'SCAN_TC') return;
-
-      stopCamera();
-      playBeep('ok');
-      clearNotification();
-
+      if (!code || (flowMode !== 'SCAN_OP' && flowMode !== 'SCAN_TC')) return;
+      stopCamera(); playBeep('ok'); clearNotification();
       if (flowMode === 'SCAN_OP') {
         const parts = code.split('|').map(s => s.trim());
-        currentOperator = {
-          operatorId: parts[0] || code,
-          operatorName: parts[1] || 'Md. Parvej Miah',
-          floor: parts[2] || '2nd Floor',
-          dept: parts[3] || 'Linking',
-          jobType: parts[4] || 'Regular',
-          line: parts[5] || 'Linking Line-02'
-        };
-        flowMode = 'HOLD_AFTER_OP';
-        updateFlowUI();
+        currentOperator = { operatorId: parts[0] || code, operatorName: parts[1] || 'Md. Parvej Miah', floor: parts[2] || '2nd Floor', dept: parts[3] || 'Linking', jobType: parts[4] || 'Regular', line: parts[5] || 'Linking Line-02' };
+        flowMode = 'HOLD_AFTER_OP'; updateFlowUI();
         showNotification(`Operator "${currentOperator.operatorId}" স্ক্যান হয়েছে। পরের ধাপে যেতে "Next" চাপুন।`, 'ok');
-        return;
-      }
-
-      if (flowMode === 'SCAN_TC') {
+      } else if (flowMode === 'SCAN_TC') {
         const parts = code.split('|').map(s => s.trim());
-        currentTcData = {
-          tcNo: parts[0] || code,
-          lotNo: parts[1] || 'LOT-101',
-          buyer: parts[2] || 'Buyer-A',
-          style: parts[3] || '1896',
-          color: parts[4] || 'Blue',
-          size: parts[5] || 'M',
-          bundleQty: Number(parts[6] || 12)
-        };
-        flowMode = 'HOLD_AFTER_TC';
-        updateFlowUI();
+        currentTcData = { tcNo: parts[0] || code, lotNo: parts[1] || 'LOT-101', buyer: parts[2] || 'Buyer-A', style: parts[3] || '1896', color: parts[4] || 'Blue', size: parts[5] || 'M', bundleQty: Number(parts[6] || 12) };
+        flowMode = 'HOLD_AFTER_TC'; updateFlowUI();
         showNotification(`TC "${currentTcData.tcNo}" (Style: ${currentTcData.style}) স্ক্যান হয়েছে। এখন আপনার Process সিলেক্ট করুন।`, 'ok');
       }
     }
@@ -1594,196 +1024,94 @@
     function onProcessSelected() {
       const proc = document.getElementById('processDropdown').value;
       clearNotification();
-      if (!proc || !currentTcData) {
-        renderTcCard();
-        return;
-      }
-
+      if (!proc || !currentTcData) { renderTcCard(); return; }
       const dupKey = `${currentTcData.tcNo}__${proc.toLowerCase()}`;
       if (scannedTcProcessSet.has(dupKey)) {
         playBeep('dup');
         showNotification(`Notification: TC "${currentTcData.tcNo}" একই "${proc}" Process-এ দুবার স্ক্যান হবে না!`, 'dup');
-        document.getElementById('processDropdown').value = '';
-        renderTcCard();
-        return;
+        document.getElementById('processDropdown').value = ''; renderTcCard(); return;
       }
-
-      const found = styleSmvMaster.find(
-        x => x.style.toLowerCase() === currentTcData.style.toLowerCase() &&
-             x.process.toLowerCase() === proc.toLowerCase()
-      );
+      const found = styleSmvMaster.find(x => x.style.toLowerCase() === currentTcData.style.toLowerCase() && x.process.toLowerCase() === proc.toLowerCase());
       const smv = found ? Number(found.smv) : 0;
-      const sah = Number(((currentTcData.bundleQty * smv) / 60).toFixed(2));
-      renderTcCard(proc, smv, sah);
+      renderTcCard(proc, smv, Number(((currentTcData.bundleQty * smv) / 60).toFixed(2)));
     }
 
     async function confirmProcessEntry() {
-      const proc = document.getElementById('processDropdown').value;
-      const msgEl = document.getElementById('processActionMsg');
+      const proc = document.getElementById('processDropdown').value, msgEl = document.getElementById('processActionMsg');
       msgEl.textContent = '';
-
-      if (!currentOperator || !currentTcData) {
-        showNotification('আগে Operator ID এবং TC Scan সম্পন্ন করুন।', 'dup');
-        return;
-      }
-      if (!proc) {
-        msgEl.style.color = '#b91c1c';
-        msgEl.textContent = 'Dropdown থেকে একটি Process সিলেক্ট করুন।';
-        return;
-      }
-
+      if (!currentOperator || !currentTcData) { showNotification('আগে Operator ID এবং TC Scan সম্পন্ন করুন।', 'dup'); return; }
+      if (!proc) { msgEl.style.color = '#b91c1c'; msgEl.textContent = 'Dropdown থেকে একটি Process সিলেক্ট করুন।'; return; }
       const dupKey = `${currentTcData.tcNo}__${proc.toLowerCase()}`;
       if (scannedTcProcessSet.has(dupKey)) {
         playBeep('dup');
-        showNotification(`Notification: TC "${currentTcData.tcNo}" এই "${proc}" Process-এ ইতিমধ্যে স্ক্যান করা হয়েছে!`, 'dup');
-        return;
+        showNotification(`Notification: TC "${currentTcData.tcNo}" এই "${proc}" Process-এ ইতিমধ্যে স্ক্যান করা হয়েছে!`, 'dup'); return;
       }
-
-      const found = styleSmvMaster.find(
-        x => x.style.toLowerCase() === currentTcData.style.toLowerCase() &&
-             x.process.toLowerCase() === proc.toLowerCase()
-      );
-      const smv = found ? Number(found.smv) : 0;
-      const sah = Number(((currentTcData.bundleQty * smv) / 60).toFixed(2));
-
+      const found = styleSmvMaster.find(x => x.style.toLowerCase() === currentTcData.style.toLowerCase() && x.process.toLowerCase() === proc.toLowerCase());
+      const smv = found ? Number(found.smv) : 0, sah = Number(((currentTcData.bundleQty * smv) / 60).toFixed(2));
       const record = {
-        timestamp: getBdTimestampNow(),
-        operatorId: currentOperator.operatorId,
-        operatorName: currentOperator.operatorName,
-        floor: currentOperator.floor,
-        dept: currentOperator.dept,
-        jobType: currentOperator.jobType,
-        line: currentOperator.line,
-        tcNo: currentTcData.tcNo,
-        lotNo: currentTcData.lotNo,
-        buyer: currentTcData.buyer,
-        style: currentTcData.style,
-        color: currentTcData.color,
-        size: currentTcData.size,
-        bundleQty: currentTcData.bundleQty,
-        process: proc,
-        smv,
-        earnedSah: sah
+        timestamp: getBdTimestampNow(), operatorId: currentOperator.operatorId, operatorName: currentOperator.operatorName,
+        floor: currentOperator.floor, dept: currentOperator.dept, jobType: currentOperator.jobType, line: currentOperator.line,
+        tcNo: currentTcData.tcNo, lotNo: currentTcData.lotNo, buyer: currentTcData.buyer, style: currentTcData.style,
+        color: currentTcData.color, size: currentTcData.size, bundleQty: currentTcData.bundleQty, process: proc, smv, earnedSah: sah
       };
-
-      scannedTcProcessSet.add(dupKey);
-      scannedEntries.unshift(record);
+      scannedTcProcessSet.add(dupKey); scannedEntries.unshift(record);
       localStorage.setItem('scanned_entries_v4', JSON.stringify(scannedEntries));
-
-      flowMode = 'HOLD_AFTER_SAVE';
-      updateFlowUI();
-      renderTcCard(proc, smv, sah);
+      flowMode = 'HOLD_AFTER_SAVE'; updateFlowUI(); renderTcCard(proc, smv, sah);
       showNotification(`Saved: OP ${record.operatorId} | Jobtype ${record.jobType} | Line ${record.line} | TC ${record.tcNo} | Process ${record.process} | SAH ${record.earnedSah}. পরের TC স্ক্যানে "Next" চাপুন।`, 'ok');
-
-      try {
-        await fetch(API_URL, {
-          method: 'POST', mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(record)
-        });
-      } catch (_) {}
+      try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(record) }); } catch (_) {}
     }
 
     function resetOperatorFlow() {
-      stopCamera();
-      currentOperator = null;
-      currentTcData = null;
-      flowMode = 'SCAN_OP';
-      document.getElementById('processActionMsg').textContent = '';
-      clearNotification();
-      updateFlowUI();
+      stopCamera(); currentOperator = null; currentTcData = null; flowMode = 'SCAN_OP';
+      document.getElementById('processActionMsg').textContent = ''; clearNotification(); updateFlowUI();
     }
 
     function runScannerStart(cameraConfig) {
-      return html5QrScanner.start(
-        cameraConfig,
-        { fps: 10, qrbox: { width: 240, height: 140 } },
-        (decodedText) => handleBarcodeInput(decodedText)
-      );
+      return html5QrScanner.start(cameraConfig, { fps: 10, qrbox: { width: 240, height: 140 } }, (decodedText) => handleBarcodeInput(decodedText));
     }
 
     function startCameraIfNeeded() {
       if (cameraRunning) return;
-      if (typeof Html5Qrcode === 'undefined') {
-        showNotification('Barcode scanner library লোড হয়নি। পেজ রিফ্রেশ করুন।', 'dup');
-        return;
-      }
+      if (typeof Html5Qrcode === 'undefined') { showNotification('Barcode scanner library লোড হয়নি। পেজ রিফ্রেশ করুন।', 'dup'); return; }
       const readerEl = document.getElementById('reader');
       if (readerEl) readerEl.innerHTML = '';
       html5QrScanner = new Html5Qrcode("reader");
-
       runScannerStart({ facingMode: "environment" })
-        .then(() => {
-          cameraRunning = true;
-          clearNotification();
-          document.getElementById('camToggleBtn').textContent = 'Stop Camera';
-        })
+        .then(() => { cameraRunning = true; clearNotification(); document.getElementById('camToggleBtn').textContent = 'Stop Camera'; })
         .catch(() => {
           if (typeof Html5Qrcode.getCameras === 'function') {
             Html5Qrcode.getCameras().then((devices) => {
-              if (!devices || !devices.length) {
-                cameraRunning = false;
-                document.getElementById('camToggleBtn').textContent = 'Start Camera';
-                showNotification('ফোনে কোনো ক্যামেরা পাওয়া যায়নি বা Camera Permission দেওয়া নেই।', 'dup');
-                return;
-              }
+              if (!devices || !devices.length) { cameraRunning = false; document.getElementById('camToggleBtn').textContent = 'Start Camera'; showNotification('ফোনে কোনো ক্যামেরা পাওয়া যায়নি বা Camera Permission দেওয়া নেই।', 'dup'); return; }
               const backCam = devices.find(d => /back|rear|environment/i.test(d.label)) || devices[devices.length - 1];
-              return runScannerStart(backCam.id).then(() => {
-                cameraRunning = true;
-                clearNotification();
-                document.getElementById('camToggleBtn').textContent = 'Stop Camera';
-              });
-            }).catch((err) => {
-              cameraRunning = false;
-              document.getElementById('camToggleBtn').textContent = 'Start Camera';
-              showNotification('ক্যামেরা চালু হয়নি: ' + (err && err.message ? err.message : 'Camera permission Allow করুন।'), 'dup');
-            });
-          } else {
-            cameraRunning = false;
-            document.getElementById('camToggleBtn').textContent = 'Start Camera';
-            showNotification('ক্যামেরা চালু হয়নি। ব্রাউজার/অ্যাপের Camera Permission চেক করুন।', 'dup');
-          }
+              return runScannerStart(backCam.id).then(() => { cameraRunning = true; clearNotification(); document.getElementById('camToggleBtn').textContent = 'Stop Camera'; });
+            }).catch((err) => { cameraRunning = false; document.getElementById('camToggleBtn').textContent = 'Start Camera'; showNotification('ক্যামেরা চালু হয়নি: ' + (err && err.message ? err.message : 'Camera permission Allow করুন।'), 'dup'); });
+          } else { cameraRunning = false; document.getElementById('camToggleBtn').textContent = 'Start Camera'; showNotification('ক্যামেরা চালু হয়নি। ব্রাউজার/অ্যাপের Camera Permission চেক করুন।', 'dup'); }
         });
     }
 
     function toggleCamera() {
-      if (cameraRunning) {
-        stopCamera();
-      } else {
-        if (flowMode !== 'SCAN_OP' && flowMode !== 'SCAN_TC') {
-          showNotification('আগে "Next" বাটনে ক্লিক করুন, তারপর স্ক্যান হবে।', 'dup');
-          return;
-        }
-        startCameraIfNeeded();
-      }
+      if (cameraRunning) stopCamera();
+      else if (flowMode !== 'SCAN_OP' && flowMode !== 'SCAN_TC') showNotification('আগে "Next" বাটনে ক্লিক করুন, তারপর স্ক্যান হবে।', 'dup');
+      else startCameraIfNeeded();
     }
 
     function stopCamera() {
       const btn = document.getElementById('camToggleBtn');
       if (btn) btn.textContent = 'Start Camera';
       if (html5QrScanner && cameraRunning) {
-        html5QrScanner.stop().then(() => {
-          html5QrScanner.clear();
-          cameraRunning = false;
-        }).catch(() => {
-          cameraRunning = false;
-        });
-      } else {
-        cameraRunning = false;
-      }
+        html5QrScanner.stop().then(() => { html5QrScanner.clear(); cameraRunning = false; }).catch(() => { cameraRunning = false; });
+      } else cameraRunning = false;
     }
 
     // --- OPERATOR INCENTIVE FUNCTIONS ---
     function incToNum(v) {
       if (typeof v === "number") return isFinite(v) ? v : 0;
-      const cleaned = String(v || "").replace(/[^0-9.-]/g, "");
-      const n = parseFloat(cleaned);
+      const n = parseFloat(String(v || "").replace(/[^0-9.-]/g, ""));
       return isFinite(n) ? n : 0;
     }
 
     function incFormatMoney(num) {
-      const rounded = Math.round(num);
-      return "৳" + rounded.toLocaleString("en-US");
+      return "৳" + Math.round(num).toLocaleString("en-US");
     }
 
     function incParseDateObj(str) {
@@ -1791,16 +1119,9 @@
       const s = String(str).trim();
       const parts = s.split("-");
       if (parts.length === 3) {
-        const months = {
-          jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
-          jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11
-        };
-        const d = parseInt(parts[0], 10);
-        const m = months[parts[1].toLowerCase().slice(0, 3)];
-        const y = parseInt(parts[2], 10);
-        if (!isNaN(d) && m !== undefined && !isNaN(y)) {
-          return new Date(y < 100 ? y + 2000 : y, m, d);
-        }
+        const months = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+        const d = parseInt(parts[0], 10), m = months[parts[1].toLowerCase().slice(0, 3)], y = parseInt(parts[2], 10);
+        if (!isNaN(d) && m !== undefined && !isNaN(y)) return new Date(y < 100 ? y + 2000 : y, m, d);
       }
       const ts = Date.parse(s);
       return isNaN(ts) ? null : new Date(ts);
@@ -1817,22 +1138,13 @@
     function incGetLatestDateLabel(rows) {
       if (!rows || !rows.length) return "—";
       let bestStr = String(rows[rows.length - 1][0] || "").trim() || "—";
-      let bestDate = incParseDateObj(bestStr);
-      let bestMs = bestDate ? bestDate.getTime() : NaN;
-
+      let bestDate = incParseDateObj(bestStr), bestMs = bestDate ? bestDate.getTime() : NaN;
       for (let i = 0; i < rows.length; i++) {
         const curStr = String(rows[i][0] || "").trim();
         if (!curStr) continue;
-        const curDate = incParseDateObj(curStr);
-        const curMs = curDate ? curDate.getTime() : NaN;
-        if (!isNaN(curMs)) {
-          if (isNaN(bestMs) || curMs >= bestMs) {
-            bestMs = curMs;
-            bestStr = curStr;
-          }
-        } else {
-          bestStr = curStr;
-        }
+        const curDate = incParseDateObj(curStr), curMs = curDate ? curDate.getTime() : NaN;
+        if (!isNaN(curMs)) { if (isNaN(bestMs) || curMs >= bestMs) { bestMs = curMs; bestStr = curStr; } }
+        else bestStr = curStr;
       }
       return bestStr || "—";
     }
@@ -1840,54 +1152,32 @@
     function renderIncQuickPills(rows) {
       const wrap = document.getElementById("incQuickPills");
       if (!wrap) return;
-      const seenId = {};
-      const seenLine = {};
-      const items = [];
-
+      const seenId = {}, seenLine = {}, items = [];
       for (let i = 0; i < rows.length && items.length < 6; i++) {
-        const idVal = String(rows[i][1] || "").trim();
-        const lineVal = String(rows[i][5] || "").trim();
-        if (idVal && !seenId[idVal] && items.length < 4) {
-          seenId[idVal] = true;
-          items.push(idVal);
-        } else if (lineVal && !seenLine[lineVal] && items.length < 6) {
-          seenLine[lineVal] = true;
-          items.push(lineVal);
-        }
+        const idVal = String(rows[i][1] || "").trim(), lineVal = String(rows[i][5] || "").trim();
+        if (idVal && !seenId[idVal] && items.length < 4) { seenId[idVal] = true; items.push(idVal); }
+        else if (lineVal && !seenLine[lineVal] && items.length < 6) { seenLine[lineVal] = true; items.push(lineVal); }
       }
-
-      wrap.innerHTML = items.map(qItem =>
-        `<button class="inc-pill-btn" type="button" data-q="${esc(qItem)}">${esc(qItem)}</button>`
-      ).join("");
-
+      wrap.innerHTML = items.map(qItem => `<button class="inc-pill-btn" type="button" data-q="${esc(qItem)}">${esc(qItem)}</button>`).join("");
       wrap.querySelectorAll(".inc-pill-btn").forEach(btn => {
-        btn.addEventListener("click", function () {
-          document.getElementById("incSearchInput").value = this.getAttribute("data-q");
-          renderIncentiveReport();
-        });
+        btn.addEventListener("click", function () { document.getElementById("incSearchInput").value = this.getAttribute("data-q"); renderIncentiveReport(); });
       });
     }
 
     function renderIncentiveReport() {
       const q = (document.getElementById("incSearchInput").value || "").trim().toLowerCase();
       const matched = [];
-
       if (q) {
         for (let i = 0; i < incRawRows.length; i++) {
           const r = incRawRows[i];
-          const idVal = String(r[1] || "").trim().toLowerCase();
-          const nameVal = String(r[2] || "").trim().toLowerCase();
-          const lineVal = String(r[5] || "").trim().toLowerCase();
-          if (idVal.indexOf(q) !== -1 || lineVal.indexOf(q) !== -1 || nameVal.indexOf(q) !== -1) {
-            matched.push(r);
-          }
+          if (String(r[1] || "").trim().toLowerCase().indexOf(q) !== -1 ||
+              String(r[5] || "").trim().toLowerCase().indexOf(q) !== -1 ||
+              String(r[2] || "").trim().toLowerCase().indexOf(q) !== -1) matched.push(r);
         }
       } else if (incRawRows.length > 0) {
         const firstId = String(incRawRows[0][1] || "").trim();
         for (let m = 0; m < incRawRows.length; m++) {
-          if (String(incRawRows[m][1] || "").trim() === firstId) {
-            matched.push(incRawRows[m]);
-          }
+          if (String(incRawRows[m][1] || "").trim() === firstId) matched.push(incRawRows[m]);
         }
       }
 
@@ -1906,199 +1196,134 @@
         return;
       }
 
-      const uniqueIds = {};
-      const uniqueLines = {};
-      let idCount = 0;
-      let lineCount = 0;
-
+      const uniqueIds = {}, uniqueLines = {}, uniqueJobs = [], seenJob = {};
+      let idCount = 0, lineCount = 0;
       for (let u = 0; u < matched.length; u++) {
-        const uid = String(matched[u][1] || "").trim();
-        const uline = String(matched[u][5] || "").trim();
-        if (uid && !uniqueIds[uid]) {
-          uniqueIds[uid] = true;
-          idCount++;
-        }
-        if (uline && !uniqueLines[uline]) {
-          uniqueLines[uline] = true;
-          lineCount++;
-        }
+        const uid = String(matched[u][1] || "").trim(), uline = String(matched[u][5] || "").trim(), ujob = String(matched[u][4] || "").trim();
+        if (uid && !uniqueIds[uid]) { uniqueIds[uid] = true; idCount++; }
+        if (uline && !uniqueLines[uline]) { uniqueLines[uline] = true; lineCount++; }
+        if (ujob && !seenJob[ujob.toLowerCase()]) { seenJob[ujob.toLowerCase()] = true; uniqueJobs.push(ujob); }
       }
 
       const firstRow = matched[0];
-      document.getElementById("incOpName").textContent =
-        idCount === 1
-          ? (String(firstRow[2] || "Operator").trim() || "Operator")
-          : ("Line Report (" + idCount + " Operators)");
+      document.getElementById("incOpName").textContent = idCount === 1 ? (String(firstRow[2] || "").trim() || "Operator") : ("Line Report (" + idCount + " Operators)");
+      document.getElementById("incOpId").textContent = idCount === 1 ? ("ID: " + (String(firstRow[1] || "").trim() || "—")) : ("Filter: " + (q ? q.toUpperCase() : "All"));
+      document.getElementById("incOpJob").textContent = uniqueJobs.length ? uniqueJobs.join(", ") : "—";
+      document.getElementById("incOpLine").textContent = lineCount === 1 ? (String(firstRow[5] || "").trim() || "—") : (lineCount > 1 ? (lineCount + " Lines") : "—");
 
-      document.getElementById("incOpId").textContent =
-        idCount === 1
-          ? ("ID: " + String(firstRow[1] || "").trim())
-          : ("Filter: " + (q ? q.toUpperCase() : "All"));
-
-      document.getElementById("incOpJob").textContent = String(firstRow[4] || "—").trim() || "—";
-      document.getElementById("incOpLine").textContent =
-        lineCount === 1 ? (String(firstRow[5] || "—").trim() || "—") : (lineCount + " Lines");
-
-      const dateMap = {};
-      const dateOrder = [];
-
+      const dateMap = {}, dateOrder = [];
       for (let x = 0; x < matched.length; x++) {
-        const row = matched[x];
-        const dtKey = String(row[0] || "—").trim() || "—";
-        const smv = incToNum(row[8]);
-        const wh = incToNum(row[10]);
-        const tgt = incToNum(row[11]);
-        const sah = incToNum(row[13]);
-        const targetSah = (tgt * smv) / 60;
-
-        if (!dateMap[dtKey]) {
-          dateMap[dtKey] = {
-            rawDate: dtKey,
-            dateTotalWh: 0,
-            dateTotalTargetSah: 0,
-            dateTotalAchSah: 0
-          };
-          dateOrder.push(dtKey);
-        }
-
+        const row = matched[x], dtKey = String(row[0] || "—").trim() || "—";
+        const smv = incToNum(row[8]), wh = incToNum(row[10]), tgt = incToNum(row[11]), sah = incToNum(row[13]);
+        if (!dateMap[dtKey]) { dateMap[dtKey] = { rawDate: dtKey, dateTotalWh: 0, dateTotalTargetSah: 0, dateTotalAchSah: 0 }; dateOrder.push(dtKey); }
         dateMap[dtKey].dateTotalWh += wh;
-        dateMap[dtKey].dateTotalTargetSah += targetSah;
+        dateMap[dtKey].dateTotalTargetSah += (tgt * smv) / 60;
         dateMap[dtKey].dateTotalAchSah += sah;
       }
 
-      let totalHrs = 0;
-      let totalTargetSah = 0;
-      let totalAchSah = 0;
-      let totalInc = 0;
-      let rowsHtml = "";
-
+      let totalHrs = 0, totalTargetSah = 0, totalAchSah = 0, totalInc = 0, rowsHtml = "";
       for (let dIdx = 0; dIdx < dateOrder.length; dIdx++) {
-        const item = dateMap[dateOrder[dIdx]];
-        const dayWh = item.dateTotalWh;
-        const dayTargetSah = item.dateTotalTargetSah;
-        const dayAchSah = item.dateTotalAchSah;
-
+        const item = dateMap[dateOrder[dIdx]], dayWh = item.dateTotalWh, dayTargetSah = item.dateTotalTargetSah, dayAchSah = item.dateTotalAchSah;
         const dayEffPct = dayWh > 0 ? Math.round((dayAchSah / dayWh) * 100) : 0;
-        const extraSah = Math.max(0, dayAchSah - (dayWh * 0.70));
-        const dayInc = extraSah * 60 * 0.80;
-
-        totalHrs += dayWh;
-        totalTargetSah += dayTargetSah;
-        totalAchSah += dayAchSah;
-        totalInc += dayInc;
-
+        const dayInc = Math.max(0, dayAchSah - (dayWh * 0.70)) * 60 * 0.80;
+        totalHrs += dayWh; totalTargetSah += dayTargetSah; totalAchSah += dayAchSah; totalInc += dayInc;
         const badgeClass = dayEffPct >= 100 ? "eff-pill eff-high" : "eff-pill eff-mid";
-
-        rowsHtml +=
-          "<tr>" +
-          "<td>" + incFormatTwoLineDate(item.rawDate) + "</td>" +
-          "<td>" + dayWh.toFixed(1) + "</td>" +
-          "<td>" + dayTargetSah.toFixed(1) + "</td>" +
-          "<td>" + dayAchSah.toFixed(1) + "</td>" +
-          '<td><span class="' + badgeClass + '">' + dayEffPct + "%</span></td>" +
-          '<td class="inc-cell">' + incFormatMoney(dayInc) + "</td>" +
-          "</tr>";
+        rowsHtml += `<tr><td>${incFormatTwoLineDate(item.rawDate)}</td><td>${dayWh.toFixed(1)}</td><td>${dayTargetSah.toFixed(1)}</td><td>${dayAchSah.toFixed(1)}</td><td><span class="${badgeClass}">${dayEffPct}%</span></td><td class="inc-cell">${incFormatMoney(dayInc)}</td></tr>`;
       }
 
       const overallEffPct = totalHrs > 0 ? Math.round((totalAchSah / totalHrs) * 100) : 0;
       document.getElementById("incTotalBox").textContent = incFormatMoney(totalInc) + " BDT";
-
-      const footHtml =
-        "<tfoot><tr>" +
-        "<td>Grand<br>Total</td>" +
-        "<td>" + totalHrs.toFixed(1) + "</td>" +
-        "<td>" + totalTargetSah.toFixed(1) + "</td>" +
-        "<td>" + totalAchSah.toFixed(1) + "</td>" +
-        "<td>" + overallEffPct + "%</td>" +
-        "<td>" + incFormatMoney(totalInc) + "</td>" +
-        "</tr></tfoot>";
-
       document.getElementById("incTableWrap").innerHTML =
-        '<table class="inc-table">' +
-        "<thead><tr>" +
-        "<th>Date</th>" +
-        "<th>Hrs</th>" +
-        "<th>Target<br>(SAH)</th>" +
-        "<th>Achieved<br>(SAH)</th>" +
-        "<th>Eff %</th>" +
-        "<th>Incentive<br>(৳)</th>" +
-        "</tr></thead>" +
-        "<tbody>" + rowsHtml + "</tbody>" +
-        footHtml +
-        "</table>";
+        `<table class="inc-table"><thead><tr><th>Date</th><th>Hrs</th><th>Target<br>(SAH)</th><th>Achieved<br>(SAH)</th><th>Eff %</th><th>Incentive<br>(৳)</th></tr></thead><tbody>${rowsHtml}</tbody><tfoot><tr><td>Grand<br>Total</td><td>${totalHrs.toFixed(1)}</td><td>${totalTargetSah.toFixed(1)}</td><td>${totalAchSah.toFixed(1)}</td><td>${overallEffPct}%</td><td>${incFormatMoney(totalInc)}</td></tr></tfoot></table>`;
     }
 
     function applyIncentiveData(rows, tag) {
       incRawRows = Array.isArray(rows) ? rows : [];
-      document.getElementById("incStatusText").textContent =
-        incRawRows.length > 0 ? (tag + " (" + incRawRows.length + " rows)") : "No data";
-      document.getElementById("incDrawerMeta").innerHTML =
-        "Created by Parvej<br>Rows: <strong>" + incRawRows.length + "</strong><br>Upto: <strong>" + esc(incGetLatestDateLabel(incRawRows)) + "</strong>";
+      document.getElementById("incStatusText").textContent = incRawRows.length > 0 ? (tag + " (" + incRawRows.length + " rows)") : "No data";
+      document.getElementById("incDrawerMeta").innerHTML = "Created by Parvej<br>Rows: <strong>" + incRawRows.length + "</strong><br>Upto: <strong>" + esc(incGetLatestDateLabel(incRawRows)) + "</strong>";
       renderIncQuickPills(incRawRows);
       renderIncentiveReport();
     }
 
+    function normalizeGvizRows(gvizTable) {
+      if (!gvizTable || !Array.isArray(gvizTable.rows)) return [];
+      const out = [];
+      gvizTable.rows.forEach(r => {
+        if (!r || !Array.isArray(r.c)) return;
+        const c = r.c.map(cell => (cell && cell.v !== null && cell.v !== undefined) ? cell.v : "");
+        const idVal = String(c[1] || "").trim(), nameVal = String(c[2] || "").trim();
+        if (!idVal && !nameVal) return;
+        let dtStr = "";
+        const rawDt = c[0];
+        if (typeof rawDt === "string" && rawDt.indexOf("Date(") === 0) {
+          const m = rawDt.match(/Date\((\d+),(\d+),(\d+)/);
+          if (m) {
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            dtStr = `${String(Number(m[3])).padStart(2, "0")}-${months[Number(m[2])]}-${String(Number(m[1])).slice(-2)}`;
+          }
+        } else dtStr = rawDt ? String(rawDt).trim() : "";
+        out.push([
+          dtStr, idVal, nameVal,
+          String(c[3] || "").trim(), String(c[4] || "").trim(), String(c[5] || "").trim(), String(c[6] || "").trim(), String(c[7] || "").trim(),
+          incToNum(c[8]), incToNum(c[9]), incToNum(c[10]), incToNum(c[11]), incToNum(c[12]), incToNum(c[13]), incToNum(c[14]), incToNum(c[15])
+        ]);
+      });
+      return out;
+    }
+
     async function fetchIncentiveSheet(forceRefresh) {
       const statusEl = document.getElementById("incStatusText");
-
       if (!forceRefresh && incRawRows.length === 0) {
         try {
           const saved = localStorage.getItem(INC_CACHE_KEY);
-          if (saved) {
-            const parsed = JSON.parse(saved);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              applyIncentiveData(parsed, "Instant");
-            }
-          }
+          if (saved) { const parsed = JSON.parse(saved); if (Array.isArray(parsed) && parsed.length > 0) applyIncentiveData(parsed, "Instant"); }
         } catch (_) {}
       }
-
       statusEl.textContent = incRawRows.length > 0 ? "Updating..." : "Syncing...";
 
       if (typeof google !== "undefined" && google.script && google.script.run) {
         google.script.run
           .withSuccessHandler(function (res) {
-            if (res && res.ok) {
-              try { localStorage.setItem(INC_CACHE_KEY, JSON.stringify(res.rows || [])); } catch (_) {}
-              applyIncentiveData(res.rows, "Live");
-            } else {
-              statusEl.textContent = (res && res.error) ? res.error : "Error";
-            }
+            if (res && res.ok) { try { localStorage.setItem(INC_CACHE_KEY, JSON.stringify(res.rows || [])); } catch (_) {} applyIncentiveData(res.rows, "Live"); }
+            else statusEl.textContent = (res && res.error) ? res.error : "Error";
           })
-          .withFailureHandler(function (err) {
-            statusEl.textContent = (err && err.message) ? err.message : "Failed";
-          })
+          .withFailureHandler(function (err) { statusEl.textContent = (err && err.message) ? err.message : "Failed"; })
           .getSheetRows(Boolean(forceRefresh));
         return;
       }
 
       try {
+        const gvizUrl = `https://docs.google.com/spreadsheets/d/${INC_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(INC_SHEET_TAB)}&t=${Date.now()}`;
+        const txt = await (await fetch(gvizUrl)).text();
+        const jsonMatch = txt.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);?\s*$/);
+        if (jsonMatch && jsonMatch[1]) {
+          const parsedGviz = JSON.parse(jsonMatch[1]);
+          if (parsedGviz && parsedGviz.status === "ok" && parsedGviz.table) {
+            const rows = normalizeGvizRows(parsedGviz.table);
+            try { localStorage.setItem(INC_CACHE_KEY, JSON.stringify(rows)); } catch (_) {}
+            applyIncentiveData(rows, "Live");
+            return;
+          }
+        }
+      } catch (_) {}
+
+      try {
         const res = await fetch(`${API_URL}?action=incentive&force=${forceRefresh ? "1" : "0"}&t=${Date.now()}`);
         const data = await res.json();
-        if (data && data.ok) {
-          try { localStorage.setItem(INC_CACHE_KEY, JSON.stringify(data.rows || [])); } catch (_) {}
-          applyIncentiveData(data.rows, "Live");
-        } else {
-          statusEl.textContent = (data && data.error) ? data.error : "Database tab data unavailable";
-        }
+        if (data && data.ok) { try { localStorage.setItem(INC_CACHE_KEY, JSON.stringify(data.rows || [])); } catch (_) {} applyIncentiveData(data.rows, "Live"); }
+        else statusEl.textContent = (data && data.error) ? data.error : "Database tab data unavailable";
       } catch (e) {
         statusEl.textContent = incRawRows.length > 0 ? "Cached" : "Sync failed";
       }
     }
 
     function handleLogin() {
-      const el = document.getElementById('pinField');
-      const rawPin = (el ? el.value : '').replace(/\s+/g, '').trim();
-      loginByPinValue(rawPin);
+      loginByPinValue((document.getElementById('pinField').value || '').replace(/\s+/g, '').trim());
     }
 
     function loginByPinValue(pin) {
-      const role = PINS[pin];
-      const msg = document.getElementById('loginMsg');
-      if (!role) {
-        msg.textContent = 'ভুল PIN! সঠিক PIN দিন।';
-        return;
-      }
+      const role = PINS[pin], msg = document.getElementById('loginMsg');
+      if (!role) { msg.textContent = 'ভুল PIN! সঠিক PIN দিন।'; return; }
       msg.textContent = '';
       try { sessionStorage.setItem(SESSION_KEY, role); } catch (_) {}
       applyRoleUI(role);
@@ -2130,21 +1355,10 @@
     function switchView(view) {
       ['dashboard', 'operator', 'incentive', 'admin'].forEach(v => {
         document.getElementById('view-' + v).classList.toggle('hidden', v !== view);
-        const btn = document.getElementById(
-          v === 'dashboard' ? 'btnTabDash'
-            : v === 'operator' ? 'btnTabOp'
-            : v === 'incentive' ? 'btnTabInc'
-            : 'btnTabAdmin'
-        );
+        const btn = document.getElementById(v === 'dashboard' ? 'btnTabDash' : v === 'operator' ? 'btnTabOp' : v === 'incentive' ? 'btnTabInc' : 'btnTabAdmin');
         if (btn) btn.classList.toggle('active', v === view);
       });
-      if (view === 'dashboard') {
-        stopCamera();
-        updateRunningDateBadge();
-        const dashPicker = document.getElementById('dashDatePicker');
-        if (dashPicker && !dashPicker.value) dashPicker.value = getTodayIso();
-        loadDashboard();
-      }
+      if (view === 'dashboard') { stopCamera(); updateRunningDateBadge(); const dashPicker = document.getElementById('dashDatePicker'); if (dashPicker && !dashPicker.value) dashPicker.value = getTodayIso(); loadDashboard(); }
       if (view === 'operator') { updateFlowUI(); syncSmvMasterFromServer(); }
       if (view === 'incentive') { stopCamera(); fetchIncentiveSheet(false); }
       if (view === 'admin') { stopCamera(); switchAdminSection('form'); renderSavedSmvTable(); syncSmvMasterFromServer(); }
@@ -2152,25 +1366,15 @@
 
     function extractRecordIsoDate(rec) {
       if (!rec) return '';
-      if (rec.date && /^\d{4}-\d{2}-\d{2}$/.test(String(rec.date).trim())) {
-        return String(rec.date).trim();
-      }
-      const tsStr = String(rec.timestamp || '').trim();
-      const m = tsStr.match(/^(\d{4}-\d{2}-\d{2})/);
+      if (rec.date && /^\d{4}-\d{2}-\d{2}$/.test(String(rec.date).trim())) return String(rec.date).trim();
+      const tsStr = String(rec.timestamp || '').trim(), m = tsStr.match(/^(\d{4}-\d{2}-\d{2})/);
       if (m) return m[1];
       const ts = tsStr ? new Date(tsStr) : null;
       if (ts && !isNaN(ts.getTime())) {
         try {
-          const parts = new Intl.DateTimeFormat('en-CA', {
-            timeZone: 'Asia/Dhaka',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-          }).formatToParts(ts);
+          const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Dhaka', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(ts);
           return `${parts.find(p => p.type === 'year').value}-${parts.find(p => p.type === 'month').value}-${parts.find(p => p.type === 'day').value}`;
-        } catch (_) {
-          return ts.toISOString().slice(0, 10);
-        }
+        } catch (_) { return ts.toISOString().slice(0, 10); }
       }
       return '';
     }
@@ -2178,67 +1382,33 @@
     async function loadDashboard() {
       const errEl = document.getElementById('dashErr');
       errEl.textContent = '';
-
       updateRunningDateBadge();
-      const runningIso = getTodayIso();
-      const dashPicker = document.getElementById('dashDatePicker');
+      const runningIso = getTodayIso(), dashPicker = document.getElementById('dashDatePicker');
       const activeIsoDate = (dashPicker && dashPicker.value) ? dashPicker.value : runningIso;
-
-      const dateSelect = document.getElementById('dateSelect');
-      const line = document.getElementById('lineInput').value.trim();
-      const style = document.getElementById('styleInput').value.trim();
+      const dateSelect = document.getElementById('dateSelect'), line = document.getElementById('lineInput').value.trim(), style = document.getElementById('styleInput').value.trim();
       document.getElementById('liveBadge').textContent = 'LOADING';
-
       try {
         const res = await fetch(`${API_URL}?${new URLSearchParams({ date: activeIsoDate, line, style, t: Date.now() })}`);
         const data = await res.json();
-        if (data.status !== 'SUCCESS') {
-          errEl.textContent = data.message || 'ডাটা আনা যায়নি।';
-          document.getElementById('liveBadge').textContent = 'ERROR';
-          return;
-        }
-
+        if (data.status !== 'SUCCESS') { errEl.textContent = data.message || 'ডাটা আনা যায়নি।'; document.getElementById('liveBadge').textContent = 'ERROR'; return; }
         const prev = dateSelect.value || activeIsoDate;
         dateSelect.innerHTML = '<option value="">Date</option>';
-        (data.dates || []).forEach(d => {
-          const opt = document.createElement('option');
-          opt.value = d; opt.textContent = d;
-          if (d === prev) opt.selected = true;
-          dateSelect.appendChild(opt);
-        });
-
-        if (Array.isArray(data.smvList) && data.smvList.length) {
-          insertGroupedByStyle(data.smvList);
-          localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
-        }
-
-        if (data.forecastMap && typeof data.forecastMap === 'object') {
-          forecastMaster = { ...forecastMaster, ...data.forecastMap };
-          localStorage.setItem(FORECAST_STORAGE_KEY, JSON.stringify(forecastMaster));
-        }
-
+        (data.dates || []).forEach(d => { const opt = document.createElement('option'); opt.value = d; opt.textContent = d; if (d === prev) opt.selected = true; dateSelect.appendChild(opt); });
+        if (Array.isArray(data.smvList) && data.smvList.length) { insertGroupedByStyle(data.smvList); localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster)); }
+        if (data.forecastMap && typeof data.forecastMap === 'object') { forecastMaster = { ...forecastMaster, ...data.forecastMap }; localStorage.setItem(FORECAST_STORAGE_KEY, JSON.stringify(forecastMaster)); }
         const allRecs = Array.isArray(data.records) ? data.records : (Array.isArray(data.rawRecords) ? data.rawRecords : []);
         const strictDateRecords = allRecs.filter(r => extractRecordIsoDate(r) === activeIsoDate);
-
         const workInfo = getElapsedWorkInfo(activeIsoDate);
         document.getElementById('upToTimeBadge').textContent = workInfo.upToLabel;
-
         renderLiveEfficiencyTable(strictDateRecords, activeIsoDate, runningIso, workInfo);
         renderStyleBreakdown(data.styleDetails, style);
         document.getElementById('liveBadge').textContent = 'LIVE';
-      } catch (e) {
-        errEl.textContent = 'সংযোগ সমস্যা: ' + e.message;
-        document.getElementById('liveBadge').textContent = 'ERROR';
-      }
+      } catch (e) { errEl.textContent = 'সংযোগ সমস্যা: ' + e.message; document.getElementById('liveBadge').textContent = 'ERROR'; }
     }
 
     function normalizeLineName(raw) {
-      const s = String(raw || '').trim();
-      const m = s.match(/linking\s*line[-\s]*0*(\d+)/i);
-      if (m) {
-        return `Linking Line-${String(m[1]).padStart(2, '0')}`;
-      }
-      return s;
+      const s = String(raw || '').trim(), m = s.match(/linking\s*line[-\s]*0*(\d+)/i);
+      return m ? `Linking Line-${String(m[1]).padStart(2, '0')}` : s;
     }
 
     function getLineNumber(lineStr) {
@@ -2247,223 +1417,69 @@
     }
 
     function buildLineRowHtml(ln, fcHour, fcPcs, upToTarget, outputQty, deviation, manpower, totalWH, earnedSah, efficiency) {
-      let devClass = '';
-      if (upToTarget > 0 || outputQty > 0) {
-        devClass = deviation >= 0 ? 'dev-pos' : 'dev-neg';
-      }
-      const devText = deviation > 0 ? `+${deviation}` : `${deviation}`;
-
-      return `
-        <tr>
-          <td><b>${esc(ln)}</b></td>
-          <td>${fcHour || 0}</td>
-          <td>${fcPcs || 0}</td>
-          <td><b>${upToTarget}</b></td>
-          <td><b>${outputQty}</b></td>
-          <td class="${devClass}">${devText}</td>
-          <td><b>${manpower}</b></td>
-          <td>${totalWH.toFixed(1)}</td>
-          <td>${earnedSah.toFixed(2)}</td>
-          <td><b>${efficiency}</b></td>
-        </tr>
-      `;
+      let devClass = (upToTarget > 0 || outputQty > 0) ? (deviation >= 0 ? 'dev-pos' : 'dev-neg') : '';
+      return `<tr><td><b>${esc(ln)}</b></td><td>${fcHour || 0}</td><td>${fcPcs || 0}</td><td><b>${upToTarget}</b></td><td><b>${outputQty}</b></td><td class="${devClass}">${deviation > 0 ? '+' + deviation : deviation}</td><td><b>${manpower}</b></td><td>${totalWH.toFixed(1)}</td><td>${earnedSah.toFixed(2)}</td><td><b>${efficiency}</b></td></tr>`;
     }
 
     function buildFloorSubtotalHtml(label, s) {
-      const dev = s.output - s.target;
-      const devClass = dev >= 0 ? 'dev-pos' : 'dev-neg';
-      const effPct = s.effCount > 0 ? (s.effSum / s.effCount).toFixed(1) + '%' : '0.0%';
-
-      return `
-        <tr class="floor-sub-row">
-          <td>${esc(label)}</td>
-          <td>${s.forecastHr}</td>
-          <td>${s.forecastPcs}</td>
-          <td>${s.target}</td>
-          <td>${s.output}</td>
-          <td class="${devClass}">${dev > 0 ? '+' + dev : dev}</td>
-          <td>${s.manpower}</td>
-          <td>${s.wh.toFixed(1)}</td>
-          <td>${s.sah.toFixed(2)}</td>
-          <td>${effPct}</td>
-        </tr>
-      `;
+      const dev = s.output - s.target, devClass = dev >= 0 ? 'dev-pos' : 'dev-neg';
+      return `<tr class="floor-sub-row"><td>${esc(label)}</td><td>${s.forecastHr}</td><td>${s.forecastPcs}</td><td>${s.target}</td><td>${s.output}</td><td class="${devClass}">${dev > 0 ? '+' + dev : dev}</td><td>${s.manpower}</td><td>${s.wh.toFixed(1)}</td><td>${s.sah.toFixed(2)}</td><td>${s.effCount > 0 ? (s.effSum / s.effCount).toFixed(1) + '%' : '0.0%'}</td></tr>`;
     }
 
     function renderLiveEfficiencyTable(strictDateRecords, isoDate, runningIso, workInfo) {
-      const box = document.getElementById('liveResultArea');
-      const dayForecast = forecastMaster[isoDate] || {};
-
-      const lineStats = {};
-      ALL_LINKING_LINES.forEach(ln => {
-        lineStats[ln] = {
-          line: ln,
-          uniqueOpIds: new Set(),
-          outputQty: 0,
-          earnedSah: 0
-        };
-      });
-
+      const box = document.getElementById('liveResultArea'), dayForecast = forecastMaster[isoDate] || {}, lineStats = {};
+      ALL_LINKING_LINES.forEach(ln => { lineStats[ln] = { line: ln, uniqueOpIds: new Set(), outputQty: 0, earnedSah: 0 }; });
       strictDateRecords.forEach(r => {
         const ln = normalizeLineName(r.line);
         if (!ln) return;
-        if (!lineStats[ln]) {
-          lineStats[ln] = { line: ln, uniqueOpIds: new Set(), outputQty: 0, earnedSah: 0 };
-        }
+        if (!lineStats[ln]) lineStats[ln] = { line: ln, uniqueOpIds: new Set(), outputQty: 0, earnedSah: 0 };
         const opId = String(r.operatorId || '').trim();
         if (opId) lineStats[ln].uniqueOpIds.add(opId);
-
-        const proc = String(r.process || '').trim().toLowerCase();
-        if (proc === 'output') {
-          lineStats[ln].outputQty += Number(r.bundleQty || r.qty || 0);
-        }
+        if (String(r.process || '').trim().toLowerCase() === 'output') lineStats[ln].outputQty += Number(r.bundleQty || r.qty || 0);
         lineStats[ln].earnedSah += Number(r.earnedSah || 0);
       });
-
       const floor3Sum = { forecastHr: 0, forecastPcs: 0, target: 0, output: 0, manpower: 0, wh: 0, sah: 0, effSum: 0, effCount: 0 };
       const floor2Sum = { forecastHr: 0, forecastPcs: 0, target: 0, output: 0, manpower: 0, wh: 0, sah: 0, effSum: 0, effCount: 0 };
-
-      let floor3RowsHtml = '';
-      let floor2RowsHtml = '';
-
+      let floor3RowsHtml = '', floor2RowsHtml = '';
       ALL_LINKING_LINES.forEach(ln => {
-        const lineNum = getLineNumber(ln);
-        const fc = dayForecast[ln] || { hour: 0, pcs: 0 };
-        const fcHour = Number(fc.hour) || 0;
-        const fcPcs = Number(fc.pcs) || 0;
-
+        const lineNum = getLineNumber(ln), fc = dayForecast[ln] || { hour: 0, pcs: 0 };
+        const fcHour = Number(fc.hour) || 0, fcPcs = Number(fc.pcs) || 0;
         const cappedHours = fcHour > 0 ? Math.min(workInfo.elapsedHours, fcHour) : workInfo.elapsedHours;
-        const perHourTarget = (fcHour > 0 && fcPcs > 0) ? (fcPcs / fcHour) : 0;
-        const upToTarget = Math.round(perHourTarget * cappedHours);
-
-        const st = lineStats[ln];
-        const outputQty = Math.round(st.outputQty);
-        const deviation = outputQty - upToTarget;
-        const manpower = st.uniqueOpIds.size;
-
-        const totalWH = Number((manpower * cappedHours).toFixed(2));
-        const earnedSah = Number(st.earnedSah.toFixed(2));
-        const effNum = totalWH > 0 ? (earnedSah / totalWH) * 100 : 0;
-        const efficiency = effNum.toFixed(1) + '%';
-
-        const rowHtml = buildLineRowHtml(ln, fcHour, fcPcs, upToTarget, outputQty, deviation, manpower, totalWH, earnedSah, efficiency);
-
+        const upToTarget = Math.round(((fcHour > 0 && fcPcs > 0) ? (fcPcs / fcHour) : 0) * cappedHours);
+        const st = lineStats[ln], outputQty = Math.round(st.outputQty), deviation = outputQty - upToTarget, manpower = st.uniqueOpIds.size;
+        const totalWH = Number((manpower * cappedHours).toFixed(2)), earnedSah = Number(st.earnedSah.toFixed(2));
+        const effNum = totalWH > 0 ? (earnedSah / totalWH) * 100 : 0, rowHtml = buildLineRowHtml(ln, fcHour, fcPcs, upToTarget, outputQty, deviation, manpower, totalWH, earnedSah, effNum.toFixed(1) + '%');
         if (lineNum >= 1 && lineNum <= 16) {
-          floor3RowsHtml += rowHtml;
-          floor3Sum.forecastHr += fcHour;
-          floor3Sum.forecastPcs += fcPcs;
-          floor3Sum.target += upToTarget;
-          floor3Sum.output += outputQty;
-          floor3Sum.manpower += manpower;
-          floor3Sum.wh += totalWH;
-          floor3Sum.sah += earnedSah;
-          if (totalWH > 0) {
-            floor3Sum.effSum += effNum;
-            floor3Sum.effCount += 1;
-          }
+          floor3RowsHtml += rowHtml; floor3Sum.forecastHr += fcHour; floor3Sum.forecastPcs += fcPcs; floor3Sum.target += upToTarget; floor3Sum.output += outputQty; floor3Sum.manpower += manpower; floor3Sum.wh += totalWH; floor3Sum.sah += earnedSah;
+          if (totalWH > 0) { floor3Sum.effSum += effNum; floor3Sum.effCount += 1; }
         } else if (lineNum >= 17 && lineNum <= 33) {
-          floor2RowsHtml += rowHtml;
-          floor2Sum.forecastHr += fcHour;
-          floor2Sum.forecastPcs += fcPcs;
-          floor2Sum.target += upToTarget;
-          floor2Sum.output += outputQty;
-          floor2Sum.manpower += manpower;
-          floor2Sum.wh += totalWH;
-          floor2Sum.sah += earnedSah;
-          if (totalWH > 0) {
-            floor2Sum.effSum += effNum;
-            floor2Sum.effCount += 1;
-          }
+          floor2RowsHtml += rowHtml; floor2Sum.forecastHr += fcHour; floor2Sum.forecastPcs += fcPcs; floor2Sum.target += upToTarget; floor2Sum.output += outputQty; floor2Sum.manpower += manpower; floor2Sum.wh += totalWH; floor2Sum.sah += earnedSah;
+          if (totalWH > 0) { floor2Sum.effSum += effNum; floor2Sum.effCount += 1; }
         }
       });
-
-      const floor3SubtotalRow = buildFloorSubtotalHtml('LINKING 3RD FLOOR (L-01 to L-16)', floor3Sum);
-      const floor2SubtotalRow = buildFloorSubtotalHtml('LINKING 2ND FLOOR (L-17 to L-33)', floor2Sum);
-
-      const grandForecastHr = floor3Sum.forecastHr + floor2Sum.forecastHr;
-      const grandForecastPcs = floor3Sum.forecastPcs + floor2Sum.forecastPcs;
-      const grandTarget = floor3Sum.target + floor2Sum.target;
-      const grandOutput = floor3Sum.output + floor2Sum.output;
-      const grandDev = grandOutput - grandTarget;
-      const grandManpower = floor3Sum.manpower + floor2Sum.manpower;
-      const grandWH = floor3Sum.wh + floor2Sum.wh;
-      const grandSah = floor3Sum.sah + floor2Sum.sah;
-
-      const avgEff3 = floor3Sum.effCount > 0 ? floor3Sum.effSum / floor3Sum.effCount : 0;
-      const avgEff2 = floor2Sum.effCount > 0 ? floor2Sum.effSum / floor2Sum.effCount : 0;
+      const grandForecastHr = floor3Sum.forecastHr + floor2Sum.forecastHr, grandForecastPcs = floor3Sum.forecastPcs + floor2Sum.forecastPcs;
+      const grandTarget = floor3Sum.target + floor2Sum.target, grandOutput = floor3Sum.output + floor2Sum.output, grandDev = grandOutput - grandTarget;
+      const grandManpower = floor3Sum.manpower + floor2Sum.manpower, grandWH = floor3Sum.wh + floor2Sum.wh, grandSah = floor3Sum.sah + floor2Sum.sah;
       const floorAvgParts = [];
-      if (floor3Sum.effCount > 0) floorAvgParts.push(avgEff3);
-      if (floor2Sum.effCount > 0) floorAvgParts.push(avgEff2);
-      const grandAvgEff = floorAvgParts.length > 0
-        ? (floorAvgParts.reduce((a, b) => a + b, 0) / floorAvgParts.length).toFixed(1) + '%'
-        : '0.0%';
-
-      const dateModeLabel = (isoDate === runningIso)
-        ? `Running Date: ${formatDisplayDate(runningIso)}`
-        : `Selected Date: ${formatDisplayDate(isoDate)} (Running: ${formatDisplayDate(runningIso)})`;
-
-      document.getElementById('dashSummaryInfo').textContent =
-        `${dateModeLabel} | Effective Hours: ${workInfo.elapsedHours.toFixed(1)} hr`;
-
-      box.innerHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th>Line</th>
-              <th>Forecast Hr</th>
-              <th>Forecast Pcs</th>
-              <th>Target (${esc(workInfo.upToLabel)})</th>
-              <th>Output</th>
-              <th>Deviation</th>
-              <th>Total Manpower</th>
-              <th>Total W.H</th>
-              <th>Earned SAH</th>
-              <th>Efficiency</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${floor3RowsHtml}
-            ${floor3SubtotalRow}
-            ${floor2RowsHtml}
-            ${floor2SubtotalRow}
-          </tbody>
-          <tfoot>
-            <tr class="grand-total-row">
-              <td>GRAND TOTAL (AVG EFF)</td>
-              <td>${grandForecastHr}</td>
-              <td>${grandForecastPcs}</td>
-              <td>${grandTarget}</td>
-              <td>${grandOutput}</td>
-              <td>${grandDev > 0 ? '+' + grandDev : grandDev}</td>
-              <td>${grandManpower}</td>
-              <td>${grandWH.toFixed(1)}</td>
-              <td>${grandSah.toFixed(2)}</td>
-              <td>${grandAvgEff}</td>
-            </tr>
-          </tfoot>
-        </table>
-      `;
+      if (floor3Sum.effCount > 0) floorAvgParts.push(floor3Sum.effSum / floor3Sum.effCount);
+      if (floor2Sum.effCount > 0) floorAvgParts.push(floor2Sum.effSum / floor2Sum.effCount);
+      const grandAvgEff = floorAvgParts.length > 0 ? (floorAvgParts.reduce((a, b) => a + b, 0) / floorAvgParts.length).toFixed(1) + '%' : '0.0%';
+      document.getElementById('dashSummaryInfo').textContent = `${isoDate === runningIso ? 'Running Date: ' + formatDisplayDate(runningIso) : 'Selected Date: ' + formatDisplayDate(isoDate) + ' (Running: ' + formatDisplayDate(runningIso) + ')'} | Effective Hours: ${workInfo.elapsedHours.toFixed(1)} hr`;
+      box.innerHTML = `<table><thead><tr><th>Line</th><th>Forecast Hr</th><th>Forecast Pcs</th><th>Target (${esc(workInfo.upToLabel)})</th><th>Output</th><th>Deviation</th><th>Total Manpower</th><th>Total W.H</th><th>Earned SAH</th><th>Efficiency</th></tr></thead><tbody>${floor3RowsHtml}${buildFloorSubtotalHtml('LINKING 3RD FLOOR (L-01 to L-16)', floor3Sum)}${floor2RowsHtml}${buildFloorSubtotalHtml('LINKING 2ND FLOOR (L-17 to L-33)', floor2Sum)}</tbody><tfoot><tr class="grand-total-row"><td>GRAND TOTAL (AVG EFF)</td><td>${grandForecastHr}</td><td>${grandForecastPcs}</td><td>${grandTarget}</td><td>${grandOutput}</td><td>${grandDev > 0 ? '+' + grandDev : grandDev}</td><td>${grandManpower}</td><td>${grandWH.toFixed(1)}</td><td>${grandSah.toFixed(2)}</td><td>${grandAvgEff}</td></tr></tfoot></table>`;
     }
 
     function renderStyleBreakdown(details, styleQuery) {
-      const badge = document.getElementById('entriesBadge');
-      const box = document.getElementById('styleResultArea');
-      if (!styleQuery || !details || details.mode === 'none') {
-        badge.textContent = '0 ENTRIES'; box.innerHTML = ''; return;
-      }
+      const badge = document.getElementById('entriesBadge'), box = document.getElementById('styleResultArea');
+      if (!styleQuery || !details || details.mode === 'none') { badge.textContent = '0 ENTRIES'; box.innerHTML = ''; return; }
       badge.textContent = `${details.entries || 0} ENTRIES`;
       if (details.mode === 'line_style') {
         const list = details.tcProcessBreakdown || [];
         if (!list.length) { box.innerHTML = '<p class="hint" style="margin-top:8px;">কোনো এন্ট্রি পাওয়া যায়নি।</p>'; return; }
-        let html = '<table><thead><tr><th>TC No.</th><th>Process</th><th>Size</th><th>Qty</th></tr></thead><tbody>';
-        list.forEach(i => html += `<tr><td>${esc(i.tcNo)}</td><td>${esc(i.process)}</td><td>${esc(i.size)}</td><td><b>${i.qty}</b></td></tr>`);
-        box.innerHTML = html + '</tbody></table>';
+        box.innerHTML = '<table><thead><tr><th>TC No.</th><th>Process</th><th>Size</th><th>Qty</th></tr></thead><tbody>' + list.map(i => `<tr><td>${esc(i.tcNo)}</td><td>${esc(i.process)}</td><td>${esc(i.size)}</td><td><b>${i.qty}</b></td></tr>`).join('') + '</tbody></table>';
       } else {
         const list = details.sizeBreakdown || [];
         if (!list.length) { box.innerHTML = '<p class="hint" style="margin-top:8px;">কোনো Size breakdown পাওয়া যায়নি।</p>'; return; }
-        let html = '<table><thead><tr><th>Style</th><th>Size</th><th>Color</th><th>Qty</th></tr></thead><tbody>';
-        list.forEach(i => html += `<tr><td>${esc(i.style)}</td><td>${esc(i.size)}</td><td>${esc(i.color)}</td><td><b>${i.qty}</b></td></tr>`);
-        box.innerHTML = html + '</tbody></table>';
+        box.innerHTML = '<table><thead><tr><th>Style</th><th>Size</th><th>Color</th><th>Qty</th></tr></thead><tbody>' + list.map(i => `<tr><td>${esc(i.style)}</td><td>${esc(i.size)}</td><td>${esc(i.color)}</td><td><b>${i.qty}</b></td></tr>`).join('') + '</tbody></table>';
       }
     }
 
@@ -2481,29 +1497,14 @@
 
       document.getElementById('incSearchBtn').addEventListener('click', renderIncentiveReport);
       document.getElementById('incSearchInput').addEventListener('input', renderIncentiveReport);
-      document.getElementById('incSearchInput').addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') renderIncentiveReport();
-      });
-      document.getElementById('incSyncBtn').addEventListener('click', function () {
-        fetchIncentiveSheet(true);
-      });
+      document.getElementById('incSearchInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') renderIncentiveReport(); });
+      document.getElementById('incSyncBtn').addEventListener('click', function () { fetchIncentiveSheet(true); });
 
       const incDrawer = document.getElementById('incDrawerBackdrop');
-      document.getElementById('incMenuBtn').addEventListener('click', function () {
-        incDrawer.className = 'drawer-backdrop open';
-      });
-      document.getElementById('incDrawerCloseBtn').addEventListener('click', function () {
-        incDrawer.className = 'drawer-backdrop';
-      });
-      document.getElementById('incDrawerSyncBtn').addEventListener('click', function () {
-        incDrawer.className = 'drawer-backdrop';
-        fetchIncentiveSheet(true);
-      });
-      document.getElementById('incDrawerClearBtn').addEventListener('click', function () {
-        document.getElementById('incSearchInput').value = '';
-        incDrawer.className = 'drawer-backdrop';
-        renderIncentiveReport();
-      });
+      document.getElementById('incMenuBtn').addEventListener('click', function () { incDrawer.className = 'drawer-backdrop open'; });
+      document.getElementById('incDrawerCloseBtn').addEventListener('click', function () { incDrawer.className = 'drawer-backdrop'; });
+      document.getElementById('incDrawerSyncBtn').addEventListener('click', function () { incDrawer.className = 'drawer-backdrop'; fetchIncentiveSheet(true); });
+      document.getElementById('incDrawerClearBtn').addEventListener('click', function () { document.getElementById('incSearchInput').value = ''; incDrawer.className = 'drawer-backdrop'; renderIncentiveReport(); });
 
       let savedRole = '';
       try { savedRole = sessionStorage.getItem(SESSION_KEY) || ''; } catch (_) {}
