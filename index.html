@@ -27,6 +27,27 @@
     * { box-sizing: border-box; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 16px; }
     body { margin: 0; background: var(--bg); color: var(--text); font-size: 16px; }
 
+    .welcome-marquee-bar {
+      width: 100%;
+      overflow: hidden;
+      background: #091d3d;
+      color: #fef08a;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+      padding: 6px 0;
+      white-space: nowrap;
+    }
+    @keyframes moveRightToLeft {
+      0% { transform: translateX(100vw); }
+      100% { transform: translateX(-100%); }
+    }
+    .welcome-marquee-track {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      animation: moveRightToLeft 14s linear infinite;
+    }
+
     @keyframes jlBlinkGlow {
       0%, 100% {
         opacity: 1;
@@ -53,6 +74,18 @@
       font-weight: 800;
       letter-spacing: 0.4px;
       animation: jlBlinkGlow 1.35s infinite ease-in-out;
+    }
+
+    .second-linking-note-box {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #fffbeb;
+      border: 1px solid #f59e0b;
+      color: #78350f;
+      font-size: 14.5px;
+      line-height: 1.55;
+      text-align: center;
     }
 
     .page-footer-credit {
@@ -230,7 +263,7 @@
     .locked-box { opacity: 0.55; pointer-events: none; user-select: none; }
 
     .dynamic-row {
-      display: grid; grid-template-columns: 1.4fr 0.9fr 1.1fr auto; gap: 8px;
+      display: grid; grid-template-columns: 1.4fr 0.9fr 1.2fr auto; gap: 8px;
       align-items: center; margin-top: 8px; background: #f8f7f3;
       padding: 8px; border-radius: 10px; border: 1px solid var(--border);
     }
@@ -367,6 +400,10 @@
   </style>
 </head>
 <body>
+  <div class="welcome-marquee-bar">
+    <div class="welcome-marquee-track">Welcome to our New Web App site</div>
+  </div>
+
   <div class="topbar">
     <h1>PRODUCTION<br/>SYSTEM</h1>
     <div id="navBar" class="topbar-right hidden">
@@ -380,6 +417,9 @@
 
   <div class="container">
     <div id="loginCard" class="card">
+      <div class="welcome-marquee-bar" style="border-radius:8px;margin-bottom:10px;">
+        <div class="welcome-marquee-track">Welcome to our New Web App site</div>
+      </div>
       <div class="card-head">
         <span class="jl-gif-anim-badge">JL Fashions Limited</span>
       </div>
@@ -396,6 +436,9 @@
 
     <div id="view-dashboard" class="hidden">
       <div id="dashMainCard" class="card">
+        <div class="welcome-marquee-bar" style="border-radius:8px;margin-bottom:10px;">
+          <div class="welcome-marquee-track">Welcome to our New Web App site</div>
+        </div>
         <div class="card-head">
           <div class="dash-top-corner-row">
             <button type="button" class="btn-corner-find" onclick="openFindYourDataSection()">Find your data</button>
@@ -423,6 +466,7 @@
 
         <div id="dashErr" class="msg" style="color:#b91c1c;"></div>
         <div id="liveResultArea" class="table-scroll"><p class="hint">ডাটা লোড হচ্ছে...</p></div>
+        <div id="secondLinkingFloorNote" class="second-linking-note-box">2nd Linking Note: ডাটা লোড হচ্ছে...</div>
         <div class="page-footer-credit">This Web App Created By Parvej</div>
       </div>
 
@@ -471,6 +515,9 @@
 
     <div id="view-operator" class="hidden">
       <div class="card">
+        <div class="welcome-marquee-bar" style="border-radius:8px;margin-bottom:10px;">
+          <div class="welcome-marquee-track">Welcome to our New Web App site</div>
+        </div>
         <div class="card-head">
           <span class="jl-gif-anim-badge">JL Fashions Limited</span>
           <h2 class="card-title">Barcode Scanner</h2>
@@ -548,6 +595,9 @@
     <div id="view-incentive" class="hidden">
       <div class="inc-wrap">
         <div class="inc-header-card">
+          <div class="welcome-marquee-bar" style="border-radius:8px;margin-bottom:10px;">
+            <div class="welcome-marquee-track">Welcome to our New Web App site</div>
+          </div>
           <div class="inc-top-row">
             <div class="inc-brand-left">
               <button class="inc-menu-btn" id="incMenuBtn" type="button" aria-label="Menu">☰</button>
@@ -606,6 +656,9 @@
 
     <div id="view-admin" class="hidden">
       <div class="card" style="padding:10px 14px;margin-bottom:12px;text-align:center;">
+        <div class="welcome-marquee-bar" style="border-radius:8px;margin-bottom:8px;">
+          <div class="welcome-marquee-track">Welcome to our New Web App site</div>
+        </div>
         <span class="jl-gif-anim-badge">JL Fashions Limited</span>
       </div>
 
@@ -620,7 +673,7 @@
           <h2 id="adminFormTitle" class="card-title">Style, Process & SMV</h2>
           <button type="button" class="btn-refresh" onclick="addProcessSmvRow()">+ Add Process & SMV</button>
         </div>
-        <p class="hint">Style No. লিখে নিচে যত খুশি তত Process ও SMV যুক্ত করুন। যে Process-এ আউটপুট হবে সেটি Output হিসেবে সিলেক্ট করুন।</p>
+        <p class="hint">Style No. লিখে নিচে Process ও SMV যুক্ত করুন। Output Process বা 2nd Linking সিলেক্ট করুন। 2nd Linking-এর SMV Total Linking SMV-তে যোগ হবে না।</p>
         <div class="grid-2">
           <div>
             <label for="adminStyleInput">Style No.</label>
@@ -645,7 +698,7 @@
           <h2 class="card-title">Saved Style Process & SMV</h2>
           <button type="button" class="btn-refresh" onclick="switchAdminSection('form')">+ New Add</button>
         </div>
-        <p class="hint">শুধু <b>Style</b> দেখাচ্ছে। যেকোনো <b>Style</b>-এ ক্লিক করলে তার <b>Process</b>, <b>SMV</b> ও <b>Output</b> দেখাবে।</p>
+        <p class="hint">শুধু <b>Style</b> দেখাচ্ছে। যেকোনো <b>Style</b>-এ ক্লিক করলে তার <b>Process</b>, <b>SMV</b> ও ধরন দেখাবে।</p>
         <div id="styleAccordionList" class="style-group-list"></div>
         <div class="page-footer-credit">This Web App Created By Parvej</div>
       </div>
@@ -684,6 +737,9 @@
 
   <div class="drawer-backdrop" id="incDrawerBackdrop">
     <div class="drawer-panel">
+      <div class="welcome-marquee-bar" style="border-radius:8px;margin-bottom:10px;">
+        <div class="welcome-marquee-track">Welcome to our New Web App site</div>
+      </div>
       <div class="drawer-title"><span class="jl-gif-anim-badge">JL Fashions Limited</span></div>
       <div class="drawer-info" id="incDrawerMeta">This Web App Created By Parvej<br>Source: <strong>Sheet</strong></div>
       <button class="drawer-btn" id="incDrawerSyncBtn" type="button">Sync Now</button>
@@ -708,11 +764,11 @@
     let currentTcData = null;
 
     let styleSmvMaster = JSON.parse(localStorage.getItem('style_smv_master') || 'null') || [
-      { style: '1896', process: 'Linking', smv: 12.0, isOutput: false },
-      { style: '1896', process: 'Ironing', smv: 8.28, isOutput: true },
-      { style: '1895', process: 'Interlock', smv: 1.2, isOutput: false },
-      { style: '1895', process: 'Shoulder join', smv: 1.5, isOutput: false },
-      { style: '1895', process: 'Sleeve join', smv: 3.5, isOutput: true }
+      { style: '1896', process: 'Linking', smv: 12.0, isOutput: false, isSecondLinking: false },
+      { style: '1896', process: 'Ironing', smv: 8.28, isOutput: true, isSecondLinking: false },
+      { style: '1895', process: 'Interlock', smv: 1.2, isOutput: false, isSecondLinking: false },
+      { style: '1895', process: 'Shoulder join', smv: 1.5, isOutput: false, isSecondLinking: false },
+      { style: '1895', process: 'Sleeve join', smv: 3.5, isOutput: true, isSecondLinking: false }
     ];
 
     let forecastMaster = JSON.parse(localStorage.getItem(FORECAST_STORAGE_KEY) || '{}');
@@ -941,7 +997,6 @@
 
     function runStyleColorSizeSearch() {
       const dateSelect = document.getElementById('dateSelect');
-      const dashPicker = document.getElementById('dashDatePicker');
       const lineVal = document.getElementById('lineInput').value.trim().toLowerCase();
       const styleVal = document.getElementById('styleInput').value.trim().toLowerCase();
       const colorVal = document.getElementById('colorInput').value.trim().toLowerCase();
@@ -1026,18 +1081,57 @@
     function getStyleTotalLinkingSmv(styleName) {
       const matched = getProcessesForStyle(styleName);
       let sum = 0;
-      matched.forEach(x => { const n = parseFloat(x.smv); if (!isNaN(n)) sum += n; });
+      matched.forEach(x => {
+        if (x.isSecondLinking) return;
+        const n = parseFloat(x.smv);
+        if (!isNaN(n)) sum += n;
+      });
       return sum;
     }
 
-    function isOutputProcessForStyle(styleName, processName) {
+    function findStyleProcessRule(styleName, processName) {
       const st = String(styleName || '').trim().toLowerCase();
       const pr = String(processName || '').trim().toLowerCase();
-      if (!pr) return false;
+      if (!pr) return null;
       const exact = styleSmvMaster.find(x => String(x.style || '').trim().toLowerCase() === st && String(x.process || '').trim().toLowerCase() === pr);
-      if (exact) return Boolean(exact.isOutput);
-      const anyStyle = styleSmvMaster.find(x => String(x.process || '').trim().toLowerCase() === pr && x.isOutput);
-      return Boolean(anyStyle);
+      if (exact) return exact;
+      const anyStyle = styleSmvMaster.find(x => String(x.process || '').trim().toLowerCase() === pr);
+      return anyStyle || null;
+    }
+
+    function isOutputProcessForStyle(styleName, processName) {
+      const pr = String(processName || '').trim().toLowerCase();
+      if (!pr) return false;
+      const rule = findStyleProcessRule(styleName, processName);
+      if (rule) return Boolean(rule.isOutput || rule.isSecondLinking);
+      return pr === 'output';
+    }
+
+    function isSecondLinkingProcessForStyle(styleName, processName) {
+      const pr = String(processName || '').trim().toLowerCase();
+      if (!pr) return false;
+      const rule = findStyleProcessRule(styleName, processName);
+      if (rule) return Boolean(rule.isSecondLinking);
+      return pr.indexOf('2nd linking') !== -1 || pr.indexOf('second linking') !== -1;
+    }
+
+    function getProcessSmvForStyle(styleName, processName) {
+      const rule = findStyleProcessRule(styleName, processName);
+      return rule ? Number(rule.smv || 0) : 0;
+    }
+
+    function computeRecordSahForDashboard(rec) {
+      const qtyVal = Number(rec.bundleQty || rec.qty || 0);
+      const procName = String(rec.process || '').trim();
+      if (isSecondLinkingProcessForStyle(rec.style, procName)) {
+        const secSmv = getProcessSmvForStyle(rec.style, procName);
+        return (qtyVal * secSmv) / 60;
+      }
+      if (isOutputProcessForStyle(rec.style, procName)) {
+        const totalStyleSmv = getStyleTotalLinkingSmv(rec.style);
+        return (qtyVal * totalStyleSmv) / 60;
+      }
+      return 0;
     }
 
     function populateProcessDropdownForStyle(styleName) {
@@ -1047,7 +1141,7 @@
         dd.innerHTML = '<option value="">-- Process সিলেক্ট করুন --</option>' + matched.map(item => `<option value="${esc(item.process)}">${esc(item.process)} (SMV: ${item.smv})</option>`).join('');
         if (hintEl) hintEl.textContent = `Style "${styleName}" এর ${matched.length}টি Process পাওয়া গেছে। আপনি যে Process-এ কাজ করছেন সেটি সিলেক্ট করুন।`;
       } else {
-        const defaults = ['Linking', 'Ironing', 'Sewing', 'Overlock', 'Checking', 'Output'];
+        const defaults = ['Linking', '2nd Linking', 'Ironing', 'Sewing', 'Overlock', 'Checking', 'Output'];
         dd.innerHTML = '<option value="">-- Process সিলেক্ট করুন --</option>' + defaults.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('');
         if (hintEl) hintEl.textContent = styleName ? `Style "${styleName}" এর জন্য Admin-এ আলাদা Process সেভ করা নেই, সাধারণ Process দেখানো হচ্ছে।` : 'Process সিলেক্ট করুন।';
       }
@@ -1060,6 +1154,8 @@
       let total = 0;
       rows.forEach(r => {
         const v = parseFloat(r.querySelector('.dyn-smv').value);
+        const typeVal = r.querySelector('.dyn-out').value;
+        if (typeVal === '2nd_linking') return;
         if (!isNaN(v) && v > 0) total += v;
       });
       box.value = total.toFixed(2);
@@ -1083,16 +1179,17 @@
       if (!wrap.children.length) addProcessSmvRow();
     }
 
-    function addProcessSmvRow(processVal = '', smvVal = '', isOutputVal = false) {
+    function addProcessSmvRow(processVal = '', smvVal = '', modeVal = 'none') {
       const wrap = document.getElementById('dynamicSmvRows');
       const row = document.createElement('div');
       row.className = 'dynamic-row';
       row.innerHTML = `
-        <input type="text" class="dyn-proc" placeholder="Process (e.g. Neck / Side)" value="${esc(processVal)}" />
+        <input type="text" class="dyn-proc" placeholder="Process (e.g. Linking / 2nd Linking)" value="${esc(processVal)}" />
         <input type="number" step="0.01" class="dyn-smv" placeholder="SMV" value="${esc(smvVal)}" oninput="recalculateLinkingSmvBox()" />
-        <select class="dyn-out">
-          <option value="0" ${!isOutputVal ? 'selected' : ''}>Not Output</option>
-          <option value="1" ${isOutputVal ? 'selected' : ''}>Output Process</option>
+        <select class="dyn-out" onchange="recalculateLinkingSmvBox()">
+          <option value="none" ${modeVal === 'none' ? 'selected' : ''}>Not Output</option>
+          <option value="output" ${modeVal === 'output' ? 'selected' : ''}>Output Process</option>
+          <option value="2nd_linking" ${modeVal === '2nd_linking' ? 'selected' : ''}>2nd Linking</option>
         </select>
         <button type="button" class="btn-remove" onclick="this.parentElement.remove(); recalculateLinkingSmvBox();">X</button>
       `;
@@ -1114,15 +1211,23 @@
       itemsToInsert.forEach(item => {
         const matchIdx = styleSmvMaster.findIndex(x => x.style.toLowerCase() === item.style.toLowerCase() && x.process.toLowerCase() === item.process.toLowerCase());
         if (matchIdx >= 0) {
-          styleSmvMaster[matchIdx] = { ...styleSmvMaster[matchIdx], style: item.style, process: item.process, smv: item.smv, isOutput: Boolean(item.isOutput) };
+          styleSmvMaster[matchIdx] = {
+            ...styleSmvMaster[matchIdx],
+            style: item.style,
+            process: item.process,
+            smv: item.smv,
+            isOutput: Boolean(item.isOutput),
+            isSecondLinking: Boolean(item.isSecondLinking)
+          };
           return;
         }
         let lastStyleIdx = -1;
         for (let i = styleSmvMaster.length - 1; i >= 0; i--) {
           if (styleSmvMaster[i].style.toLowerCase() === item.style.toLowerCase()) { lastStyleIdx = i; break; }
         }
-        if (lastStyleIdx >= 0) styleSmvMaster.splice(lastStyleIdx + 1, 0, { ...item, isOutput: Boolean(item.isOutput) });
-        else styleSmvMaster.push({ ...item, isOutput: Boolean(item.isOutput) });
+        const cleanItem = { ...item, isOutput: Boolean(item.isOutput), isSecondLinking: Boolean(item.isSecondLinking) };
+        if (lastStyleIdx >= 0) styleSmvMaster.splice(lastStyleIdx + 1, 0, cleanItem);
+        else styleSmvMaster.push(cleanItem);
       });
     }
 
@@ -1135,8 +1240,10 @@
       rows.forEach(r => {
         const pr = r.querySelector('.dyn-proc').value.trim();
         const smv = parseFloat(r.querySelector('.dyn-smv').value);
-        const isOut = r.querySelector('.dyn-out').value === '1';
-        if (pr && !isNaN(smv) && smv > 0) newItems.push({ style, process: pr, smv, isOutput: isOut });
+        const modeSel = r.querySelector('.dyn-out').value;
+        const isSec = modeSel === '2nd_linking';
+        const isOut = modeSel === 'output' || isSec;
+        if (pr && !isNaN(smv) && smv > 0) newItems.push({ style, process: pr, smv, isOutput: isOut, isSecondLinking: isSec });
       });
       if (!newItems.length) { msg.style.color = '#b91c1c'; msg.textContent = 'কমপক্ষে একটি Process ও SMV দিন।'; return; }
 
@@ -1152,7 +1259,7 @@
       document.getElementById('adminFormTitle').textContent = 'Style, Process & SMV';
       document.getElementById('saveSmvBtn').textContent = 'Save Style Process & SMV';
       msg.style.color = '#15803d';
-      msg.textContent = `${style} Style-এর ${newItems.length}টি Process, SMV ও Output সেটিং (Linking SMV: ${getStyleTotalLinkingSmv(style).toFixed(2)}) সেভ/আপডেট হয়েছে।`;
+      msg.textContent = `${style} Style-এর ${newItems.length}টি Process, SMV ও সেটিং (Linking SMV: ${getStyleTotalLinkingSmv(style).toFixed(2)}) সেভ/আপডেট হয়েছে।`;
 
       try {
         await fetch(API_URL, {
@@ -1177,7 +1284,10 @@
       wrap.innerHTML = '';
       const styleRows = getProcessesForStyle(style);
       if (styleRows.length) {
-        styleRows.forEach(item => addProcessSmvRow(item.process, item.smv, Boolean(item.isOutput)));
+        styleRows.forEach(item => {
+          const modeVal = item.isSecondLinking ? '2nd_linking' : (item.isOutput ? 'output' : 'none');
+          addProcessSmvRow(item.process, item.smv, modeVal);
+        });
       } else {
         addProcessSmvRow();
       }
@@ -1185,16 +1295,22 @@
       document.getElementById('adminFormTitle').textContent = `Edit Style (${style}) Process, SMV & Output`;
       document.getElementById('saveSmvBtn').textContent = 'Update Style Process & SMV';
       document.getElementById('adminSmvMsg').style.color = '#1d4ed8';
-      document.getElementById('adminSmvMsg').textContent = `${style} Style-এর Process, SMV বা Output Process বদলে "Update Style Process & SMV" চাপুন।`;
+      document.getElementById('adminSmvMsg').textContent = `${style} Style-এর Process, SMV বা ধরন বদলে "Update Style Process & SMV" চাপুন।`;
     }
 
-    async function toggleListOutputProcess(style, process) {
+    async function cycleListProcessMode(style, process) {
       const targetStyle = String(style || '').trim().toLowerCase();
       const targetProc = String(process || '').trim().toLowerCase();
       let updatedItem = null;
       styleSmvMaster = styleSmvMaster.map(x => {
         if (x.style.toLowerCase() === targetStyle && x.process.toLowerCase() === targetProc) {
-          updatedItem = { ...x, isOutput: !Boolean(x.isOutput) };
+          if (x.isSecondLinking) {
+            updatedItem = { ...x, isSecondLinking: false, isOutput: false };
+          } else if (x.isOutput) {
+            updatedItem = { ...x, isSecondLinking: true, isOutput: true };
+          } else {
+            updatedItem = { ...x, isSecondLinking: false, isOutput: true };
+          }
           return updatedItem;
         }
         return x;
@@ -1231,23 +1347,27 @@
       });
       container.innerHTML = groups.map(g => {
         const isOpen = expandedStyles.has(g.key);
-        const totalSmv = g.items.reduce((acc, cur) => acc + (parseFloat(cur.smv) || 0), 0);
-        const rowsHtml = g.items.map(it => `
-          <tr>
-            <td>${esc(it.process)}</td>
-            <td><b>${it.smv}</b></td>
-            <td>
-              <button type="button" class="${it.isOutput ? 'btn-edit' : 'btn-remove'}" onclick="toggleListOutputProcess('${esc(it.style)}','${esc(it.process)}')">
-                ${it.isOutput ? 'Output Process' : 'Not Output'}
-              </button>
-            </td>
-            <td>
-              <div style="display:flex;gap:6px;justify-content:center;">
-                <button type="button" class="btn-edit" onclick="editSavedSmv('${esc(it.style)}')">Edit</button>
-                <button type="button" class="btn-remove" onclick="deleteSavedSmv('${esc(it.style)}','${esc(it.process)}')">Delete</button>
-              </div>
-            </td>
-          </tr>`).join('');
+        const totalSmv = g.items.reduce((acc, cur) => cur.isSecondLinking ? acc : (acc + (parseFloat(cur.smv) || 0)), 0);
+        const rowsHtml = g.items.map(it => {
+          const modeLabel = it.isSecondLinking ? '2nd Linking' : (it.isOutput ? 'Output Process' : 'Not Output');
+          const btnCls = it.isSecondLinking ? 'btn-refresh' : (it.isOutput ? 'btn-edit' : 'btn-remove');
+          return `
+            <tr>
+              <td>${esc(it.process)}</td>
+              <td><b>${it.smv}</b></td>
+              <td>
+                <button type="button" class="${btnCls}" onclick="cycleListProcessMode('${esc(it.style)}','${esc(it.process)}')">
+                  ${modeLabel}
+                </button>
+              </td>
+              <td>
+                <div style="display:flex;gap:6px;justify-content:center;">
+                  <button type="button" class="btn-edit" onclick="editSavedSmv('${esc(it.style)}')">Edit</button>
+                  <button type="button" class="btn-remove" onclick="deleteSavedSmv('${esc(it.style)}','${esc(it.process)}')">Delete</button>
+                </div>
+              </td>
+            </tr>`;
+        }).join('');
         return `
           <div class="style-group-card">
             <button type="button" class="style-group-header" onclick="toggleStyleExpand('${esc(g.key)}')">
@@ -1258,7 +1378,7 @@
               </span>
             </button>
             <div class="style-group-body ${isOpen ? '' : 'hidden'}">
-              <table><thead><tr><th>Process</th><th>SMV</th><th>Output Status</th><th>Action</th></tr></thead><tbody>${rowsHtml}</tbody></table>
+              <table><thead><tr><th>Process</th><th>SMV</th><th>Process Type</th><th>Action</th></tr></thead><tbody>${rowsHtml}</tbody></table>
             </div>
           </div>`;
       }).join('');
@@ -1382,11 +1502,13 @@
         showNotification(`Notification: TC "${currentTcData.tcNo}" একই "${proc}" Process-এ দুবার স্ক্যান হবে না!`, 'dup');
         document.getElementById('processDropdown').value = ''; renderTcCard(); return;
       }
-      const found = styleSmvMaster.find(x => x.style.toLowerCase() === currentTcData.style.toLowerCase() && x.process.toLowerCase() === proc.toLowerCase());
+      const found = findStyleProcessRule(currentTcData.style, proc);
       const smv = found ? Number(found.smv) : 0;
-      const calcSah = found && found.isOutput
-        ? Number(((currentTcData.bundleQty * getStyleTotalLinkingSmv(currentTcData.style)) / 60).toFixed(2))
-        : Number(((currentTcData.bundleQty * smv) / 60).toFixed(2));
+      const calcSah = found && found.isSecondLinking
+        ? Number(((currentTcData.bundleQty * smv) / 60).toFixed(2))
+        : (found && found.isOutput
+          ? Number(((currentTcData.bundleQty * getStyleTotalLinkingSmv(currentTcData.style)) / 60).toFixed(2))
+          : Number(((currentTcData.bundleQty * smv) / 60).toFixed(2)));
       renderTcCard(proc, smv, calcSah);
     }
 
@@ -1400,12 +1522,15 @@
         playBeep('dup');
         showNotification(`Notification: TC "${currentTcData.tcNo}" এই "${proc}" Process-এ ইতিমধ্যে স্ক্যান করা হয়েছে!`, 'dup'); return;
       }
-      const found = styleSmvMaster.find(x => x.style.toLowerCase() === currentTcData.style.toLowerCase() && x.process.toLowerCase() === proc.toLowerCase());
+      const found = findStyleProcessRule(currentTcData.style, proc);
       const smv = found ? Number(found.smv) : 0;
+      const isSec = Boolean(found && found.isSecondLinking);
       const isOut = Boolean(found && found.isOutput);
-      const sah = isOut
-        ? Number(((currentTcData.bundleQty * getStyleTotalLinkingSmv(currentTcData.style)) / 60).toFixed(2))
-        : Number(((currentTcData.bundleQty * smv) / 60).toFixed(2));
+      const sah = isSec
+        ? Number(((currentTcData.bundleQty * smv) / 60).toFixed(2))
+        : (isOut
+          ? Number(((currentTcData.bundleQty * getStyleTotalLinkingSmv(currentTcData.style)) / 60).toFixed(2))
+          : Number(((currentTcData.bundleQty * smv) / 60).toFixed(2)));
       const record = {
         timestamp: getBdTimestampNow(), operatorId: currentOperator.operatorId, operatorName: currentOperator.operatorName,
         floor: currentOperator.floor, dept: currentOperator.dept, jobType: currentOperator.jobType, line: currentOperator.line,
@@ -1791,6 +1916,14 @@
       return m ? parseInt(m[1], 10) : 0;
     }
 
+    function detectFloorLabelForRecord(rec, lineNum) {
+      const fl = String(rec.floor || '').trim();
+      if (fl) return fl;
+      if (lineNum >= 1 && lineNum <= 16) return '3rd Floor';
+      if (lineNum >= 17 && lineNum <= 33) return '2nd Floor';
+      return 'Other Floor';
+    }
+
     function buildLineRowHtml(ln, fcHour, fcPcs, upToTarget, outputQty, deviation, manpower, totalWH, earnedSah, efficiency) {
       let devClass = (upToTarget > 0 || outputQty > 0) ? (deviation >= 0 ? 'dev-pos' : 'dev-neg') : '';
       return `<tr><td><b>${esc(ln)}</b></td><td>${fcHour || 0}</td><td>${fcPcs || 0}</td><td><b>${upToTarget}</b></td><td><b>${outputQty}</b></td><td class="${devClass}">${deviation > 0 ? '+' + deviation : deviation}</td><td><b>${manpower}</b></td><td>${totalWH.toFixed(1)}</td><td>${earnedSah.toFixed(2)}</td><td><b>${efficiency}</b></td></tr>`;
@@ -1799,6 +1932,41 @@
     function buildFloorSubtotalHtml(label, s) {
       const dev = s.output - s.target, devClass = dev >= 0 ? 'dev-pos' : 'dev-neg';
       return `<tr class="floor-sub-row"><td>${esc(label)}</td><td>${s.forecastHr}</td><td>${s.forecastPcs}</td><td>${s.target}</td><td>${s.output}</td><td class="${devClass}">${dev > 0 ? '+' + dev : dev}</td><td>${s.manpower}</td><td>${s.wh.toFixed(1)}</td><td>${s.sah.toFixed(2)}</td><td>${s.effCount > 0 ? (s.effSum / s.effCount).toFixed(1) + '%' : '0.0%'}</td></tr>`;
+    }
+
+    function renderSecondLinkingNote(strictDateRecords) {
+      const noteEl = document.getElementById('secondLinkingFloorNote');
+      if (!noteEl) return;
+      const floorGroups = {};
+      let grandSecPcs = 0;
+
+      strictDateRecords.forEach(r => {
+        const procName = String(r.process || '').trim();
+        if (!isSecondLinkingProcessForStyle(r.style, procName)) return;
+        const qtyVal = Number(r.bundleQty || r.qty || 0);
+        const ln = normalizeLineName(r.line);
+        const flLabel = detectFloorLabelForRecord(r, getLineNumber(ln));
+        const stLabel = String(r.style || 'Unknown Style').trim() || 'Unknown Style';
+
+        if (!floorGroups[flLabel]) floorGroups[flLabel] = { totalPcs: 0, styles: {} };
+        floorGroups[flLabel].totalPcs += qtyVal;
+        floorGroups[flLabel].styles[stLabel] = (floorGroups[flLabel].styles[stLabel] || 0) + qtyVal;
+        grandSecPcs += qtyVal;
+      });
+
+      const floorKeys = Object.keys(floorGroups);
+      if (!floorKeys.length) {
+        noteEl.innerHTML = '<b>2nd Linking Note:</b> আজকের নির্বাচিত তারিখে কোনো 2nd Linking এন্ট্রি পাওয়া যায়নি।';
+        return;
+      }
+
+      const linesHtml = floorKeys.map(flKey => {
+        const fg = floorGroups[flKey];
+        const stParts = Object.keys(fg.styles).map(stKey => `<b>Style ${esc(stKey)}</b>: <b>${fg.styles[stKey]} Pcs</b>`);
+        return `<div><b>${esc(flKey)}</b> — Total 2nd Linking: <b>${fg.totalPcs} Pcs</b> (${stParts.join(', ')})</div>`;
+      }).join('');
+
+      noteEl.innerHTML = `<div style="font-weight:800;margin-bottom:4px;">2nd Linking Floor & Style Note (Grand Total: ${grandSecPcs} Pcs)</div>${linesHtml}`;
     }
 
     function renderLiveEfficiencyTable(strictDateRecords, isoDate, runningIso, workInfo) {
@@ -1814,8 +1982,7 @@
         const qtyVal = Number(r.bundleQty || r.qty || 0);
         if (isOutputProcessForStyle(r.style, procName)) {
           lineStats[ln].outputQty += qtyVal;
-          const totalStyleSmv = getStyleTotalLinkingSmv(r.style);
-          lineStats[ln].earnedSah += (qtyVal * totalStyleSmv) / 60;
+          lineStats[ln].earnedSah += computeRecordSahForDashboard(r);
         }
       });
       const floor3Sum = { forecastHr: 0, forecastPcs: 0, target: 0, output: 0, manpower: 0, wh: 0, sah: 0, effSum: 0, effCount: 0 };
@@ -1846,6 +2013,7 @@
       const grandAvgEff = floorAvgParts.length > 0 ? (floorAvgParts.reduce((a, b) => a + b, 0) / floorAvgParts.length).toFixed(1) + '%' : '0.0%';
       document.getElementById('dashSummaryInfo').textContent = `${isoDate === runningIso ? 'Running Date: ' + formatDisplayDate(runningIso) : 'Selected Date: ' + formatDisplayDate(isoDate) + ' (Running: ' + formatDisplayDate(runningIso) + ')'} | Effective Hours: ${workInfo.elapsedHours.toFixed(1)} hr`;
       box.innerHTML = `<table><thead><tr><th>Line</th><th>Forecast Hr</th><th>Forecast Pcs</th><th>Target (${esc(workInfo.upToLabel)})</th><th>Output</th><th>Deviation</th><th>Total Manpower</th><th>Total W.H</th><th>Earned SAH</th><th>Efficiency</th></tr></thead><tbody>${floor3RowsHtml}${buildFloorSubtotalHtml('LINKING 3RD FLOOR (L-01 to L-16)', floor3Sum)}${floor2RowsHtml}${buildFloorSubtotalHtml('LINKING 2ND FLOOR (L-17 to L-33)', floor2Sum)}</tbody><tfoot><tr class="grand-total-row"><td>GRAND TOTAL (AVG EFF)</td><td>${grandForecastHr}</td><td>${grandForecastPcs}</td><td>${grandTarget}</td><td>${grandOutput}</td><td>${grandDev > 0 ? '+' + grandDev : grandDev}</td><td>${grandManpower}</td><td>${grandWH.toFixed(1)}</td><td>${grandSah.toFixed(2)}</td><td>${grandAvgEff}</td></tr></tfoot></table>`;
+      renderSecondLinkingNote(strictDateRecords);
     }
 
     function renderStyleBreakdown(details) {
