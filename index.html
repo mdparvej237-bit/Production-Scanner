@@ -1212,27 +1212,39 @@
       const dateMap = {}, dateOrder = [];
       for (let x = 0; x < matched.length; x++) {
         const row = matched[x], dtKey = String(row[0] || "—").trim() || "—";
-        const smv = incToNum(row[8]), wh = incToNum(row[10]), tgt = incToNum(row[11]), sah = incToNum(row[13]);
-        if (!dateMap[dtKey]) { dateMap[dtKey] = { rawDate: dtKey, dateTotalWh: 0, dateTotalTargetSah: 0, dateTotalAchSah: 0 }; dateOrder.push(dtKey); }
-        dateMap[dtKey].dateTotalWh += wh;
-        dateMap[dtKey].dateTotalTargetSah += (tgt * smv) / 60;
-        dateMap[dtKey].dateTotalAchSah += sah;
+        const wh = incToNum(row[10]), sah = incToNum(row[13]);
+        if (!dateMap[dtKey]) {
+          dateMap[dtKey] = { rawDate: dtKey, whSum: 0, whCount: 0, achSahSum: 0 };
+          dateOrder.push(dtKey);
+        }
+        dateMap[dtKey].whSum += wh;
+        dateMap[dtKey].whCount += 1;
+        dateMap[dtKey].achSahSum += sah;
       }
 
       let totalHrs = 0, totalTargetSah = 0, totalAchSah = 0, totalInc = 0, rowsHtml = "";
       for (let dIdx = 0; dIdx < dateOrder.length; dIdx++) {
-        const item = dateMap[dateOrder[dIdx]], dayWh = item.dateTotalWh, dayTargetSah = item.dateTotalTargetSah, dayAchSah = item.dateTotalAchSah;
-        const dayEffPct = dayWh > 0 ? Math.round((dayAchSah / dayWh) * 100) : 0;
-        const dayInc = Math.max(0, dayAchSah - (dayWh * 0.70)) * 60 * 0.80;
-        totalHrs += dayWh; totalTargetSah += dayTargetSah; totalAchSah += dayAchSah; totalInc += dayInc;
+        const item = dateMap[dateOrder[dIdx]];
+        const dayWh = item.whCount > 0 ? (item.whSum / item.whCount) : 0;
+        const dayTargetSah = dayWh * 0.70;
+        const dayAchSah = item.achSahSum;
+
+        const dayEffPct = dayWh > 0 ? ((dayAchSah / dayWh) * 100) : 0;
+        const dayInc = Math.max(0, dayAchSah - dayTargetSah) * 60 * 0.80;
+
+        totalHrs += dayWh;
+        totalTargetSah += dayTargetSah;
+        totalAchSah += dayAchSah;
+        totalInc += dayInc;
+
         const badgeClass = dayEffPct >= 100 ? "eff-pill eff-high" : "eff-pill eff-mid";
-        rowsHtml += `<tr><td>${incFormatTwoLineDate(item.rawDate)}</td><td>${dayWh.toFixed(1)}</td><td>${dayTargetSah.toFixed(1)}</td><td>${dayAchSah.toFixed(1)}</td><td><span class="${badgeClass}">${dayEffPct}%</span></td><td class="inc-cell">${incFormatMoney(dayInc)}</td></tr>`;
+        rowsHtml += `<tr><td>${incFormatTwoLineDate(item.rawDate)}</td><td>${dayWh.toFixed(2)}</td><td>${dayTargetSah.toFixed(2)}</td><td>${dayAchSah.toFixed(2)}</td><td><span class="${badgeClass}">${dayEffPct.toFixed(2)}%</span></td><td class="inc-cell">${incFormatMoney(dayInc)}</td></tr>`;
       }
 
-      const overallEffPct = totalHrs > 0 ? Math.round((totalAchSah / totalHrs) * 100) : 0;
+      const overallEffPct = totalHrs > 0 ? ((totalAchSah / totalHrs) * 100) : 0;
       document.getElementById("incTotalBox").textContent = incFormatMoney(totalInc) + " BDT";
       document.getElementById("incTableWrap").innerHTML =
-        `<table class="inc-table"><thead><tr><th>Date</th><th>Hrs</th><th>Target<br>(SAH)</th><th>Achieved<br>(SAH)</th><th>Eff %</th><th>Incentive<br>(৳)</th></tr></thead><tbody>${rowsHtml}</tbody><tfoot><tr><td>Grand<br>Total</td><td>${totalHrs.toFixed(1)}</td><td>${totalTargetSah.toFixed(1)}</td><td>${totalAchSah.toFixed(1)}</td><td>${overallEffPct}%</td><td>${incFormatMoney(totalInc)}</td></tr></tfoot></table>`;
+        `<table class="inc-table"><thead><tr><th>Date</th><th>Hrs</th><th>Target<br>(SAH)</th><th>Achieved<br>(SAH)</th><th>Eff %</th><th>Incentive<br>(৳)</th></tr></thead><tbody>${rowsHtml}</tbody><tfoot><tr><td>Grand<br>Total</td><td>${totalHrs.toFixed(2)}</td><td>${totalTargetSah.toFixed(2)}</td><td>${totalAchSah.toFixed(2)}</td><td>${overallEffPct.toFixed(2)}%</td><td>${incFormatMoney(totalInc)}</td></tr></tfoot></table>`;
     }
 
     function applyIncentiveData(rows, tag) {
