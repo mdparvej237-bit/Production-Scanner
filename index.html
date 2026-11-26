@@ -860,7 +860,6 @@
 
     let scannedEntries = JSON.parse(localStorage.getItem('scanned_entries_v4') || '[]');
     const scannedTcProcessSet = new Set(scannedEntries.map(e => `${String(e.tcNo || '').trim().toLowerCase()}__${String(e.process || '').trim().toLowerCase()}`));
-    let hasSyncedServerRecordsOnce = false;
 
     let incRawRows = [];
     let latestFetchedRecords = [];
@@ -874,7 +873,6 @@
     function syncDuplicateLocksWithServer(serverRecords) {
       if (!Array.isArray(serverRecords)) return;
       latestFetchedRecords = serverRecords;
-      hasSyncedServerRecordsOnce = true;
 
       const activeServerKeys = new Set();
       serverRecords.forEach(r => {
@@ -1215,7 +1213,18 @@
 
     function getProcessesForStyle(styleName) {
       const target = String(styleName || '').trim().toLowerCase();
-      return target ? styleSmvMaster.filter(x => String(x.style || '').trim().toLowerCase() === target) : [];
+      if (!target) return [];
+      const seenProc = new Set();
+      const result = [];
+      styleSmvMaster.forEach(x => {
+        if (!x || String(x.style || '').trim().toLowerCase() !== target) return;
+        const pClean = String(x.process || '').trim();
+        const pKey = pClean.toLowerCase();
+        if (!pClean || seenProc.has(pKey)) return;
+        seenProc.add(pKey);
+        result.push({ ...x, style: String(x.style || '').trim(), process: pClean });
+      });
+      return result;
     }
 
     function getStyleTotalLinkingSmv(styleName) {
@@ -1282,14 +1291,16 @@
 
     function populateProcessDropdownForStyle(styleName) {
       const dd = document.getElementById('processDropdown'), hintEl = document.getElementById('styleProcessHint');
-      const matched = getProcessesForStyle(styleName);
+      const cleanStyle = String(styleName || '').trim();
+      dd.value = '';
+      renderTcCard('-', '-', '-');
+      const matched = getProcessesForStyle(cleanStyle);
       if (matched.length > 0) {
         dd.innerHTML = '<option value="">-- Process সিলেক্ট করুন --</option>' + matched.map(item => `<option value="${esc(item.process)}">${esc(item.process)} (SMV: ${item.smv})</option>`).join('');
-        if (hintEl) hintEl.textContent = `Style "${styleName}" এর ${matched.length}টি Process পাওয়া গেছে। আপনি যে Process-এ কাজ করছেন সেটি সিলেক্ট করুন।`;
+        if (hintEl) hintEl.textContent = `Style "${cleanStyle}" এর ${matched.length}টি Process পাওয়া গেছে। আপনি যে Process-এ কাজ করছেন সেটি সিলেক্ট করুন।`;
       } else {
-        const defaults = ['Linking', '2nd Linking', 'Ironing', 'Sewing', 'Overlock', 'Checking', 'Output'];
-        dd.innerHTML = '<option value="">-- Process সিলেক্ট করুন --</option>' + defaults.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('');
-        if (hintEl) hintEl.textContent = styleName ? `Style "${styleName}" এর জন্য Admin-এ আলাদা Process সেভ করা নেই, সাধারণ Process দেখানো হচ্ছে।` : 'Process সিলেক্ট করুন।';
+        dd.innerHTML = '<option value="">-- Process সিলেক্ট করুন --</option>';
+        if (hintEl) hintEl.textContent = cleanStyle ? `Style "${cleanStyle}" এর জন্য Admin-এ কোনো Process সেভ করা নেই। আগে Admin থেকে Style "${cleanStyle}"-এর Process যুক্ত করুন।` : 'Process সিলেক্ট করুন।';
       }
     }
 
@@ -1410,13 +1421,16 @@
       if (!style) { msg.style.color = '#b91c1c'; msg.textContent = 'আগে Style No. লিখুন।'; return; }
 
       const newItems = [];
+      const seenRowProc = new Set();
       rows.forEach(r => {
         const pr = String(r.querySelector('.dyn-proc').value || '').trim();
         const smv = parseFloat(r.querySelector('.dyn-smv').value);
         const modeSel = r.querySelector('.dyn-out').value;
         const isSec = modeSel === '2nd_linking';
         const isOut = modeSel === 'output' || isSec;
-        if (pr && !isNaN(smv) && smv > 0) {
+        const pKey = pr.toLowerCase();
+        if (pr && !isNaN(smv) && smv > 0 && !seenRowProc.has(pKey)) {
+          seenRowProc.add(pKey);
           newItems.push({ style, process: pr, smv, isOutput: isOut, isSecondLinking: isSec });
         }
       });
@@ -1655,6 +1669,9 @@
 
     function onNextButtonClick() {
       playBeep('ok'); clearNotification(); currentTcData = null;
+      document.getElementById('processDropdown').innerHTML = '<option value="">-- Process সিলেক্ট করুন --</option>';
+      document.getElementById('processDropdown').value = '';
+      document.getElementById('styleProcessHint').textContent = '';
       document.getElementById('processActionMsg').textContent = '';
       flowMode = 'SCAN_TC'; updateFlowUI(); startCameraIfNeeded();
     }
@@ -1670,7 +1687,7 @@
         showNotification(`Operator "${currentOperator.operatorId}" স্ক্যান হয়েছে। পরের ধাপে যেতে "Next" চাপুন।`, 'ok');
       } else if (flowMode === 'SCAN_TC') {
         const parts = code.split('|').map(s => s.trim());
-        currentTcData = { tcNo: parts[0] || code, lotNo: parts[1] || 'LOT-101', buyer: parts[2] || 'Buyer-A', style: parts[3] || '1896', color: parts[4] || 'Blue', size: parts[5] || 'M', bundleQty: Number(parts[6] || 12) };
+        currentTcData = { tcNo: parts[0] || code, lotNo: parts[1] || 'LOT-101', buyer: parts[2] || 'Buyer-A', style: (parts[3] || '1896').trim(), color: parts[4] || 'Blue', size: parts[5] || 'M', bundleQty: Number(parts[6] || 12) };
         flowMode = 'HOLD_AFTER_TC'; updateFlowUI();
         refreshServerRecordsForDuplicateCheck();
         showNotification(`TC "${currentTcData.tcNo}" (Style: ${currentTcData.style}) স্ক্যান হয়েছে। এখন আপনার Process সিলেক্ট করুন।`, 'ok');
@@ -1733,6 +1750,9 @@
 
     function resetOperatorFlow() {
       stopCamera(); currentOperator = null; currentTcData = null; flowMode = 'SCAN_OP';
+      document.getElementById('processDropdown').innerHTML = '<option value="">-- Process সিলেক্ট করুন --</option>';
+      document.getElementById('processDropdown').value = '';
+      document.getElementById('styleProcessHint').textContent = '';
       document.getElementById('processActionMsg').textContent = ''; clearNotification(); updateFlowUI();
     }
 
