@@ -132,6 +132,7 @@
       align-items: center;
       gap: 8px;
       margin-bottom: 4px;
+      flex-wrap: wrap;
     }
     .btn-corner-find {
       background: #0f2c59;
@@ -153,6 +154,16 @@
       font-weight: 800;
       cursor: pointer;
     }
+    .btn-corner-compact {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fcd34d;
+      border-radius: 9px;
+      padding: 6px 12px;
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+    }
     .dash-fullscreen-mode {
       position: fixed !important;
       inset: 0 !important;
@@ -164,6 +175,16 @@
       height: 100vh !important;
       overflow-y: auto !important;
       background: var(--card) !important;
+    }
+
+    .dash-compact-table th,
+    .dash-compact-table td {
+      padding: 3px 5px !important;
+      font-size: 11.5px !important;
+      line-height: 1.15 !important;
+    }
+    .dash-compact-table th {
+      font-size: 11px !important;
     }
 
     .admin-menubar {
@@ -443,7 +464,10 @@
           <div class="dash-top-corner-row">
             <button type="button" class="btn-corner-find" onclick="openFindYourDataSection()">Find your data</button>
             <span class="jl-gif-anim-badge">JL Fashions Limited</span>
-            <button id="dashFullScreenBtn" type="button" class="btn-corner-fs" onclick="toggleDashboardFullScreen()">Full Screen</button>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button id="dashCompactBtn" type="button" class="btn-corner-compact" onclick="toggleDashboardCompactView()">All Lines Compact</button>
+              <button id="dashFullScreenBtn" type="button" class="btn-corner-fs" onclick="toggleDashboardFullScreen()">Full Screen</button>
+            </div>
           </div>
           <h2 class="card-title">Live Line-wise Output & Efficiency</h2>
           <p class="hint" style="margin-top:2px;">Output Process ভিত্তিক Output ও Total Linking SMV SAH | প্রতিটি অপারেটরের Average Working Hour-এর যোগফলে Line W.H ও Efficiency</p>
@@ -946,6 +970,15 @@
     function toggleSearchSection() {
       const wrap = document.getElementById('dashboardSearchWrapper');
       wrap.classList.toggle('hidden');
+    }
+
+    function toggleDashboardCompactView() {
+      const area = document.getElementById('liveResultArea');
+      const btn = document.getElementById('dashCompactBtn');
+      if (!area) return;
+      const tbl = area.querySelector('table');
+      const isCompact = tbl ? tbl.classList.toggle('dash-compact-table') : false;
+      if (btn) btn.textContent = isCompact ? 'Normal View' : 'All Lines Compact';
     }
 
     function toggleDashboardFullScreen() {
@@ -1990,6 +2023,8 @@
 
     function renderLiveEfficiencyTable(strictDateRecords, isoDate, runningIso, workInfo) {
       const box = document.getElementById('liveResultArea'), dayForecast = forecastMaster[isoDate] || {}, lineStats = {};
+      const wasCompact = Boolean(box.querySelector('table.dash-compact-table'));
+
       ALL_LINKING_LINES.forEach(ln => {
         const fc = dayForecast[ln] || { hour: 0, pcs: 0 };
         lineStats[ln] = { line: ln, opWhMap: {}, outputQty: 0, earnedSah: 0, defaultLineHr: Number(fc.hour) || 0 };
@@ -2071,7 +2106,7 @@
       const grandAvgEff = grandWH > 0 ? ((grandSah / grandWH) * 100).toFixed(1) + '%' : '0.0%';
 
       document.getElementById('dashSummaryInfo').textContent = `${isoDate === runningIso ? 'Running Date: ' + formatDisplayDate(runningIso) : 'Selected Date: ' + formatDisplayDate(isoDate) + ' (Running: ' + formatDisplayDate(runningIso) + ')'} | Effective Hours: ${workInfo.elapsedHours.toFixed(1)} hr`;
-      box.innerHTML = `<table><thead><tr><th>Line</th><th>Forecast Hr</th><th>Forecast Pcs</th><th>Target (${esc(workInfo.upToLabel)})</th><th>Output</th><th>Deviation</th><th>Total Manpower</th><th>Total W.H</th><th>Earned SAH</th><th>Efficiency</th></tr></thead><tbody>${floor3RowsHtml}${buildFloorSubtotalHtml('LINKING 3RD FLOOR (L-01 to L-16)', floor3Sum)}${floor2RowsHtml}${buildFloorSubtotalHtml('LINKING 2ND FLOOR (L-17 to L-33)', floor2Sum)}</tbody><tfoot><tr class="grand-total-row"><td>GRAND TOTAL (EFF)</td><td>${grandForecastHr}</td><td>${grandForecastPcs}</td><td>${grandTarget}</td><td>${grandOutput}</td><td>${grandDev > 0 ? '+' + grandDev : grandDev}</td><td>${grandManpower}</td><td>${grandWH.toFixed(2)}</td><td>${grandSah.toFixed(2)}</td><td>${grandAvgEff}</td></tr></tfoot></table>`;
+      box.innerHTML = `<table class="${wasCompact ? 'dash-compact-table' : ''}"><thead><tr><th>Line</th><th>Forecast Hr</th><th>Forecast Pcs</th><th>Target (${esc(workInfo.upToLabel)})</th><th>Output</th><th>Deviation</th><th>Total Manpower</th><th>Total W.H</th><th>Earned SAH</th><th>Efficiency</th></tr></thead><tbody>${floor3RowsHtml}${buildFloorSubtotalHtml('LINKING 3RD FLOOR (L-01 to L-16)', floor3Sum)}${floor2RowsHtml}${buildFloorSubtotalHtml('LINKING 2ND FLOOR (L-17 to L-33)', floor2Sum)}</tbody><tfoot><tr class="grand-total-row"><td>GRAND TOTAL (EFF)</td><td>${grandForecastHr}</td><td>${grandForecastPcs}</td><td>${grandTarget}</td><td>${grandOutput}</td><td>${grandDev > 0 ? '+' + grandDev : grandDev}</td><td>${grandManpower}</td><td>${grandWH.toFixed(2)}</td><td>${grandSah.toFixed(2)}</td><td>${grandAvgEff}</td></tr></tfoot></table>`;
       renderSecondLinkingNote(strictDateRecords);
     }
 
