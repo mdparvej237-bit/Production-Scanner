@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Production System</title>
+  <title>Production Pro</title>
 
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Production" />
+  <meta name="apple-mobile-web-app-title" content="Production Pro" />
   <meta name="theme-color" content="#0c2340" />
   <link rel="manifest" href="manifest.json" />
 
@@ -405,7 +405,7 @@
   </div>
 
   <div class="topbar">
-    <h1>PRODUCTION<br/>SYSTEM</h1>
+    <h1>PRODUCTION<br/>PRO</h1>
     <div id="navBar" class="topbar-right hidden">
       <button id="btnTabDash" class="pill pill-tab" onclick="switchView('dashboard')">Dashboard</button>
       <button id="btnTabOp" class="pill pill-tab" onclick="switchView('operator')">Barcode Scan</button>
@@ -423,7 +423,7 @@
       <div class="card-head">
         <span class="jl-gif-anim-badge">JL Fashions Limited</span>
       </div>
-      <h2 class="card-title">System PIN Login</h2>
+      <h2 class="card-title">Production Pro — PIN Login</h2>
       <p class="hint" style="margin-top:4px;">আপনার নির্ধারিত PIN কোডটি লিখে Login চাপুন।</p>
       <label for="pinField">PIN Code</label>
       <input id="pinField" type="text" inputmode="numeric" autocomplete="off" placeholder="PIN কোড লিখুন" onkeydown="if(event.key==='Enter') handleLogin()" />
@@ -446,7 +446,7 @@
             <button id="dashFullScreenBtn" type="button" class="btn-corner-fs" onclick="toggleDashboardFullScreen()">Full Screen</button>
           </div>
           <h2 class="card-title">Live Line-wise Output & Efficiency</h2>
-          <p class="hint" style="margin-top:2px;">In-time 8:00 AM | Lunch 1:00 PM–2:00 PM বাদে লাইভ আপডেট (Max Forecast Hour সীমাবদ্ধ)</p>
+          <p class="hint" style="margin-top:2px;">Output Process ভিত্তিক Output ও Total Linking SMV SAH | প্রতিটি অপারেটরের Average Working Hour-এর যোগফলে Line W.H ও Efficiency</p>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;">
             <span id="runningDateBadge" class="badge-running-date">Running Date: -</span>
             <span id="upToTimeBadge" class="badge-upto">Up to 8:00 AM</span>
@@ -1134,6 +1134,12 @@
       return 0;
     }
 
+    function getRecordEntryWorkingHour(rec, defaultLineHour) {
+      const directWh = Number(rec.workingHour ?? rec.wh ?? rec.forecastHour);
+      if (!isNaN(directWh) && directWh > 0) return directWh;
+      return Number(defaultLineHour || 0);
+    }
+
     function populateProcessDropdownForStyle(styleName) {
       const dd = document.getElementById('processDropdown'), hintEl = document.getElementById('styleProcessHint');
       const matched = getProcessesForStyle(styleName);
@@ -1232,29 +1238,34 @@
     }
 
     async function saveAllStyleSmv() {
-      const style = document.getElementById('adminStyleInput').value.trim(), msg = document.getElementById('adminSmvMsg');
+      const style = String(document.getElementById('adminStyleInput').value || '').trim();
+      const msg = document.getElementById('adminSmvMsg');
       const rows = Array.from(document.querySelectorAll('#dynamicSmvRows .dynamic-row'));
       if (!style) { msg.style.color = '#b91c1c'; msg.textContent = 'আগে Style No. লিখুন।'; return; }
 
       const newItems = [];
       rows.forEach(r => {
-        const pr = r.querySelector('.dyn-proc').value.trim();
+        const pr = String(r.querySelector('.dyn-proc').value || '').trim();
         const smv = parseFloat(r.querySelector('.dyn-smv').value);
         const modeSel = r.querySelector('.dyn-out').value;
         const isSec = modeSel === '2nd_linking';
         const isOut = modeSel === 'output' || isSec;
-        if (pr && !isNaN(smv) && smv > 0) newItems.push({ style, process: pr, smv, isOutput: isOut, isSecondLinking: isSec });
+        if (pr && !isNaN(smv) && smv > 0) {
+          newItems.push({ style, process: pr, smv, isOutput: isOut, isSecondLinking: isSec });
+        }
       });
       if (!newItems.length) { msg.style.color = '#b91c1c'; msg.textContent = 'কমপক্ষে একটি Process ও SMV দিন।'; return; }
 
-      const otherStyles = styleSmvMaster.filter(x => x.style.toLowerCase() !== style.toLowerCase());
+      const otherStyles = styleSmvMaster.filter(x => String(x.style || '').trim().toLowerCase() !== style.toLowerCase());
       styleSmvMaster = [...otherStyles, ...newItems];
       expandedStyles.add(style.toLowerCase());
       localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
 
       recalculateLinkingSmvBox();
       renderSavedSmvTable();
-      if (currentTcData && currentTcData.style.toLowerCase() === style.toLowerCase()) populateProcessDropdownForStyle(currentTcData.style);
+      if (currentTcData && String(currentTcData.style || '').trim().toLowerCase() === style.toLowerCase()) {
+        populateProcessDropdownForStyle(currentTcData.style);
+      }
 
       document.getElementById('adminFormTitle').textContent = 'Style, Process & SMV';
       document.getElementById('saveSmvBtn').textContent = 'Save Style Process & SMV';
@@ -1266,7 +1277,7 @@
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'STYLE_SMV_BATCH', items: newItems })
+          body: JSON.stringify({ type: 'STYLE_SMV_BATCH', style, items: newItems })
         });
       } catch (_) {}
     }
@@ -1278,11 +1289,12 @@
     }
 
     function editSavedSmv(style) {
+      const targetStyle = decodeURIComponent(style || '');
       switchAdminSection('form');
-      document.getElementById('adminStyleInput').value = style;
+      document.getElementById('adminStyleInput').value = targetStyle;
       const wrap = document.getElementById('dynamicSmvRows');
       wrap.innerHTML = '';
-      const styleRows = getProcessesForStyle(style);
+      const styleRows = getProcessesForStyle(targetStyle);
       if (styleRows.length) {
         styleRows.forEach(item => {
           const modeVal = item.isSecondLinking ? '2nd_linking' : (item.isOutput ? 'output' : 'none');
@@ -1292,18 +1304,19 @@
         addProcessSmvRow();
       }
       recalculateLinkingSmvBox();
-      document.getElementById('adminFormTitle').textContent = `Edit Style (${style}) Process, SMV & Output`;
+      document.getElementById('adminFormTitle').textContent = `Edit Style (${targetStyle}) Process, SMV & Output`;
       document.getElementById('saveSmvBtn').textContent = 'Update Style Process & SMV';
       document.getElementById('adminSmvMsg').style.color = '#1d4ed8';
-      document.getElementById('adminSmvMsg').textContent = `${style} Style-এর Process, SMV বা ধরন বদলে "Update Style Process & SMV" চাপুন।`;
+      document.getElementById('adminSmvMsg').textContent = `${targetStyle} Style-এর Process, SMV বা ধরন বদলে "Update Style Process & SMV" চাপুন।`;
     }
 
-    async function cycleListProcessMode(style, process) {
-      const targetStyle = String(style || '').trim().toLowerCase();
-      const targetProc = String(process || '').trim().toLowerCase();
+    async function cycleListProcessMode(styleEncoded, processEncoded) {
+      const targetStyle = decodeURIComponent(styleEncoded || '').trim().toLowerCase();
+      const targetProc = decodeURIComponent(processEncoded || '').trim().toLowerCase();
       let updatedItem = null;
+      let styleGroupItems = [];
       styleSmvMaster = styleSmvMaster.map(x => {
-        if (x.style.toLowerCase() === targetStyle && x.process.toLowerCase() === targetProc) {
+        if (String(x.style || '').trim().toLowerCase() === targetStyle && String(x.process || '').trim().toLowerCase() === targetProc) {
           if (x.isSecondLinking) {
             updatedItem = { ...x, isSecondLinking: false, isOutput: false };
           } else if (x.isOutput) {
@@ -1315,6 +1328,7 @@
         }
         return x;
       });
+      styleGroupItems = styleSmvMaster.filter(x => String(x.style || '').trim().toLowerCase() === targetStyle);
       localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
       renderSavedSmvTable();
       if (updatedItem) {
@@ -1323,17 +1337,19 @@
             method: 'POST',
             mode: 'no-cors',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type: 'STYLE_SMV_BATCH', items: [updatedItem] })
+            body: JSON.stringify({ type: 'STYLE_SMV_BATCH', style: updatedItem.style, items: styleGroupItems })
           });
         } catch (_) {}
       }
     }
 
-    async function deleteSavedSmv(style, process) {
-      styleSmvMaster = styleSmvMaster.filter(x => !(x.style.toLowerCase() === style.toLowerCase() && x.process.toLowerCase() === process.toLowerCase()));
+    async function deleteSavedSmv(styleEncoded, processEncoded) {
+      const targetStyle = decodeURIComponent(styleEncoded || '').trim().toLowerCase();
+      const targetProc = decodeURIComponent(processEncoded || '').trim().toLowerCase();
+      styleSmvMaster = styleSmvMaster.filter(x => !(String(x.style || '').trim().toLowerCase() === targetStyle && String(x.process || '').trim().toLowerCase() === targetProc));
       localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
       renderSavedSmvTable();
-      try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'DELETE_STYLE_SMV', style, process }) }); } catch (_) {}
+      try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'DELETE_STYLE_SMV', style: decodeURIComponent(styleEncoded || ''), process: decodeURIComponent(processEncoded || '') }) }); } catch (_) {}
     }
 
     function renderSavedSmvTable() {
@@ -1341,29 +1357,31 @@
       if (!styleSmvMaster.length) { container.innerHTML = '<p class="hint">কোনো Style Process & SMV সেভ করা নেই।</p>'; return; }
       const groups = [], groupMap = {};
       styleSmvMaster.forEach(item => {
-        const key = item.style.toLowerCase();
+        const key = String(item.style || '').trim().toLowerCase();
         if (!groupMap[key]) { groupMap[key] = { style: item.style, key, items: [] }; groups.push(groupMap[key]); }
         groupMap[key].items.push(item);
       });
       container.innerHTML = groups.map(g => {
         const isOpen = expandedStyles.has(g.key);
         const totalSmv = g.items.reduce((acc, cur) => cur.isSecondLinking ? acc : (acc + (parseFloat(cur.smv) || 0)), 0);
+        const encStyle = encodeURIComponent(g.style);
         const rowsHtml = g.items.map(it => {
           const modeLabel = it.isSecondLinking ? '2nd Linking' : (it.isOutput ? 'Output Process' : 'Not Output');
           const btnCls = it.isSecondLinking ? 'btn-refresh' : (it.isOutput ? 'btn-edit' : 'btn-remove');
+          const encProc = encodeURIComponent(it.process);
           return `
             <tr>
               <td>${esc(it.process)}</td>
               <td><b>${it.smv}</b></td>
               <td>
-                <button type="button" class="${btnCls}" onclick="cycleListProcessMode('${esc(it.style)}','${esc(it.process)}')">
+                <button type="button" class="${btnCls}" onclick="cycleListProcessMode('${encStyle}','${encProc}')">
                   ${modeLabel}
                 </button>
               </td>
               <td>
                 <div style="display:flex;gap:6px;justify-content:center;">
-                  <button type="button" class="btn-edit" onclick="editSavedSmv('${esc(it.style)}')">Edit</button>
-                  <button type="button" class="btn-remove" onclick="deleteSavedSmv('${esc(it.style)}','${esc(it.process)}')">Delete</button>
+                  <button type="button" class="btn-edit" onclick="editSavedSmv('${encStyle}')">Edit</button>
+                  <button type="button" class="btn-remove" onclick="deleteSavedSmv('${encStyle}','${encProc}')">Delete</button>
                 </div>
               </td>
             </tr>`;
@@ -1926,12 +1944,13 @@
 
     function buildLineRowHtml(ln, fcHour, fcPcs, upToTarget, outputQty, deviation, manpower, totalWH, earnedSah, efficiency) {
       let devClass = (upToTarget > 0 || outputQty > 0) ? (deviation >= 0 ? 'dev-pos' : 'dev-neg') : '';
-      return `<tr><td><b>${esc(ln)}</b></td><td>${fcHour || 0}</td><td>${fcPcs || 0}</td><td><b>${upToTarget}</b></td><td><b>${outputQty}</b></td><td class="${devClass}">${deviation > 0 ? '+' + deviation : deviation}</td><td><b>${manpower}</b></td><td>${totalWH.toFixed(1)}</td><td>${earnedSah.toFixed(2)}</td><td><b>${efficiency}</b></td></tr>`;
+      return `<tr><td><b>${esc(ln)}</b></td><td>${fcHour || 0}</td><td>${fcPcs || 0}</td><td><b>${upToTarget}</b></td><td><b>${outputQty}</b></td><td class="${devClass}">${deviation > 0 ? '+' + deviation : deviation}</td><td><b>${manpower}</b></td><td>${totalWH.toFixed(2)}</td><td>${earnedSah.toFixed(2)}</td><td><b>${efficiency}</b></td></tr>`;
     }
 
     function buildFloorSubtotalHtml(label, s) {
       const dev = s.output - s.target, devClass = dev >= 0 ? 'dev-pos' : 'dev-neg';
-      return `<tr class="floor-sub-row"><td>${esc(label)}</td><td>${s.forecastHr}</td><td>${s.forecastPcs}</td><td>${s.target}</td><td>${s.output}</td><td class="${devClass}">${dev > 0 ? '+' + dev : dev}</td><td>${s.manpower}</td><td>${s.wh.toFixed(1)}</td><td>${s.sah.toFixed(2)}</td><td>${s.effCount > 0 ? (s.effSum / s.effCount).toFixed(1) + '%' : '0.0%'}</td></tr>`;
+      const floorEff = s.wh > 0 ? ((s.sah / s.wh) * 100).toFixed(1) + '%' : '0.0%';
+      return `<tr class="floor-sub-row"><td>${esc(label)}</td><td>${s.forecastHr}</td><td>${s.forecastPcs}</td><td>${s.target}</td><td>${s.output}</td><td class="${devClass}">${dev > 0 ? '+' + dev : dev}</td><td>${s.manpower}</td><td>${s.wh.toFixed(2)}</td><td>${s.sah.toFixed(2)}</td><td>${floorEff}</td></tr>`;
     }
 
     function renderSecondLinkingNote(strictDateRecords) {
@@ -1971,13 +1990,27 @@
 
     function renderLiveEfficiencyTable(strictDateRecords, isoDate, runningIso, workInfo) {
       const box = document.getElementById('liveResultArea'), dayForecast = forecastMaster[isoDate] || {}, lineStats = {};
-      ALL_LINKING_LINES.forEach(ln => { lineStats[ln] = { line: ln, uniqueOpIds: new Set(), outputQty: 0, earnedSah: 0 }; });
+      ALL_LINKING_LINES.forEach(ln => {
+        const fc = dayForecast[ln] || { hour: 0, pcs: 0 };
+        lineStats[ln] = { line: ln, opWhMap: {}, outputQty: 0, earnedSah: 0, defaultLineHr: Number(fc.hour) || 0 };
+      });
       strictDateRecords.forEach(r => {
         const ln = normalizeLineName(r.line);
         if (!ln) return;
-        if (!lineStats[ln]) lineStats[ln] = { line: ln, uniqueOpIds: new Set(), outputQty: 0, earnedSah: 0 };
+        const fc = dayForecast[ln] || { hour: 0, pcs: 0 };
+        if (!lineStats[ln]) {
+          lineStats[ln] = { line: ln, opWhMap: {}, outputQty: 0, earnedSah: 0, defaultLineHr: Number(fc.hour) || 0 };
+        }
         const opId = String(r.operatorId || '').trim();
-        if (opId) lineStats[ln].uniqueOpIds.add(opId);
+        const entryWh = getRecordEntryWorkingHour(r, lineStats[ln].defaultLineHr);
+        if (opId) {
+          if (!lineStats[ln].opWhMap[opId]) {
+            lineStats[ln].opWhMap[opId] = { whSum: 0, count: 0 };
+          }
+          lineStats[ln].opWhMap[opId].whSum += entryWh;
+          lineStats[ln].opWhMap[opId].count += 1;
+        }
+
         const procName = String(r.process || '').trim();
         const qtyVal = Number(r.bundleQty || r.qty || 0);
         if (isOutputProcessForStyle(r.style, procName)) {
@@ -1985,34 +2018,60 @@
           lineStats[ln].earnedSah += computeRecordSahForDashboard(r);
         }
       });
-      const floor3Sum = { forecastHr: 0, forecastPcs: 0, target: 0, output: 0, manpower: 0, wh: 0, sah: 0, effSum: 0, effCount: 0 };
-      const floor2Sum = { forecastHr: 0, forecastPcs: 0, target: 0, output: 0, manpower: 0, wh: 0, sah: 0, effSum: 0, effCount: 0 };
+
+      const floor3Sum = { forecastHr: 0, forecastPcs: 0, target: 0, output: 0, manpower: 0, wh: 0, sah: 0 };
+      const floor2Sum = { forecastHr: 0, forecastPcs: 0, target: 0, output: 0, manpower: 0, wh: 0, sah: 0 };
       let floor3RowsHtml = '', floor2RowsHtml = '';
+
       ALL_LINKING_LINES.forEach(ln => {
         const lineNum = getLineNumber(ln), fc = dayForecast[ln] || { hour: 0, pcs: 0 };
         const fcHour = Number(fc.hour) || 0, fcPcs = Number(fc.pcs) || 0;
         const cappedHours = fcHour > 0 ? Math.min(workInfo.elapsedHours, fcHour) : workInfo.elapsedHours;
         const upToTarget = Math.round(((fcHour > 0 && fcPcs > 0) ? (fcPcs / fcHour) : 0) * cappedHours);
-        const st = lineStats[ln], outputQty = Math.round(st.outputQty), deviation = outputQty - upToTarget, manpower = st.uniqueOpIds.size;
-        const totalWH = Number((manpower * cappedHours).toFixed(2)), earnedSah = Number(st.earnedSah.toFixed(2));
-        const effNum = totalWH > 0 ? (earnedSah / totalWH) * 100 : 0, rowHtml = buildLineRowHtml(ln, fcHour, fcPcs, upToTarget, outputQty, deviation, manpower, totalWH, earnedSah, effNum.toFixed(1) + '%');
+        const st = lineStats[ln], outputQty = Math.round(st.outputQty), deviation = outputQty - upToTarget;
+
+        const opKeys = Object.keys(st.opWhMap);
+        const manpower = opKeys.length;
+        let sumOfOperatorAvgWh = 0;
+        opKeys.forEach(opKey => {
+          const item = st.opWhMap[opKey];
+          if (item.count > 0) {
+            sumOfOperatorAvgWh += (item.whSum / item.count);
+          }
+        });
+
+        const totalWH = Number(sumOfOperatorAvgWh.toFixed(2)), earnedSah = Number(st.earnedSah.toFixed(2));
+        const effNum = totalWH > 0 ? (earnedSah / totalWH) * 100 : 0;
+        const rowHtml = buildLineRowHtml(ln, fcHour, fcPcs, upToTarget, outputQty, deviation, manpower, totalWH, earnedSah, effNum.toFixed(1) + '%');
+
         if (lineNum >= 1 && lineNum <= 16) {
-          floor3RowsHtml += rowHtml; floor3Sum.forecastHr += fcHour; floor3Sum.forecastPcs += fcPcs; floor3Sum.target += upToTarget; floor3Sum.output += outputQty; floor3Sum.manpower += manpower; floor3Sum.wh += totalWH; floor3Sum.sah += earnedSah;
-          if (totalWH > 0) { floor3Sum.effSum += effNum; floor3Sum.effCount += 1; }
+          floor3RowsHtml += rowHtml;
+          floor3Sum.forecastHr += fcHour;
+          floor3Sum.forecastPcs += fcPcs;
+          floor3Sum.target += upToTarget;
+          floor3Sum.output += outputQty;
+          floor3Sum.manpower += manpower;
+          floor3Sum.wh += totalWH;
+          floor3Sum.sah += earnedSah;
         } else if (lineNum >= 17 && lineNum <= 33) {
-          floor2RowsHtml += rowHtml; floor2Sum.forecastHr += fcHour; floor2Sum.forecastPcs += fcPcs; floor2Sum.target += upToTarget; floor2Sum.output += outputQty; floor2Sum.manpower += manpower; floor2Sum.wh += totalWH; floor2Sum.sah += earnedSah;
-          if (totalWH > 0) { floor2Sum.effSum += effNum; floor2Sum.effCount += 1; }
+          floor2RowsHtml += rowHtml;
+          floor2Sum.forecastHr += fcHour;
+          floor2Sum.forecastPcs += fcPcs;
+          floor2Sum.target += upToTarget;
+          floor2Sum.output += outputQty;
+          floor2Sum.manpower += manpower;
+          floor2Sum.wh += totalWH;
+          floor2Sum.sah += earnedSah;
         }
       });
+
       const grandForecastHr = floor3Sum.forecastHr + floor2Sum.forecastHr, grandForecastPcs = floor3Sum.forecastPcs + floor2Sum.forecastPcs;
       const grandTarget = floor3Sum.target + floor2Sum.target, grandOutput = floor3Sum.output + floor2Sum.output, grandDev = grandOutput - grandTarget;
       const grandManpower = floor3Sum.manpower + floor2Sum.manpower, grandWH = floor3Sum.wh + floor2Sum.wh, grandSah = floor3Sum.sah + floor2Sum.sah;
-      const floorAvgParts = [];
-      if (floor3Sum.effCount > 0) floorAvgParts.push(floor3Sum.effSum / floor3Sum.effCount);
-      if (floor2Sum.effCount > 0) floorAvgParts.push(floor2Sum.effSum / floor2Sum.effCount);
-      const grandAvgEff = floorAvgParts.length > 0 ? (floorAvgParts.reduce((a, b) => a + b, 0) / floorAvgParts.length).toFixed(1) + '%' : '0.0%';
+      const grandAvgEff = grandWH > 0 ? ((grandSah / grandWH) * 100).toFixed(1) + '%' : '0.0%';
+
       document.getElementById('dashSummaryInfo').textContent = `${isoDate === runningIso ? 'Running Date: ' + formatDisplayDate(runningIso) : 'Selected Date: ' + formatDisplayDate(isoDate) + ' (Running: ' + formatDisplayDate(runningIso) + ')'} | Effective Hours: ${workInfo.elapsedHours.toFixed(1)} hr`;
-      box.innerHTML = `<table><thead><tr><th>Line</th><th>Forecast Hr</th><th>Forecast Pcs</th><th>Target (${esc(workInfo.upToLabel)})</th><th>Output</th><th>Deviation</th><th>Total Manpower</th><th>Total W.H</th><th>Earned SAH</th><th>Efficiency</th></tr></thead><tbody>${floor3RowsHtml}${buildFloorSubtotalHtml('LINKING 3RD FLOOR (L-01 to L-16)', floor3Sum)}${floor2RowsHtml}${buildFloorSubtotalHtml('LINKING 2ND FLOOR (L-17 to L-33)', floor2Sum)}</tbody><tfoot><tr class="grand-total-row"><td>GRAND TOTAL (AVG EFF)</td><td>${grandForecastHr}</td><td>${grandForecastPcs}</td><td>${grandTarget}</td><td>${grandOutput}</td><td>${grandDev > 0 ? '+' + grandDev : grandDev}</td><td>${grandManpower}</td><td>${grandWH.toFixed(1)}</td><td>${grandSah.toFixed(2)}</td><td>${grandAvgEff}</td></tr></tfoot></table>`;
+      box.innerHTML = `<table><thead><tr><th>Line</th><th>Forecast Hr</th><th>Forecast Pcs</th><th>Target (${esc(workInfo.upToLabel)})</th><th>Output</th><th>Deviation</th><th>Total Manpower</th><th>Total W.H</th><th>Earned SAH</th><th>Efficiency</th></tr></thead><tbody>${floor3RowsHtml}${buildFloorSubtotalHtml('LINKING 3RD FLOOR (L-01 to L-16)', floor3Sum)}${floor2RowsHtml}${buildFloorSubtotalHtml('LINKING 2ND FLOOR (L-17 to L-33)', floor2Sum)}</tbody><tfoot><tr class="grand-total-row"><td>GRAND TOTAL (EFF)</td><td>${grandForecastHr}</td><td>${grandForecastPcs}</td><td>${grandTarget}</td><td>${grandOutput}</td><td>${grandDev > 0 ? '+' + grandDev : grandDev}</td><td>${grandManpower}</td><td>${grandWH.toFixed(2)}</td><td>${grandSah.toFixed(2)}</td><td>${grandAvgEff}</td></tr></tfoot></table>`;
       renderSecondLinkingNote(strictDateRecords);
     }
 
