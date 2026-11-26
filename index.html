@@ -9,17 +9,17 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Production Pro" />
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#0b1526" />
   <link rel="manifest" href="manifest.json" />
 
   <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
     :root {
-      --navy: #0f172a; --navy-2: #1e293b; --cobalt: #2563eb; --cobalt-dark: #1d4ed8;
+      --navy: #0b1526; --navy-2: #162844; --cobalt: #2563eb; --cobalt-dark: #1d4ed8;
       --sage: #8fb89f; --sage-soft: #e6f2eb; --sage-text: #23533b;
       --amber-soft: #fef3c7; --amber-text: #b45309;
       --red-soft: #fee2e2; --red-text: #991b1b;
-      --bg: #eef2f6; --card: #ffffff; --border: #dbe3ec; --text: #0f172a; --muted: #526071;
+      --bg: #d9dde2; --card: #f4f5f7; --border: #cfd6df; --text: #111827; --muted: #526071;
       --inc-navy: #0f2c59; --inc-navy-dark: #091d3d; --inc-blue: #1c64b8;
       --inc-green: #159957; --inc-green-badge: #16a34a; --inc-amber-badge: #c88a12;
       --inc-total-bg: #dde2e8;
@@ -78,14 +78,14 @@
 
     .second-linking-note-box {
       margin-top: 12px;
-      padding: 12px 14px;
-      border-radius: 12px;
-      background: #fffbeb;
-      border: 1px solid #f59e0b;
-      color: #78350f;
+      padding: 12px 16px;
+      border-radius: 8px;
+      background: #f6e39b;
+      border: 1px solid #e3c864;
+      color: #1e293b;
       font-size: 14px;
-      line-height: 1.55;
-      text-align: center;
+      line-height: 1.5;
+      text-align: left;
     }
 
     .page-footer-credit {
@@ -99,25 +99,25 @@
     }
 
     .topbar {
-      background: linear-gradient(135deg, #0b1324, #17253b);
+      background: linear-gradient(180deg, #1b283b 0%, #0d1522 100%);
       color: #fff; padding: 12px 16px; display: flex; justify-content: space-between;
       align-items: center; gap: 10px; flex-wrap: wrap;
-      box-shadow: 0 4px 16px rgba(11, 19, 36, 0.22);
-      border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+      box-shadow: 0 4px 14px rgba(11, 21, 38, 0.25);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     }
     .topbar h1 { margin: 0; font-size: 19px; font-weight: 900; line-height: 1.1; text-align: center; letter-spacing: 0.4px; }
     .topbar-right { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: center; }
 
     .pill { border: none; border-radius: 999px; padding: 8px 14px; font-size: 13.5px; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.15s ease; }
-    .pill-tab { background: rgba(255, 255, 255, 0.12); color: #f8fafc; }
-    .pill-tab:hover { background: rgba(255, 255, 255, 0.2); }
-    .pill-tab.active { background: #16a34a; color: #ffffff; box-shadow: 0 2px 8px rgba(22, 163, 74, 0.35); }
+    .pill-tab { background: rgba(255, 255, 255, 0.13); color: #f8fafc; }
+    .pill-tab:hover { background: rgba(255, 255, 255, 0.22); }
+    .pill-tab.active { background: #1d4ed8; color: #ffffff; box-shadow: 0 2px 8px rgba(29, 78, 216, 0.4); }
     .pill-logout { background: #dc2626; color: #fff; }
 
-    .container { max-width: 1120px; margin: 16px auto; padding: 0 12px 44px; }
+    .container { max-width: 1140px; margin: 16px auto; padding: 0 12px 44px; }
     .card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 16px;
-      padding: 16px; margin-bottom: 14px; box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+      padding: 16px; margin-bottom: 14px; box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
     }
     .card-head {
       display: flex; justify-content: center; align-items: center;
@@ -128,10 +128,10 @@
     .hint { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.5; text-align: center; }
 
     .dash-control-panel {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 10px 12px;
+      background: linear-gradient(180deg, #1b283b 0%, #0e1726 100%);
+      border: 1px solid #2b3c56;
+      border-radius: 10px;
+      padding: 9px 12px;
       width: 100%;
       display: flex;
       justify-content: space-between;
@@ -142,39 +142,72 @@
     }
     .dash-btn-group {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       flex-wrap: wrap;
       align-items: center;
     }
     .btn-corner-find {
-      background: #0f2c59;
-      color: #ffffff;
-      border: 1px solid #1e40af;
-      border-radius: 9px;
-      padding: 7px 13px;
+      background: #24344d;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      border-radius: 7px;
+      padding: 6px 12px;
       font-size: 13.5px;
-      font-weight: 800;
+      font-weight: 700;
       cursor: pointer;
     }
     .btn-corner-fs {
-      background: #dbeafe;
-      color: #1e3a8a;
-      border: 1px solid #93c5fd;
-      border-radius: 9px;
-      padding: 7px 13px;
+      background: #24344d;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      border-radius: 7px;
+      padding: 6px 12px;
       font-size: 13.5px;
-      font-weight: 800;
+      font-weight: 700;
       cursor: pointer;
     }
     .btn-corner-compact {
-      background: #fef3c7;
-      color: #92400e;
-      border: 1px solid #fcd34d;
-      border-radius: 9px;
-      padding: 7px 13px;
+      background: #24344d;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      border-radius: 7px;
+      padding: 6px 12px;
       font-size: 13.5px;
-      font-weight: 800;
+      font-weight: 700;
       cursor: pointer;
+    }
+    .dash-top-meta-strip {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .dash-eff-summary-box {
+      background: #ffffff;
+      border: 1px solid #d1d9e2;
+      border-radius: 8px;
+      padding: 8px 14px;
+      text-align: center;
+      min-width: 150px;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+    }
+    .dash-eff-summary-lbl {
+      font-size: 12px;
+      font-weight: 800;
+      color: #334155;
+      margin-bottom: 4px;
+    }
+    .dash-eff-summary-pill {
+      display: inline-block;
+      background: #1d4ed8;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 6px;
     }
     .dash-fullscreen-mode {
       position: fixed !important;
@@ -269,7 +302,7 @@
 
     .badge-entries { background: #0f766e; color: #ecfdf5; padding: 5px 11px; border-radius: 999px; font-size: 14px; font-weight: 800; text-align: center; }
     .badge-live { background: var(--amber-soft); color: var(--amber-text); padding: 5px 11px; border-radius: 999px; font-size: 14px; font-weight: 800; text-align: center; }
-    .badge-running-date { background: #dcfce7; color: #166534; border: 1px solid #86efac; padding: 5px 14px; border-radius: 999px; font-size: 14.5px; font-weight: 800; text-align: center; }
+    .badge-running-date { background: #1e293b; color: #f8fafc; border: 1px solid #475569; padding: 5px 12px; border-radius: 7px; font-size: 13.5px; font-weight: 800; text-align: center; }
     .badge-upto { background: #dbeafe; color: #1e3a8a; border: 1px solid #93c5fd; padding: 5px 14px; border-radius: 999px; font-size: 14.5px; font-weight: 800; text-align: center; }
     .badge-lock { background: var(--red-soft); color: var(--red-text); padding: 5px 11px; border-radius: 999px; font-size: 14px; font-weight: 800; text-align: center; }
     .badge-count { background: #e0e7ff; color: #1e3a8a; padding: 4px 10px; border-radius: 999px; font-size: 13.5px; font-weight: 800; text-align: center; }
@@ -315,22 +348,23 @@
     .style-group-header:hover { background: #e9e5dc; }
     .style-group-body { padding: 4px 12px 12px; background: #fff; }
 
-    .table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; }
+    .table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; }
     table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14px; min-width: 720px; }
     th, td {
-      padding: 9px 8px; border-bottom: 1px solid #e2e8f0;
+      padding: 9px 8px; border-bottom: 1px solid #dce2e8;
       text-align: center !important; vertical-align: middle;
       font-size: 14px; white-space: nowrap;
     }
-    th { background: linear-gradient(180deg, #1e293b, #0f172a); font-weight: 800; color: #f8fafc; }
-    tbody tr:nth-child(even) td { background: #f8fafc; }
-    tbody tr:hover td { background: #eff6ff; }
-    tr.floor-sub-row td { background: #dbeafe !important; font-weight: 800; color: #0f172a; border-top: 2px solid #60a5fa; border-bottom: 2px solid #60a5fa; }
-    tr.grand-total-row td { background: linear-gradient(180deg, #172554, #0f172a) !important; font-weight: 800; color: #ffffff; border-top: 2px solid #1d4ed8; }
+    th { background: linear-gradient(180deg, #1b293d 0%, #0e1726 100%); font-weight: 800; color: #f8fafc; border-right: 1px solid rgba(255, 255, 255, 0.12); }
+    tbody tr:nth-child(even) td { background: #e9edf2; }
+    tbody tr:nth-child(odd) td { background: #f4f6f8; }
+    tbody tr:hover td { background: #e2e8f0; }
+    tr.floor-sub-row td { background: #cfd8e3 !important; font-weight: 800; color: #0f172a; border-top: 2px solid #94a3b8; border-bottom: 2px solid #94a3b8; }
+    tr.grand-total-row td { background: linear-gradient(180deg, #162438 0%, #0b1320 100%) !important; font-weight: 800; color: #ffffff; border-top: 2px solid #0b1320; }
     tr.fc-highlight td { background: #fef9c3 !important; transition: background 0.4s ease; }
 
     .dev-pos { background: #dcfce7 !important; color: #166534 !important; font-weight: 800; }
-    .dev-neg { background: #fee2e2 !important; color: #991b1b !important; font-weight: 800; }
+    .dev-neg { background: #fca5a5 !important; color: #7f1d1d !important; font-weight: 800; }
     .fc-input { padding: 7px 9px; font-size: 15px; border-radius: 8px; min-width: 90px; text-align: center; }
 
     .msg { margin-top: 8px; font-size: 15px; font-weight: 700; text-align: center; }
@@ -476,17 +510,30 @@
         </div>
         <div class="card-head">
           <div class="dash-control-panel">
-            <button type="button" class="btn-corner-find" onclick="openFindYourDataSection()">Find your data</button>
-            <span class="jl-gif-anim-badge">JL Fashions Limited</span>
             <div class="dash-btn-group">
+              <button type="button" class="btn-corner-find" onclick="openFindYourDataSection()">Find your data</button>
               <button id="dashCompactBtn" type="button" class="btn-corner-compact" onclick="toggleDashboardCompactView()">All Lines Compact</button>
               <button id="dashFullScreenBtn" type="button" class="btn-corner-fs" onclick="toggleDashboardFullScreen()">Full Screen</button>
             </div>
+            <div class="dash-btn-group">
+              <span class="jl-gif-anim-badge">JL Fashions Limited</span>
+              <span id="runningDateBadge" class="badge-running-date">Running Date: -</span>
+            </div>
           </div>
-          <h2 class="card-title">Live Line-wise Output & Efficiency</h2>
+
+          <div class="dash-top-meta-strip">
+            <div style="flex:1;min-width:260px;text-align:left;">
+              <div id="secondLinkingFloorNote" class="second-linking-note-box" style="margin-top:0;">2nd Linking Note: ডাটা লোড হচ্ছে...</div>
+            </div>
+            <div class="dash-eff-summary-box">
+              <div class="dash-eff-summary-lbl">Efficiency</div>
+              <div id="topEfficiencyBadge" class="dash-eff-summary-pill">Efficiency: 0.0%</div>
+            </div>
+          </div>
+
+          <h2 class="card-title" style="margin-top:6px;">Live Line-wise Output & Efficiency</h2>
           <p class="hint" style="margin-top:2px;">Output Process ভিত্তিক Output ও Total Linking SMV SAH | প্রতিটি অপারেটরের Average Working Hour-এর যোগফলে Line W.H ও Efficiency</p>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;">
-            <span id="runningDateBadge" class="badge-running-date">Running Date: -</span>
             <span id="upToTimeBadge" class="badge-upto">Up to 8:00 AM</span>
             <span id="liveBadge" class="badge-live">LIVE</span>
             <button class="btn-refresh" onclick="resetToRunningDateAndLoad()">Today (Running)</button>
@@ -504,7 +551,6 @@
 
         <div id="dashErr" class="msg" style="color:#b91c1c;"></div>
         <div id="liveResultArea" class="table-scroll"><p class="hint">ডাটা লোড হচ্ছে...</p></div>
-        <div id="secondLinkingFloorNote" class="second-linking-note-box">2nd Linking Note: ডাটা লোড হচ্ছে...</div>
         <div class="page-footer-credit">This Web App Created By Parvej</div>
       </div>
 
@@ -2022,7 +2068,7 @@
 
       const floorKeys = Object.keys(floorGroups);
       if (!floorKeys.length) {
-        noteEl.innerHTML = '<b>2nd Linking Note:</b> আজকের নির্বাচিত তারিখে কোনো 2nd Linking এন্ট্রি পাওয়া যায়নি।';
+        noteEl.innerHTML = '<b>2nd Linking Floor & Style Note</b><br>আজকের নির্বাচিত তারিখে কোনো 2nd Linking এন্ট্রি পাওয়া যায়নি।';
         return;
       }
 
@@ -2118,6 +2164,9 @@
       const grandTarget = floor3Sum.target + floor2Sum.target, grandOutput = floor3Sum.output + floor2Sum.output, grandDev = grandOutput - grandTarget;
       const grandManpower = floor3Sum.manpower + floor2Sum.manpower, grandWH = floor3Sum.wh + floor2Sum.wh, grandSah = floor3Sum.sah + floor2Sum.sah;
       const grandAvgEff = grandWH > 0 ? ((grandSah / grandWH) * 100).toFixed(1) + '%' : '0.0%';
+
+      const topEffEl = document.getElementById('topEfficiencyBadge');
+      if (topEffEl) topEffEl.textContent = `Efficiency: ${grandAvgEff}`;
 
       document.getElementById('dashSummaryInfo').textContent = `${isoDate === runningIso ? 'Running Date: ' + formatDisplayDate(runningIso) : 'Selected Date: ' + formatDisplayDate(isoDate) + ' (Running: ' + formatDisplayDate(runningIso) + ')'} | Effective Hours: ${workInfo.elapsedHours.toFixed(1)} hr`;
       box.innerHTML = `<table class="${wasCompact ? 'dash-compact-table' : ''}"><thead><tr><th>Line</th><th>Forecast Hr</th><th>Forecast Pcs</th><th>Target (${esc(workInfo.upToLabel)})</th><th>Output</th><th>Deviation</th><th>Total Manpower</th><th>Total W.H</th><th>Earned SAH</th><th>Efficiency</th></tr></thead><tbody>${floor3RowsHtml}${buildFloorSubtotalHtml('LINKING 3RD FLOOR (L-01 to L-16)', floor3Sum)}${floor2RowsHtml}${buildFloorSubtotalHtml('LINKING 2ND FLOOR (L-17 to L-33)', floor2Sum)}</tbody><tfoot><tr class="grand-total-row"><td>GRAND TOTAL (EFF)</td><td>${grandForecastHr}</td><td>${grandForecastPcs}</td><td>${grandTarget}</td><td>${grandOutput}</td><td>${grandDev > 0 ? '+' + grandDev : grandDev}</td><td>${grandManpower}</td><td>${grandWH.toFixed(2)}</td><td>${grandSah.toFixed(2)}</td><td>${grandAvgEff}</td></tr></tfoot></table>`;
