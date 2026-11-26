@@ -863,6 +863,7 @@
 
     let incRawRows = [];
     let latestFetchedRecords = [];
+    let lastDashboardContext = null;
 
     const ALL_LINKING_LINES = Array.from({ length: 33 }, (_, idx) => `Linking Line-${String(idx + 1).padStart(2, '0')}`);
 
@@ -1052,6 +1053,17 @@
       return { elapsedHours: cappedElapsedHours, rawElapsedHours: rawHours, maxForecastHr, upToLabel: `Up to ${addWorkingHoursTo8Am(cappedElapsedHours)}` };
     }
 
+    function refreshLiveTimeAndTargetsOnly() {
+      updateRunningDateBadge();
+      if (!lastDashboardContext) return;
+      const dashView = document.getElementById('view-dashboard');
+      if (!dashView || dashView.classList.contains('hidden')) return;
+      const workInfo = getElapsedWorkInfo(lastDashboardContext.isoDate);
+      const upToEl = document.getElementById('upToTimeBadge');
+      if (upToEl) upToEl.textContent = workInfo.upToLabel;
+      renderLiveEfficiencyTable(lastDashboardContext.strictDateRecords, lastDashboardContext.isoDate, lastDashboardContext.runningIso, workInfo);
+    }
+
     function openFindYourDataSection() {
       const wrap = document.getElementById('dashboardSearchWrapper');
       if (wrap.classList.contains('hidden')) {
@@ -1192,7 +1204,7 @@
         const data = await res.json();
         if (data && data.status === 'SUCCESS') {
           if (Array.isArray(data.smvList) && data.smvList.length) {
-            insertGroupedByStyle(data.smvList);
+            replaceSyncedStylesFromServer(data.smvList);
             localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster));
             if (document.getElementById('view-admin') && !document.getElementById('view-admin').classList.contains('hidden') && !document.getElementById('admin-sec-list').classList.contains('hidden')) {
               renderSavedSmvTable();
@@ -1402,35 +1414,48 @@
       return { isOutput: Boolean(isOut || isSec), isSecondLinking: Boolean(isSec) };
     }
 
-    function insertGroupedByStyle(itemsToInsert) {
-      itemsToInsert.forEach(item => {
+    function replaceSyncedStylesFromServer(serverSmvList) {
+      if (!Array.isArray(serverSmvList) || !serverSmvList.length) return;
+      const incomingByStyle = {};
+      serverSmvList.forEach(item => {
         if (!item || !item.style || !item.process) return;
         const stClean = String(item.style).trim();
         const prClean = String(item.process).trim();
-        const matchIdx = styleSmvMaster.findIndex(x => String(x.style || '').trim().toLowerCase() === stClean.toLowerCase() && String(x.process || '').trim().toLowerCase() === prClean.toLowerCase());
-        const existingItem = matchIdx >= 0 ? styleSmvMaster[matchIdx] : null;
+        const stKey = stClean.toLowerCase();
+        const prKey = prClean.toLowerCase();
+        if (!stClean || !prClean) return;
+
+        const existingItem = styleSmvMaster.find(x => String(x.style || '').trim().toLowerCase() === stKey && String(x.process || '').trim().toLowerCase() === prKey) || null;
         const flags = parseServerOutputFlags(item, existingItem);
         const smvNum = !isNaN(parseFloat(item.smv)) ? parseFloat(item.smv) : (existingItem ? Number(existingItem.smv || 0) : 0);
 
-        const cleanItem = {
+        if (!incomingByStyle[stKey]) incomingByStyle[stKey] = { seenProc: new Set(), items: [] };
+        if (incomingByStyle[stKey].seenProc.has(prKey)) return;
+        incomingByStyle[stKey].seenProc.add(prKey);
+        incomingByStyle[stKey].items.push({
           style: stClean,
           process: prClean,
           smv: smvNum,
           isOutput: flags.isOutput,
           isSecondLinking: flags.isSecondLinking
-        };
-
-        if (matchIdx >= 0) {
-          styleSmvMaster[matchIdx] = { ...existingItem, ...cleanItem };
-          return;
-        }
-        let lastStyleIdx = -1;
-        for (let i = styleSmvMaster.length - 1; i >= 0; i--) {
-          if (String(styleSmvMaster[i].style || '').trim().toLowerCase() === stClean.toLowerCase()) { lastStyleIdx = i; break; }
-        }
-        if (lastStyleIdx >= 0) styleSmvMaster.splice(lastStyleIdx + 1, 0, cleanItem);
-        else styleSmvMaster.push(cleanItem);
+        });
       });
+
+      const syncedStyleKeys = new Set(Object.keys(incomingByStyle));
+      const keptOtherStyles = styleSmvMaster.filter(x => {
+        const k = String(x.style || '').trim().toLowerCase();
+        return !syncedStyleKeys.has(k);
+      });
+
+      const merged = [...keptOtherStyles];
+      Object.keys(incomingByStyle).forEach(stKey => {
+        incomingByStyle[stKey].items.forEach(it => merged.push(it));
+      });
+      styleSmvMaster = merged;
+    }
+
+    function insertGroupedByStyle(itemsToInsert) {
+      replaceSyncedStylesFromServer(itemsToInsert);
     }
 
     async function saveAllStyleSmv() {
@@ -2117,11 +2142,12 @@
         const prev = dateSelect.value || activeIsoDate;
         dateSelect.innerHTML = '<option value="">Date</option>';
         (data.dates || []).forEach(d => { const opt = document.createElement('option'); opt.value = d; opt.textContent = d; if (d === prev) opt.selected = true; dateSelect.appendChild(opt); });
-        if (Array.isArray(data.smvList) && data.smvList.length) { insertGroupedByStyle(data.smvList); localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster)); }
+        if (Array.isArray(data.smvList) && data.smvList.length) { replaceSyncedStylesFromServer(data.smvList); localStorage.setItem('style_smv_master', JSON.stringify(styleSmvMaster)); }
         if (data.forecastMap && typeof data.forecastMap === 'object') { forecastMaster = { ...forecastMaster, ...data.forecastMap }; localStorage.setItem(FORECAST_STORAGE_KEY, JSON.stringify(forecastMaster)); }
         const allRecs = Array.isArray(data.records) ? data.records : (Array.isArray(data.rawRecords) ? data.rawRecords : []);
         syncDuplicateLocksWithServer(allRecs);
         const strictDateRecords = allRecs.filter(r => extractRecordIsoDate(r) === activeIsoDate);
+        lastDashboardContext = { strictDateRecords, isoDate: activeIsoDate, runningIso };
         const workInfo = getElapsedWorkInfo(activeIsoDate);
         document.getElementById('upToTimeBadge').textContent = workInfo.upToLabel;
         renderLiveEfficiencyTable(strictDateRecords, activeIsoDate, runningIso, workInfo);
@@ -2331,6 +2357,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       initForecastDates();
       updateFlowUI();
+      setInterval(refreshLiveTimeAndTargetsOnly, 30000);
 
       document.getElementById('incSearchBtn').addEventListener('click', renderIncentiveReport);
       document.getElementById('incSearchInput').addEventListener('input', renderIncentiveReport);
