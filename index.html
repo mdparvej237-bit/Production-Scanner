@@ -1217,7 +1217,9 @@
       const seenProc = new Set();
       const result = [];
       styleSmvMaster.forEach(x => {
-        if (!x || String(x.style || '').trim().toLowerCase() !== target) return;
+        if (!x) return;
+        const rowStyle = String(x.style || '').trim().toLowerCase();
+        if (rowStyle !== target) return;
         const pClean = String(x.process || '').trim();
         const pKey = pClean.toLowerCase();
         if (!pClean || seenProc.has(pKey)) return;
@@ -1292,15 +1294,32 @@
     function populateProcessDropdownForStyle(styleName) {
       const dd = document.getElementById('processDropdown'), hintEl = document.getElementById('styleProcessHint');
       const cleanStyle = String(styleName || '').trim();
+      dd.innerHTML = '';
       dd.value = '';
       renderTcCard('-', '-', '-');
+
+      const placeholderOpt = document.createElement('option');
+      placeholderOpt.value = '';
+      placeholderOpt.textContent = '-- Process সিলেক্ট করুন --';
+      dd.appendChild(placeholderOpt);
+
+      if (!cleanStyle) {
+        if (hintEl) hintEl.textContent = 'Process সিলেক্ট করুন।';
+        return;
+      }
+
       const matched = getProcessesForStyle(cleanStyle);
       if (matched.length > 0) {
-        dd.innerHTML = '<option value="">-- Process সিলেক্ট করুন --</option>' + matched.map(item => `<option value="${esc(item.process)}">${esc(item.process)} (SMV: ${item.smv})</option>`).join('');
+        matched.forEach(item => {
+          if (String(item.style || '').trim().toLowerCase() !== cleanStyle.toLowerCase()) return;
+          const opt = document.createElement('option');
+          opt.value = item.process;
+          opt.textContent = `${item.process} (SMV: ${item.smv})`;
+          dd.appendChild(opt);
+        });
         if (hintEl) hintEl.textContent = `Style "${cleanStyle}" এর ${matched.length}টি Process পাওয়া গেছে। আপনি যে Process-এ কাজ করছেন সেটি সিলেক্ট করুন।`;
       } else {
-        dd.innerHTML = '<option value="">-- Process সিলেক্ট করুন --</option>';
-        if (hintEl) hintEl.textContent = cleanStyle ? `Style "${cleanStyle}" এর জন্য Admin-এ কোনো Process সেভ করা নেই। আগে Admin থেকে Style "${cleanStyle}"-এর Process যুক্ত করুন।` : 'Process সিলেক্ট করুন।';
+        if (hintEl) hintEl.textContent = `Style "${cleanStyle}" এর জন্য Admin-এ কোনো Process সেভ করা নেই। আগে Admin থেকে Style "${cleanStyle}"-এর Process যুক্ত করুন।`;
       }
     }
 
