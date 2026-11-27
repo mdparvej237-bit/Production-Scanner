@@ -1053,15 +1053,18 @@
       return { elapsedHours: cappedElapsedHours, rawElapsedHours: rawHours, maxForecastHr, upToLabel: `Up to ${addWorkingHoursTo8Am(cappedElapsedHours)}` };
     }
 
-    function refreshLiveTimeAndTargetsOnly() {
+    function isUserTypingInSearchInputs() {
+      const active = document.activeElement;
+      if (!active) return false;
+      const searchIds = ['lineInput', 'styleInput', 'colorInput'];
+      return searchIds.indexOf(active.id) !== -1;
+    }
+
+    function autoSyncDashboardTick() {
       updateRunningDateBadge();
-      if (!lastDashboardContext) return;
       const dashView = document.getElementById('view-dashboard');
       if (!dashView || dashView.classList.contains('hidden')) return;
-      const workInfo = getElapsedWorkInfo(lastDashboardContext.isoDate);
-      const upToEl = document.getElementById('upToTimeBadge');
-      if (upToEl) upToEl.textContent = workInfo.upToLabel;
-      renderLiveEfficiencyTable(lastDashboardContext.strictDateRecords, lastDashboardContext.isoDate, lastDashboardContext.runningIso, workInfo);
+      loadDashboard({ silent: true, skipSearchReRender: isUserTypingInSearchInputs() });
     }
 
     function openFindYourDataSection() {
@@ -2127,18 +2130,20 @@
       return '';
     }
 
-    async function loadDashboard() {
+    async function loadDashboard(opts = {}) {
+      const silent = Boolean(opts && opts.silent);
+      const skipSearchReRender = Boolean(opts && opts.skipSearchReRender);
       const errEl = document.getElementById('dashErr');
-      errEl.textContent = '';
+      if (!silent) errEl.textContent = '';
       updateRunningDateBadge();
       const runningIso = getTodayIso(), dashPicker = document.getElementById('dashDatePicker');
       const activeIsoDate = (dashPicker && dashPicker.value) ? dashPicker.value : runningIso;
       const dateSelect = document.getElementById('dateSelect'), line = document.getElementById('lineInput').value.trim(), style = document.getElementById('styleInput').value.trim(), color = document.getElementById('colorInput').value.trim();
-      document.getElementById('liveBadge').textContent = 'LOADING';
+      if (!silent) document.getElementById('liveBadge').textContent = 'LOADING';
       try {
         const res = await fetch(`${API_URL}?${new URLSearchParams({ date: activeIsoDate, line: '', style: '', t: Date.now() })}`);
         const data = await res.json();
-        if (data.status !== 'SUCCESS') { errEl.textContent = data.message || 'ডাটা আনা যায়নি।'; document.getElementById('liveBadge').textContent = 'ERROR'; return; }
+        if (data.status !== 'SUCCESS') { if (!silent) errEl.textContent = data.message || 'ডাটা আনা যায়নি।'; document.getElementById('liveBadge').textContent = 'ERROR'; return; }
         const prev = dateSelect.value || activeIsoDate;
         dateSelect.innerHTML = '<option value="">Date</option>';
         (data.dates || []).forEach(d => { const opt = document.createElement('option'); opt.value = d; opt.textContent = d; if (d === prev) opt.selected = true; dateSelect.appendChild(opt); });
@@ -2151,11 +2156,11 @@
         const workInfo = getElapsedWorkInfo(activeIsoDate);
         document.getElementById('upToTimeBadge').textContent = workInfo.upToLabel;
         renderLiveEfficiencyTable(strictDateRecords, activeIsoDate, runningIso, workInfo);
-        if (!document.getElementById('dashboardSearchWrapper').classList.contains('hidden') && (line || style || color)) {
+        if (!skipSearchReRender && !document.getElementById('dashboardSearchWrapper').classList.contains('hidden') && (line || style || color)) {
           runFindYourDataSearch();
         }
         document.getElementById('liveBadge').textContent = 'LIVE';
-      } catch (e) { errEl.textContent = 'সংযোগ সমস্যা: ' + e.message; document.getElementById('liveBadge').textContent = 'ERROR'; }
+      } catch (e) { if (!silent) errEl.textContent = 'সংযোগ সমস্যা: ' + e.message; document.getElementById('liveBadge').textContent = 'ERROR'; }
     }
 
     function normalizeLineName(raw) {
@@ -2357,7 +2362,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       initForecastDates();
       updateFlowUI();
-      setInterval(refreshLiveTimeAndTargetsOnly, 30000);
+      setInterval(autoSyncDashboardTick, 30000);
 
       document.getElementById('incSearchBtn').addEventListener('click', renderIncentiveReport);
       document.getElementById('incSearchInput').addEventListener('input', renderIncentiveReport);
