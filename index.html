@@ -209,6 +209,17 @@
       padding: 4px 12px;
       border-radius: 6px;
     }
+    .badge-clock {
+      background: #0f172a;
+      color: #fef08a;
+      border: 1px solid #38bdf8;
+      padding: 5px 13px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 800;
+      text-align: center;
+      letter-spacing: 0.3px;
+    }
     .dash-fullscreen-mode {
       position: fixed !important;
       inset: 0 !important;
@@ -516,6 +527,7 @@
               <button id="dashFullScreenBtn" type="button" class="btn-corner-fs" onclick="toggleDashboardFullScreen()">Full Screen</button>
             </div>
             <div class="dash-btn-group">
+              <span id="liveClockBadge" class="badge-clock">Time: --:--:--</span>
               <span class="jl-gif-anim-badge">JL Fashions Limited</span>
               <span id="runningDateBadge" class="badge-running-date">Running Date: -</span>
             </div>
@@ -864,6 +876,7 @@
     let incRawRows = [];
     let latestFetchedRecords = [];
     let lastDashboardContext = null;
+    let lastAppliedUpToLabel = '';
 
     const ALL_LINKING_LINES = Array.from({ length: 33 }, (_, idx) => `Linking Line-${String(idx + 1).padStart(2, '0')}`);
 
@@ -919,6 +932,20 @@
       } catch (_) {
         const now = new Date();
         return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      }
+    }
+
+    function getBdClockTimeString() {
+      try {
+        return new Intl.DateTimeFormat('en-US', {
+          timeZone: 'Asia/Dhaka',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: true
+        }).format(new Date());
+      } catch (_) {
+        return new Date().toLocaleTimeString('en-US');
       }
     }
 
@@ -1060,8 +1087,28 @@
       return searchIds.indexOf(active.id) !== -1;
     }
 
-    function autoSyncDashboardTick() {
+    function updateLiveClockAndUpTo() {
+      const clockBadge = document.getElementById('liveClockBadge');
+      if (clockBadge) clockBadge.textContent = `Time: ${getBdClockTimeString()}`;
       updateRunningDateBadge();
+
+      const dashView = document.getElementById('view-dashboard');
+      if (!dashView || dashView.classList.contains('hidden')) return;
+
+      const runningIso = getTodayIso();
+      const dashPicker = document.getElementById('dashDatePicker');
+      const activeIsoDate = (dashPicker && dashPicker.value) ? dashPicker.value : (lastDashboardContext ? lastDashboardContext.isoDate : runningIso);
+      const workInfo = getElapsedWorkInfo(activeIsoDate);
+      const upToEl = document.getElementById('upToTimeBadge');
+      if (upToEl) upToEl.textContent = workInfo.upToLabel;
+
+      if (lastDashboardContext && lastAppliedUpToLabel !== workInfo.upToLabel) {
+        lastAppliedUpToLabel = workInfo.upToLabel;
+        renderLiveEfficiencyTable(lastDashboardContext.strictDateRecords, lastDashboardContext.isoDate, lastDashboardContext.runningIso, workInfo);
+      }
+    }
+
+    function autoSyncDashboardTick() {
       const dashView = document.getElementById('view-dashboard');
       if (!dashView || dashView.classList.contains('hidden')) return;
       loadDashboard({ silent: true, skipSearchReRender: isUserTypingInSearchInputs() });
@@ -1840,7 +1887,6 @@
       } else cameraRunning = false;
     }
 
-    // --- OPERATOR INCENTIVE FUNCTIONS ---
     function incToNum(v) {
       if (typeof v === "number") return isFinite(v) ? v : 0;
       const n = parseFloat(String(v || "").replace(/[^0-9.-]/g, ""));
@@ -2109,7 +2155,7 @@
         const btn = document.getElementById(v === 'dashboard' ? 'btnTabDash' : v === 'operator' ? 'btnTabOp' : v === 'incentive' ? 'btnTabInc' : 'btnTabAdmin');
         if (btn) btn.classList.toggle('active', v === view);
       });
-      if (view === 'dashboard') { stopCamera(); updateRunningDateBadge(); const dashPicker = document.getElementById('dashDatePicker'); if (dashPicker && !dashPicker.value) dashPicker.value = getTodayIso(); loadDashboard(); }
+      if (view === 'dashboard') { stopCamera(); updateRunningDateBadge(); updateLiveClockAndUpTo(); const dashPicker = document.getElementById('dashDatePicker'); if (dashPicker && !dashPicker.value) dashPicker.value = getTodayIso(); loadDashboard(); }
       if (view === 'operator') { updateFlowUI(); syncSmvMasterFromServer(); }
       if (view === 'incentive') { stopCamera(); fetchIncentiveSheet(false); }
       if (view === 'admin') { stopCamera(); switchAdminSection('form'); renderSavedSmvTable(); syncSmvMasterFromServer(); }
@@ -2154,6 +2200,7 @@
         const strictDateRecords = allRecs.filter(r => extractRecordIsoDate(r) === activeIsoDate);
         lastDashboardContext = { strictDateRecords, isoDate: activeIsoDate, runningIso };
         const workInfo = getElapsedWorkInfo(activeIsoDate);
+        lastAppliedUpToLabel = workInfo.upToLabel;
         document.getElementById('upToTimeBadge').textContent = workInfo.upToLabel;
         renderLiveEfficiencyTable(strictDateRecords, activeIsoDate, runningIso, workInfo);
         if (!skipSearchReRender && !document.getElementById('dashboardSearchWrapper').classList.contains('hidden') && (line || style || color)) {
@@ -2362,6 +2409,8 @@
     window.addEventListener('DOMContentLoaded', () => {
       initForecastDates();
       updateFlowUI();
+      updateLiveClockAndUpTo();
+      setInterval(updateLiveClockAndUpTo, 1000);
       setInterval(autoSyncDashboardTick, 30000);
 
       document.getElementById('incSearchBtn').addEventListener('click', renderIncentiveReport);
