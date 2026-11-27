@@ -126,6 +126,13 @@
     }
     .card-title { margin: 0; font-size: 20px; font-weight: 800; text-align: center; color: #0f172a; }
     .hint { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.5; text-align: center; }
+    #dashSummaryInfo,
+    #dashSummaryInfo * {
+      font-size: 14px !important;
+      font-weight: 800 !important;
+      color: #0f172a !important;
+      line-height: 1.4 !important;
+    }
 
     .dash-control-panel {
       background: linear-gradient(180deg, #1b283b 0%, #0e1726 100%);
@@ -511,6 +518,7 @@
       <button id="btnTabDash" class="pill pill-tab" onclick="switchView('dashboard')">Dashboard</button>
       <button id="btnTabOp" class="pill pill-tab" onclick="switchView('operator')">Barcode Scan</button>
       <button id="btnTabInc" class="pill pill-tab" onclick="switchView('incentive')">Operator Incentive</button>
+      <button id="btnTabOpWh" class="pill pill-tab" onclick="switchView('opwh')">Operator W.H</button>
       <button id="btnTabAdmin" class="pill pill-tab" onclick="switchView('admin')">Admin</button>
       <button class="pill pill-logout" onclick="logoutSystem()">Logout</button>
     </div>
@@ -570,7 +578,7 @@
             <label for="dashDatePicker" style="margin-top:0;">Select Date (Change to View Other Date)</label>
             <input id="dashDatePicker" type="date" onchange="onDashboardDateChange()" />
           </div>
-          <div id="dashSummaryInfo" class="hint" style="padding-top:14px;"></div>
+          <div id="dashSummaryInfo" style="padding-top:14px;"></div>
         </div>
 
         <div id="dashErr" class="msg" style="color:#b91c1c;"></div>
@@ -763,6 +771,57 @@
       </div>
     </div>
 
+    <div id="view-opwh" class="hidden">
+      <div class="card">
+        <div class="welcome-marquee-bar" style="border-radius:8px;margin-bottom:10px;">
+          <div class="welcome-marquee-track">Welcome to our New Web App site</div>
+        </div>
+        <div class="card-head">
+          <span class="jl-gif-anim-badge">JL Fashions Limited</span>
+          <h2 class="card-title">Operator Working Hour (Date-wise)</h2>
+          <p class="hint">কোনো নির্দিষ্ট তারিখে কোনো অপারেটর নির্ধারিত ফোরকাস্ট ঘণ্টার আগে চলে গেলে শুধু ওই তারিখের Working Hour বদলে দিন।</p>
+        </div>
+
+        <div class="grid-3">
+          <div>
+            <label for="opWhDatePicker">Select Date</label>
+            <input id="opWhDatePicker" type="date" onchange="onOpWhDateChange()" />
+          </div>
+          <div>
+            <label for="opWhOperatorIdInput">Operator ID</label>
+            <input id="opWhOperatorIdInput" type="text" placeholder="e.g. 700002" oninput="lookupOperatorForWhEdit()" onkeydown="if(event.key==='Enter') saveOperatorWorkingHour()" />
+          </div>
+          <div>
+            <label for="opWhNewHourInput">New Working Hour</label>
+            <input id="opWhNewHourInput" type="number" step="0.5" min="0" max="24" placeholder="e.g. 8" onkeydown="if(event.key==='Enter') saveOperatorWorkingHour()" />
+          </div>
+        </div>
+
+        <div class="info-grid" style="margin-top:12px;">
+          <div class="info-cell"><div class="info-lbl">Operator Name</div><div id="opWhFoundName" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">Line</div><div id="opWhFoundLine" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">Line Forecast Hr</div><div id="opWhForecastHr" class="info-val">-</div></div>
+          <div class="info-cell"><div class="info-lbl">Active W.H (Selected Date)</div><div id="opWhCurrentActive" class="info-val">-</div></div>
+        </div>
+
+        <div class="btn-row" style="margin-top:14px;">
+          <button type="button" class="btn-primary" onclick="saveOperatorWorkingHour()">Save / Update Operator W.H</button>
+          <button type="button" class="btn-sage" onclick="clearOpWhForm()">Clear</button>
+        </div>
+        <div id="opWhMsg" class="msg" style="color:#15803d;"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2 class="card-title">Operators on Selected Date</h2>
+          <button type="button" class="btn-refresh" onclick="syncAndRenderOpWhPage()">Refresh Data</button>
+        </div>
+        <p class="hint">যে অপারেটরের Working Hour পরিবর্তন করতে চান, তার পাশে <b>Edit W.H</b> চাপুন।</p>
+        <div id="opWhDateListArea" class="table-scroll"><p class="hint">ডাটা লোড হচ্ছে...</p></div>
+        <div class="page-footer-credit">This Web App Created By Parvej</div>
+      </div>
+    </div>
+
     <div id="view-admin" class="hidden">
       <div class="card" style="padding:10px 14px;margin-bottom:12px;text-align:center;">
         <div class="welcome-marquee-bar" style="border-radius:8px;margin-bottom:8px;">
@@ -859,9 +918,10 @@
 
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbyWnveGrJjO52Rft9xbv4WPjxWkoaSAg5sHs_at9xDWJew5gsI_NorrpEuUc4YU2zcW2A/exec';
-    const PINS = { '1111': 'dashboard', '2222': 'operator', '3333': 'incentive', '9999': 'admin' };
+    const PINS = { '1111': 'dashboard', '2222': 'operator', '3333': 'incentive', '4444': 'opwh', '9999': 'admin' };
     const SESSION_KEY = 'prod_system_role_v1';
     const FORECAST_STORAGE_KEY = 'linking_forecast_master_v1';
+    const OP_WH_STORAGE_KEY = 'operator_custom_wh_master_v1';
     const INC_CACHE_KEY = 'jl_fashion_op_inc_v2';
 
     let html5QrScanner = null;
@@ -881,6 +941,7 @@
     ];
 
     let forecastMaster = JSON.parse(localStorage.getItem(FORECAST_STORAGE_KEY) || '{}');
+    let operatorWhMaster = JSON.parse(localStorage.getItem(OP_WH_STORAGE_KEY) || '{}');
     let expandedStyles = new Set();
 
     let scannedEntries = JSON.parse(localStorage.getItem('scanned_entries_v4') || '[]');
@@ -893,6 +954,217 @@
     let isDashboardFetchInFlight = false;
 
     const ALL_LINKING_LINES = Array.from({ length: 33 }, (_, idx) => `Linking Line-${String(idx + 1).padStart(2, '0')}`);
+
+    function getCustomOperatorWh(isoDate, operatorId) {
+      const dtKey = String(isoDate || '').trim();
+      const opKey = String(operatorId || '').trim().toLowerCase();
+      if (!dtKey || !opKey || !operatorWhMaster[dtKey]) return null;
+      const val = Number(operatorWhMaster[dtKey][opKey]);
+      return (!isNaN(val) && val >= 0) ? val : null;
+    }
+
+    function setCustomOperatorWh(isoDate, operatorId, whVal) {
+      const dtKey = String(isoDate || '').trim();
+      const opKey = String(operatorId || '').trim().toLowerCase();
+      if (!dtKey || !opKey) return;
+      if (!operatorWhMaster[dtKey]) operatorWhMaster[dtKey] = {};
+      operatorWhMaster[dtKey][opKey] = Number(whVal);
+      localStorage.setItem(OP_WH_STORAGE_KEY, JSON.stringify(operatorWhMaster));
+    }
+
+    function initOpWhDate() {
+      const picker = document.getElementById('opWhDatePicker');
+      if (picker && !picker.value) picker.value = getTodayIso();
+    }
+
+    function onOpWhDateChange() {
+      document.getElementById('opWhMsg').textContent = '';
+      renderOpWhDateList();
+      lookupOperatorForWhEdit();
+      refreshServerRecordsForDuplicateCheck().then(() => {
+        renderOpWhDateList();
+        lookupOperatorForWhEdit();
+      });
+    }
+
+    async function syncAndRenderOpWhPage() {
+      initOpWhDate();
+      await refreshServerRecordsForDuplicateCheck();
+      renderOpWhDateList();
+      lookupOperatorForWhEdit();
+    }
+
+    function getOperatorSummaryForDate(isoDate) {
+      const targetDate = String(isoDate || getTodayIso()).trim();
+      const dayForecast = forecastMaster[targetDate] || {};
+      const map = {};
+
+      latestFetchedRecords.forEach(r => {
+        if (extractRecordIsoDate(r) !== targetDate) return;
+        const opId = String(r.operatorId || '').trim();
+        if (!opId) return;
+        const key = opId.toLowerCase();
+        const ln = normalizeLineName(r.line);
+        const fc = dayForecast[ln] || { hour: 0, pcs: 0 };
+        const baseWh = getRecordEntryWorkingHour(r, Number(fc.hour) || 8);
+        const customWh = getCustomOperatorWh(targetDate, opId);
+
+        if (!map[key]) {
+          map[key] = {
+            operatorId: opId,
+            operatorName: String(r.operatorName || '-').trim() || '-',
+            line: ln || '-',
+            forecastHr: Number(fc.hour) || 0,
+            defaultWh: baseWh,
+            activeWh: customWh !== null ? customWh : baseWh,
+            hasCustom: customWh !== null
+          };
+        }
+      });
+
+      const dayCustomMap = operatorWhMaster[targetDate] || {};
+      Object.keys(dayCustomMap).forEach(opKey => {
+        if (!map[opKey]) {
+          map[opKey] = {
+            operatorId: opKey.toUpperCase(),
+            operatorName: '-',
+            line: '-',
+            forecastHr: 0,
+            defaultWh: 8,
+            activeWh: Number(dayCustomMap[opKey]),
+            hasCustom: true
+          };
+        }
+      });
+
+      return Object.keys(map).map(k => map[k]);
+    }
+
+    function lookupOperatorForWhEdit() {
+      const isoDate = (document.getElementById('opWhDatePicker') && document.getElementById('opWhDatePicker').value) || getTodayIso();
+      const opIdInput = String((document.getElementById('opWhOperatorIdInput') && document.getElementById('opWhOperatorIdInput').value) || '').trim();
+      const nameEl = document.getElementById('opWhFoundName');
+      const lineEl = document.getElementById('opWhFoundLine');
+      const fcEl = document.getElementById('opWhForecastHr');
+      const actEl = document.getElementById('opWhCurrentActive');
+
+      if (!opIdInput) {
+        if (nameEl) nameEl.textContent = '-';
+        if (lineEl) lineEl.textContent = '-';
+        if (fcEl) fcEl.textContent = '-';
+        if (actEl) actEl.textContent = '-';
+        return;
+      }
+
+      const list = getOperatorSummaryForDate(isoDate);
+      const found = list.find(x => String(x.operatorId || '').trim().toLowerCase() === opIdInput.toLowerCase());
+      if (found) {
+        if (nameEl) nameEl.textContent = found.operatorName;
+        if (lineEl) lineEl.textContent = found.line;
+        if (fcEl) fcEl.textContent = found.forecastHr || '-';
+        if (actEl) actEl.textContent = Number(found.activeWh).toFixed(2) + ' hr';
+      } else {
+        const customVal = getCustomOperatorWh(isoDate, opIdInput);
+        if (nameEl) nameEl.textContent = 'Not in Sheet Yet';
+        if (lineEl) lineEl.textContent = '-';
+        if (fcEl) fcEl.textContent = '-';
+        if (actEl) actEl.textContent = customVal !== null ? (Number(customVal).toFixed(2) + ' hr') : 'Default (8.00 hr)';
+      }
+    }
+
+    function renderOpWhDateList() {
+      const box = document.getElementById('opWhDateListArea');
+      if (!box) return;
+      const isoDate = (document.getElementById('opWhDatePicker') && document.getElementById('opWhDatePicker').value) || getTodayIso();
+      const list = getOperatorSummaryForDate(isoDate);
+      if (!list.length) {
+        box.innerHTML = `<p class="hint">Date <b>${esc(formatDisplayDate(isoDate))}</b> এর কোনো Operator ডাটা পাওয়া যায়নি। ওপরে Operator ID ও New Working Hour লিখে সরাসরি Save করতে পারেন।</p>`;
+        return;
+      }
+
+      const rowsHtml = list.map(item => {
+        const statusTag = item.hasCustom ? '<span class="badge-entries">Custom</span>' : '<span class="badge-live">Default</span>';
+        return `
+          <tr>
+            <td><b>${esc(item.operatorId)}</b></td>
+            <td>${esc(item.operatorName)}</td>
+            <td>${esc(item.line)}</td>
+            <td>${item.forecastHr || 0}</td>
+            <td><b>${Number(item.activeWh).toFixed(2)}</b></td>
+            <td>${statusTag}</td>
+            <td><button type="button" class="btn-edit" onclick="selectOperatorForWh('${esc(item.operatorId)}', '${Number(item.activeWh)}')">Edit W.H</button></td>
+          </tr>`;
+      }).join('');
+
+      box.innerHTML = `<table><thead><tr><th>Operator ID</th><th>Operator Name</th><th>Line</th><th>Forecast Hr</th><th>Working Hour</th><th>Status</th><th>Action</th></tr></thead><tbody>${rowsHtml}</tbody></table>`;
+    }
+
+    function selectOperatorForWh(opId, currentWh) {
+      const idInput = document.getElementById('opWhOperatorIdInput');
+      const whInput = document.getElementById('opWhNewHourInput');
+      if (idInput) idInput.value = opId;
+      if (whInput) {
+        whInput.value = currentWh;
+        whInput.focus();
+        whInput.select();
+      }
+      lookupOperatorForWhEdit();
+      document.getElementById('opWhMsg').style.color = '#1d4ed8';
+      document.getElementById('opWhMsg').textContent = `Operator "${opId}" সিলেক্ট হয়েছে—নতুন Working Hour লিখে "Save / Update Operator W.H" চাপুন।`;
+    }
+
+    function clearOpWhForm() {
+      document.getElementById('opWhOperatorIdInput').value = '';
+      document.getElementById('opWhNewHourInput').value = '';
+      document.getElementById('opWhMsg').textContent = '';
+      lookupOperatorForWhEdit();
+    }
+
+    async function saveOperatorWorkingHour() {
+      const isoDate = (document.getElementById('opWhDatePicker') && document.getElementById('opWhDatePicker').value) || getTodayIso();
+      const opId = String((document.getElementById('opWhOperatorIdInput') && document.getElementById('opWhOperatorIdInput').value) || '').trim();
+      const whRaw = String((document.getElementById('opWhNewHourInput') && document.getElementById('opWhNewHourInput').value) || '').trim();
+      const msgEl = document.getElementById('opWhMsg');
+      const whNum = parseFloat(whRaw);
+
+      if (!opId) {
+        msgEl.style.color = '#b91c1c';
+        msgEl.textContent = 'আগে Operator ID লিখুন।';
+        return;
+      }
+      if (whRaw === '' || isNaN(whNum) || whNum < 0 || whNum > 24) {
+        msgEl.style.color = '#b91c1c';
+        msgEl.textContent = '০ থেকে ২৪-এর মধ্যে সঠিক Working Hour লিখুন।';
+        return;
+      }
+
+      setCustomOperatorWh(isoDate, opId, whNum);
+      renderOpWhDateList();
+      lookupOperatorForWhEdit();
+
+      if (lastDashboardContext && lastDashboardContext.isoDate === isoDate) {
+        const workInfo = getElapsedWorkInfo(isoDate);
+        renderLiveEfficiencyTable(lastDashboardContext.strictDateRecords, lastDashboardContext.isoDate, lastDashboardContext.runningIso, workInfo);
+      }
+
+      msgEl.style.color = '#15803d';
+      msgEl.textContent = `Date ${formatDisplayDate(isoDate)}-এ Operator "${opId}"-এর Working Hour ${whNum.toFixed(2)} hr সেভ/আপডেট হয়েছে।`;
+
+      try {
+        await fetch(API_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'OPERATOR_WH_UPDATE',
+            date: isoDate,
+            displayDate: formatDisplayDate(isoDate),
+            operatorId: opId,
+            workingHour: whNum
+          })
+        });
+      } catch (_) {}
+    }
 
     function buildTcProcessKey(tcNo, processName) {
       return `${String(tcNo || '').trim().toLowerCase()}__${String(processName || '').trim().toLowerCase()}`;
@@ -988,6 +1260,7 @@
       if (fcPicker && !fcPicker.value) fcPicker.value = runningIso;
       const dashPicker = document.getElementById('dashDatePicker');
       if (dashPicker && !dashPicker.value) dashPicker.value = runningIso;
+      initOpWhDate();
     }
 
     function onForecastCustomDateChange() {
@@ -1363,7 +1636,13 @@
       return 0;
     }
 
-    function getRecordEntryWorkingHour(rec, defaultLineHour) {
+    function getRecordEntryWorkingHour(rec, defaultLineHour, isoDateOverride = '') {
+      const dtKey = isoDateOverride || extractRecordIsoDate(rec);
+      const opId = String(rec.operatorId || '').trim();
+      if (dtKey && opId) {
+        const customOpWh = getCustomOperatorWh(dtKey, opId);
+        if (customOpWh !== null) return customOpWh;
+      }
       const directWh = Number(rec.workingHour ?? rec.wh ?? rec.forecastHour);
       if (!isNaN(directWh) && directWh > 0) return directWh;
       return Number(defaultLineHour || 0);
@@ -2027,7 +2306,10 @@
         const row = matched[x];
         const rawDateStr = String(row[0] || "—").trim() || "—";
         const dtKey = incNormalizeDateKey(rawDateStr);
-        const wh = incToNum(row[10]), sah = incToNum(row[13]);
+        const opIdRow = String(row[1] || "").trim();
+        const customOpWh = getCustomOperatorWh(dtKey, opIdRow);
+        const wh = customOpWh !== null ? customOpWh : incToNum(row[10]);
+        const sah = incToNum(row[13]);
         if (!dateMap[dtKey]) {
           dateMap[dtKey] = { rawDate: rawDateStr, whSum: 0, whCount: 0, achSahSum: 0 };
           dateOrder.push(dtKey);
@@ -2152,7 +2434,7 @@
       document.getElementById('loginMsg').textContent = '';
       document.getElementById('loginCard').classList.remove('hidden');
       document.getElementById('navBar').classList.add('hidden');
-      ['dashboard', 'operator', 'incentive', 'admin'].forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
+      ['dashboard', 'operator', 'incentive', 'opwh', 'admin'].forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
     }
 
     function applyRoleUI(role) {
@@ -2161,19 +2443,21 @@
       document.getElementById('btnTabDash').classList.toggle('hidden', role === 'operator' || role === 'incentive');
       document.getElementById('btnTabOp').classList.toggle('hidden', role === 'dashboard' || role === 'incentive');
       document.getElementById('btnTabInc').classList.toggle('hidden', role === 'dashboard' || role === 'operator');
+      document.getElementById('btnTabOpWh').classList.toggle('hidden', role === 'operator' || role === 'incentive');
       document.getElementById('btnTabAdmin').classList.toggle('hidden', role !== 'admin');
       switchView(role);
     }
 
     function switchView(view) {
-      ['dashboard', 'operator', 'incentive', 'admin'].forEach(v => {
+      ['dashboard', 'operator', 'incentive', 'opwh', 'admin'].forEach(v => {
         document.getElementById('view-' + v).classList.toggle('hidden', v !== view);
-        const btn = document.getElementById(v === 'dashboard' ? 'btnTabDash' : v === 'operator' ? 'btnTabOp' : v === 'incentive' ? 'btnTabInc' : 'btnTabAdmin');
+        const btn = document.getElementById(v === 'dashboard' ? 'btnTabDash' : v === 'operator' ? 'btnTabOp' : v === 'incentive' ? 'btnTabInc' : v === 'opwh' ? 'btnTabOpWh' : 'btnTabAdmin');
         if (btn) btn.classList.toggle('active', v === view);
       });
       if (view === 'dashboard') { stopCamera(); updateRunningDateBadge(); updateLiveClockAndUpTo(); const dashPicker = document.getElementById('dashDatePicker'); if (dashPicker && !dashPicker.value) dashPicker.value = getTodayIso(); loadDashboard(); }
       if (view === 'operator') { updateFlowUI(); syncSmvMasterFromServer(); }
       if (view === 'incentive') { stopCamera(); fetchIncentiveSheet(false); }
+      if (view === 'opwh') { stopCamera(); syncAndRenderOpWhPage(); }
       if (view === 'admin') { stopCamera(); switchAdminSection('form'); renderSavedSmvTable(); syncSmvMasterFromServer(); }
     }
 
@@ -2315,7 +2599,7 @@
           lineStats[ln] = { line: ln, opWhMap: {}, outputQty: 0, earnedSah: 0, defaultLineHr: Number(fc.hour) || 0 };
         }
         const opId = String(r.operatorId || '').trim();
-        const entryWh = getRecordEntryWorkingHour(r, lineStats[ln].defaultLineHr);
+        const entryWh = getRecordEntryWorkingHour(r, lineStats[ln].defaultLineHr, isoDate);
         if (opId) {
           if (!lineStats[ln].opWhMap[opId]) {
             lineStats[ln].opWhMap[opId] = { whSum: 0, count: 0 };
