@@ -492,6 +492,14 @@
     .eff-mid { background-color: var(--inc-amber-badge); }
     .inc-cell { color: var(--inc-green) !important; font-weight: 800 !important; }
 
+    .factory-inc-table { min-width: 1400px; }
+    .factory-inc-table th,
+    .factory-inc-table td {
+      padding: 6px 5px !important;
+      font-size: 12px !important;
+      border-right: 1px solid rgba(148, 163, 184, 0.35);
+    }
+
     .drawer-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); display: none; z-index: 90; }
     .drawer-backdrop.open { display: block; }
     .drawer-panel { width: 265px; height: 100%; background: #ffffff; padding: 18px 16px; box-shadow: 4px 0 20px rgba(0, 0, 0, 0.25); text-align: center; }
@@ -519,6 +527,7 @@
       <button id="btnTabOp" class="pill pill-tab" onclick="switchView('operator')">Barcode Scan</button>
       <button id="btnTabInc" class="pill pill-tab" onclick="switchView('incentive')">Operator Incentive</button>
       <button id="btnTabOpWh" class="pill pill-tab" onclick="switchView('opwh')">Operator W.H</button>
+      <button id="btnTabFactoryInc" class="pill pill-tab" onclick="switchView('factoryinc')">Factory Incentive</button>
       <button id="btnTabAdmin" class="pill pill-tab" onclick="switchView('admin')">Admin</button>
       <button class="pill pill-logout" onclick="logoutSystem()">Logout</button>
     </div>
@@ -822,6 +831,39 @@
       </div>
     </div>
 
+    <div id="view-factoryinc" class="hidden">
+      <div class="card">
+        <div class="welcome-marquee-bar" style="border-radius:8px;margin-bottom:10px;">
+          <div class="welcome-marquee-track">Welcome to our New Web App site</div>
+        </div>
+        <div class="card-head">
+          <span class="jl-gif-anim-badge">JL Fashions Limited</span>
+          <h2 class="card-title">Full Factory Date-wise Incentives & Efficiency Report</h2>
+          <p class="hint">মাস সিলেক্ট করে বাম থেকে ডানে তারিখ অনুযায়ী সব অপারেটরের Incentive ও Efficiency দেখুন এবং Excel ফাইল ডাউনলোড করুন।</p>
+        </div>
+
+        <div class="grid-2" style="max-width:560px;margin:0 auto 12px;">
+          <div>
+            <label for="factoryIncMonthPicker">Select Month</label>
+            <input id="factoryIncMonthPicker" type="month" onchange="renderFactoryIncentiveMatrix()" />
+          </div>
+          <div>
+            <label for="factoryIncSearchInput">Filter by ID / Name / Line</label>
+            <input id="factoryIncSearchInput" type="text" placeholder="Search ID, Name or Line..." oninput="renderFactoryIncentiveMatrix()" />
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;">
+          <button type="button" class="btn-refresh" onclick="syncFactoryIncentivePage()">↻ Refresh Data</button>
+          <button type="button" class="btn-next" style="padding:9px 18px;font-size:15px;" onclick="downloadFactoryIncentiveExcel()">Download Excel (.xls)</button>
+        </div>
+
+        <div id="factoryIncSummaryBadge" class="msg" style="color:#0f172a;margin-bottom:8px;"></div>
+        <div id="factoryIncMatrixArea" class="table-scroll"><p class="hint">ডাটা লোড হচ্ছে...</p></div>
+        <div class="page-footer-credit">This Web App Created By Parvej</div>
+      </div>
+    </div>
+
     <div id="view-admin" class="hidden">
       <div class="card" style="padding:10px 14px;margin-bottom:12px;text-align:center;">
         <div class="welcome-marquee-bar" style="border-radius:8px;margin-bottom:8px;">
@@ -918,7 +960,7 @@
 
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbyWnveGrJjO52Rft9xbv4WPjxWkoaSAg5sHs_at9xDWJew5gsI_NorrpEuUc4YU2zcW2A/exec';
-    const PINS = { '1111': 'dashboard', '2222': 'operator', '3333': 'incentive', '4444': 'opwh', '9999': 'admin' };
+    const PINS = { '1111': 'dashboard', '2222': 'operator', '3333': 'incentive', '4444': 'opwh', '5555': 'factoryinc', '9999': 'admin' };
     const SESSION_KEY = 'prod_system_role_v1';
     const FORECAST_STORAGE_KEY = 'linking_forecast_master_v1';
     const OP_WH_STORAGE_KEY = 'operator_custom_wh_master_v1';
@@ -954,6 +996,330 @@
     let isDashboardFetchInFlight = false;
 
     const ALL_LINKING_LINES = Array.from({ length: 33 }, (_, idx) => `Linking Line-${String(idx + 1).padStart(2, '0')}`);
+
+    function getDaysInMonthIso(yearMonthStr) {
+      const m = String(yearMonthStr || '').match(/^(\d{4})-(\d{2})$/);
+      const y = m ? parseInt(m[1], 10) : parseInt(getTodayIso().slice(0, 4), 10);
+      const mo = m ? parseInt(m[2], 10) : parseInt(getTodayIso().slice(5, 7), 10);
+      const lastDay = new Date(y, mo, 0).getDate();
+      const ymPrefix = `${y}-${String(mo).padStart(2, '0')}`;
+      const dates = [];
+      for (let d = 1; d <= lastDay; d++) {
+        const dayStr = String(d).padStart(2, '0');
+        dates.push({
+          iso: `${ymPrefix}-${dayStr}`,
+          label: `${dayStr}/${String(mo).padStart(2, '0')}`
+        });
+      }
+      return dates;
+    }
+
+    function initFactoryIncentiveMonth() {
+      const picker = document.getElementById('factoryIncMonthPicker');
+      if (picker && !picker.value) {
+        picker.value = getTodayIso().slice(0, 7);
+      }
+    }
+
+    async function syncFactoryIncentivePage() {
+      initFactoryIncentiveMonth();
+      await refreshServerRecordsForDuplicateCheck();
+      if (!incRawRows.length) {
+        await fetchIncentiveSheet(true);
+      }
+      renderFactoryIncentiveMatrix();
+    }
+
+    function buildFactoryIncentiveReportModel(yearMonthStr, filterText) {
+      const monthDates = getDaysInMonthIso(yearMonthStr);
+      const dateIsoSet = new Set(monthDates.map(d => d.iso));
+      const opMap = {};
+
+      latestFetchedRecords.forEach(r => {
+        const dtIso = extractRecordIsoDate(r);
+        if (!dtIso || !dateIsoSet.has(dtIso)) return;
+        const opId = String(r.operatorId || '').trim();
+        if (!opId) return;
+        const opKey = opId.toLowerCase();
+        const ln = normalizeLineName(r.line);
+        const dayForecast = forecastMaster[dtIso] || {};
+        const fc = dayForecast[ln] || { hour: 0, pcs: 0 };
+        const wh = getRecordEntryWorkingHour(r, Number(fc.hour) || 8, dtIso);
+        const sah = Number(r.earnedSah ?? r.sah ?? 0);
+
+        if (!opMap[opKey]) {
+          opMap[opKey] = {
+            operatorId: opId,
+            operatorName: String(r.operatorName || '-').trim() || '-',
+            line: ln || '-',
+            floor: String(r.floor || '-').trim() || '-',
+            jobType: String(r.jobType || '-').trim() || '-',
+            dayBuckets: {}
+          };
+        }
+        if (!opMap[opKey].dayBuckets[dtIso]) {
+          opMap[opKey].dayBuckets[dtIso] = { whSum: 0, whCount: 0, achSahSum: 0 };
+        }
+        opMap[opKey].dayBuckets[dtIso].whSum += wh;
+        opMap[opKey].dayBuckets[dtIso].whCount += 1;
+        opMap[opKey].dayBuckets[dtIso].achSahSum += sah;
+      });
+
+      if (Object.keys(opMap).length === 0 && Array.isArray(incRawRows) && incRawRows.length > 0) {
+        incRawRows.forEach(row => {
+          const dtIso = incNormalizeDateKey(row[0]);
+          if (!dtIso || !dateIsoSet.has(dtIso)) return;
+          const opId = String(row[1] || '').trim();
+          if (!opId) return;
+          const opKey = opId.toLowerCase();
+          const customWh = getCustomOperatorWh(dtIso, opId);
+          const wh = customWh !== null ? customWh : incToNum(row[10]);
+          const sah = incToNum(row[13]);
+
+          if (!opMap[opKey]) {
+            opMap[opKey] = {
+              operatorId: opId,
+              operatorName: String(row[2] || '-').trim() || '-',
+              line: String(row[5] || '-').trim() || '-',
+              floor: String(row[3] || '-').trim() || '-',
+              jobType: String(row[4] || '-').trim() || '-',
+              dayBuckets: {}
+            };
+          }
+          if (!opMap[opKey].dayBuckets[dtIso]) {
+            opMap[opKey].dayBuckets[dtIso] = { whSum: 0, whCount: 0, achSahSum: 0 };
+          }
+          opMap[opKey].dayBuckets[dtIso].whSum += wh;
+          opMap[opKey].dayBuckets[dtIso].whCount += 1;
+          opMap[opKey].dayBuckets[dtIso].achSahSum += sah;
+        });
+      }
+
+      const q = String(filterText || '').trim().toLowerCase();
+      let operators = Object.keys(opMap).map(k => opMap[k]);
+      if (q) {
+        operators = operators.filter(op =>
+          op.operatorId.toLowerCase().indexOf(q) !== -1 ||
+          op.operatorName.toLowerCase().indexOf(q) !== -1 ||
+          op.line.toLowerCase().indexOf(q) !== -1
+        );
+      }
+
+      const rowsData = operators.map(op => {
+        let totalInc = 0;
+        let sumMonthWh = 0;
+        let sumMonthSah = 0;
+        const perDay = {};
+
+        monthDates.forEach(dObj => {
+          const b = op.dayBuckets[dObj.iso];
+          if (b && b.whCount > 0) {
+            const dayWh = b.whSum / b.whCount;
+            const dayTargetSah = dayWh * 0.70;
+            const dayAchSah = b.achSahSum;
+            const dayEffPct = dayWh > 0 ? ((dayAchSah / dayWh) * 100) : 0;
+            const dayInc = Math.max(0, dayAchSah - dayTargetSah) * 60 * 0.80;
+
+            perDay[dObj.iso] = {
+              inc: dayInc,
+              effPct: dayEffPct
+            };
+            totalInc += dayInc;
+            sumMonthWh += dayWh;
+            sumMonthSah += dayAchSah;
+          } else {
+            perDay[dObj.iso] = {
+              inc: 0,
+              effPct: 0
+            };
+          }
+        });
+
+        const avgEffPct = sumMonthWh > 0 ? ((sumMonthSah / sumMonthWh) * 100) : 0;
+        return {
+          ...op,
+          perDay,
+          totalInc,
+          avgEffPct,
+          sumMonthWh,
+          sumMonthSah
+        };
+      });
+
+      const grandDayTotals = {};
+      let grandTotalIncAll = 0;
+      let grandSumWhAll = 0;
+      let grandSumSahAll = 0;
+
+      monthDates.forEach(dObj => {
+        let dIncSum = 0;
+        let dWhSum = 0;
+        let dSahSum = 0;
+        rowsData.forEach(r => {
+          const b = r.dayBuckets[dObj.iso];
+          if (b && b.whCount > 0) {
+            const dayWh = b.whSum / b.whCount;
+            const dayTargetSah = dayWh * 0.70;
+            const dayAchSah = b.achSahSum;
+            dIncSum += Math.max(0, dayAchSah - dayTargetSah) * 60 * 0.80;
+            dWhSum += dayWh;
+            dSahSum += dayAchSah;
+          }
+        });
+        grandDayTotals[dObj.iso] = {
+          inc: dIncSum,
+          effPct: dWhSum > 0 ? ((dSahSum / dWhSum) * 100) : 0
+        };
+        grandTotalIncAll += dIncSum;
+        grandSumWhAll += dWhSum;
+        grandSumSahAll += dSahSum;
+      });
+
+      const grandAvgEffAll = grandSumWhAll > 0 ? ((grandSumSahAll / grandSumWhAll) * 100) : 0;
+      return { monthDates, rowsData, grandDayTotals, grandTotalIncAll, grandAvgEffAll };
+    }
+
+    function renderFactoryIncentiveMatrix() {
+      initFactoryIncentiveMonth();
+      const ym = (document.getElementById('factoryIncMonthPicker') && document.getElementById('factoryIncMonthPicker').value) || getTodayIso().slice(0, 7);
+      const q = (document.getElementById('factoryIncSearchInput') && document.getElementById('factoryIncSearchInput').value) || '';
+      const area = document.getElementById('factoryIncMatrixArea');
+      const sumBadge = document.getElementById('factoryIncSummaryBadge');
+      if (!area) return;
+
+      const model = buildFactoryIncentiveReportModel(ym, q);
+      if (sumBadge) {
+        sumBadge.textContent = `Month: ${ym} | Total Operators: ${model.rowsData.length} | Total Incentives: ${incFormatMoney(model.grandTotalIncAll)} | Avg Efficiency: ${model.grandAvgEffAll.toFixed(2)}%`;
+      }
+
+      if (!model.rowsData.length) {
+        area.innerHTML = `<p class="hint">নির্বাচিত মাস (${esc(ym)})-এ কোনো Operator ডাটা পাওয়া যায়নি।</p>`;
+        return;
+      }
+
+      const topDateHeaders = `
+        <th rowspan="2">SL</th>
+        <th rowspan="2">OP ID</th>
+        <th rowspan="2">Name</th>
+        <th rowspan="2">Line</th>
+        <th rowspan="2">Floor</th>
+        <th rowspan="2">Jobtype</th>
+        ${model.monthDates.map(d => `<th colspan="2">${esc(d.label)}</th>`).join('')}
+        <th rowspan="2">Total<br>Incentives</th>
+        <th rowspan="2">Total Avg<br>Efficiency</th>
+      `;
+
+      const subHeaders = model.monthDates.map(() => `<th>Inc Amount</th><th>Efficiency</th>`).join('');
+
+      const bodyHtml = model.rowsData.map((op, idx) => {
+        const dayCells = model.monthDates.map(d => {
+          const cell = op.perDay[d.iso] || { inc: 0, effPct: 0 };
+          return `<td>${incFormatMoney(cell.inc)}</td><td>${cell.effPct.toFixed(1)}%</td>`;
+        }).join('');
+        return `
+          <tr>
+            <td><b>${idx + 1}</b></td>
+            <td><b>${esc(op.operatorId)}</b></td>
+            <td>${esc(op.operatorName)}</td>
+            <td>${esc(op.line)}</td>
+            <td>${esc(op.floor)}</td>
+            <td>${esc(op.jobType)}</td>
+            ${dayCells}
+            <td class="inc-cell"><b>${incFormatMoney(op.totalInc)}</b></td>
+            <td><b>${op.avgEffPct.toFixed(2)}%</b></td>
+          </tr>`;
+      }).join('');
+
+      const grandDayCells = model.monthDates.map(d => {
+        const gCell = model.grandDayTotals[d.iso] || { inc: 0, effPct: 0 };
+        return `<td>${incFormatMoney(gCell.inc)}</td><td>${gCell.effPct.toFixed(1)}%</td>`;
+      }).join('');
+
+      area.innerHTML = `
+        <table class="factory-inc-table">
+          <thead>
+            <tr>${topDateHeaders}</tr>
+            <tr>${subHeaders}</tr>
+          </thead>
+          <tbody>${bodyHtml}</tbody>
+          <tfoot>
+            <tr class="grand-total-row">
+              <td colspan="6">GRAND TOTAL</td>
+              ${grandDayCells}
+              <td>${incFormatMoney(model.grandTotalIncAll)}</td>
+              <td>${model.grandAvgEffAll.toFixed(2)}%</td>
+            </tr>
+          </tfoot>
+        </table>`;
+    }
+
+    function downloadFactoryIncentiveExcel() {
+      initFactoryIncentiveMonth();
+      const ym = (document.getElementById('factoryIncMonthPicker') && document.getElementById('factoryIncMonthPicker').value) || getTodayIso().slice(0, 7);
+      const q = (document.getElementById('factoryIncSearchInput') && document.getElementById('factoryIncSearchInput').value) || '';
+      const model = buildFactoryIncentiveReportModel(ym, q);
+
+      const topHeaderHtml = `
+        <tr>
+          <th rowspan="2">SL</th>
+          <th rowspan="2">OP ID</th>
+          <th rowspan="2">Name</th>
+          <th rowspan="2">Line</th>
+          <th rowspan="2">Floor</th>
+          <th rowspan="2">Jobtype</th>
+          ${model.monthDates.map(d => `<th colspan="2">${esc(d.label)}</th>`).join('')}
+          <th rowspan="2">Total Incentives</th>
+          <th rowspan="2">Total Avg Efficiency</th>
+        </tr>
+        <tr>
+          ${model.monthDates.map(() => `<th>Inc Amount</th><th>Efficiency</th>`).join('')}
+        </tr>
+      `;
+
+      const bodyRowsHtml = model.rowsData.map((op, idx) => {
+        const cells = model.monthDates.map(d => {
+          const c = op.perDay[d.iso] || { inc: 0, effPct: 0 };
+          return `<td>${Math.round(c.inc)}</td><td>${c.effPct.toFixed(2)}%</td>`;
+        }).join('');
+        return `<tr><td>${idx + 1}</td><td>${esc(op.operatorId)}</td><td>${esc(op.operatorName)}</td><td>${esc(op.line)}</td><td>${esc(op.floor)}</td><td>${esc(op.jobType)}</td>${cells}<td>${Math.round(op.totalInc)}</td><td>${op.avgEffPct.toFixed(2)}%</td></tr>`;
+      }).join('');
+
+      const footCells = model.monthDates.map(d => {
+        const gc = model.grandDayTotals[d.iso] || { inc: 0, effPct: 0 };
+        return `<td>${Math.round(gc.inc)}</td><td>${gc.effPct.toFixed(2)}%</td>`;
+      }).join('');
+
+      const xlsContent = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        <head><meta charset="UTF-8" /></head>
+        <body>
+          <h3>JL Fashions Limited - Factory Date-wise Incentives & Efficiency Report (${esc(ym)})</h3>
+          <table border="1">
+            <thead>${topHeaderHtml}</thead>
+            <tbody>${bodyRowsHtml}</tbody>
+            <tfoot>
+              <tr>
+                <td colspan="6"><b>Grand Total</b></td>
+                ${footCells}
+                <td><b>${Math.round(model.grandTotalIncAll)}</b></td>
+                <td><b>${model.grandAvgEffAll.toFixed(2)}%</b></td>
+              </tr>
+            </tfoot>
+          </table>
+        </body>
+        </html>
+      `;
+
+      const blob = new Blob([xlsContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Factory_Incentive_Efficiency_${ym}.xls`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
 
     function getCustomOperatorWh(isoDate, operatorId) {
       const dtKey = String(isoDate || '').trim();
@@ -1006,7 +1372,7 @@
         const key = opId.toLowerCase();
         const ln = normalizeLineName(r.line);
         const fc = dayForecast[ln] || { hour: 0, pcs: 0 };
-        const baseWh = getRecordEntryWorkingHour(r, Number(fc.hour) || 8);
+        const baseWh = getRecordEntryWorkingHour(r, Number(fc.hour) || 8, targetDate);
         const customWh = getCustomOperatorWh(targetDate, opId);
 
         if (!map[key]) {
@@ -1261,6 +1627,7 @@
       const dashPicker = document.getElementById('dashDatePicker');
       if (dashPicker && !dashPicker.value) dashPicker.value = runningIso;
       initOpWhDate();
+      initFactoryIncentiveMonth();
     }
 
     function onForecastCustomDateChange() {
@@ -2434,7 +2801,7 @@
       document.getElementById('loginMsg').textContent = '';
       document.getElementById('loginCard').classList.remove('hidden');
       document.getElementById('navBar').classList.add('hidden');
-      ['dashboard', 'operator', 'incentive', 'opwh', 'admin'].forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
+      ['dashboard', 'operator', 'incentive', 'opwh', 'factoryinc', 'admin'].forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
     }
 
     function applyRoleUI(role) {
@@ -2444,20 +2811,28 @@
       document.getElementById('btnTabOp').classList.toggle('hidden', role === 'dashboard' || role === 'incentive');
       document.getElementById('btnTabInc').classList.toggle('hidden', role === 'dashboard' || role === 'operator');
       document.getElementById('btnTabOpWh').classList.toggle('hidden', role === 'operator' || role === 'incentive');
+      document.getElementById('btnTabFactoryInc').classList.toggle('hidden', role === 'operator' || role === 'incentive');
       document.getElementById('btnTabAdmin').classList.toggle('hidden', role !== 'admin');
       switchView(role);
     }
 
     function switchView(view) {
-      ['dashboard', 'operator', 'incentive', 'opwh', 'admin'].forEach(v => {
+      ['dashboard', 'operator', 'incentive', 'opwh', 'factoryinc', 'admin'].forEach(v => {
         document.getElementById('view-' + v).classList.toggle('hidden', v !== view);
-        const btn = document.getElementById(v === 'dashboard' ? 'btnTabDash' : v === 'operator' ? 'btnTabOp' : v === 'incentive' ? 'btnTabInc' : v === 'opwh' ? 'btnTabOpWh' : 'btnTabAdmin');
+        const btn = document.getElementById(
+          v === 'dashboard' ? 'btnTabDash' :
+          v === 'operator' ? 'btnTabOp' :
+          v === 'incentive' ? 'btnTabInc' :
+          v === 'opwh' ? 'btnTabOpWh' :
+          v === 'factoryinc' ? 'btnTabFactoryInc' : 'btnTabAdmin'
+        );
         if (btn) btn.classList.toggle('active', v === view);
       });
       if (view === 'dashboard') { stopCamera(); updateRunningDateBadge(); updateLiveClockAndUpTo(); const dashPicker = document.getElementById('dashDatePicker'); if (dashPicker && !dashPicker.value) dashPicker.value = getTodayIso(); loadDashboard(); }
       if (view === 'operator') { updateFlowUI(); syncSmvMasterFromServer(); }
       if (view === 'incentive') { stopCamera(); fetchIncentiveSheet(false); }
       if (view === 'opwh') { stopCamera(); syncAndRenderOpWhPage(); }
+      if (view === 'factoryinc') { stopCamera(); syncFactoryIncentivePage(); }
       if (view === 'admin') { stopCamera(); switchAdminSection('form'); renderSavedSmvTable(); syncSmvMasterFromServer(); }
     }
 
